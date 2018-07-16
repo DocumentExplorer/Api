@@ -12,7 +12,6 @@ namespace DocumentExplorer.Core.Domain
         
         protected User()
         {
-
         } 
 
         public User(string username, string hash, string salt, string role)

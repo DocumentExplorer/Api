@@ -15,6 +15,9 @@ using DocumentExplorer.Infrastructure.IoC.Modules;
 using DocumentExplorer.Infrastructure.Services;
 using DocumentExplorer.Core.Repositories;
 using DocumentExplorer.Infrastructure.Repositories;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace DocumentExplorer.Api
 {
@@ -31,11 +34,25 @@ namespace DocumentExplorer.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidIssuer = ConfigurationRoot["jwt:issuer"],
+                ValidateAudience = false,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigurationRoot["jwt:key"]))
+            };
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = tokenValidationParameters;
+            });
+
+
 
             services.AddSingleton(AutoMapperConfig.Initialize());
             services.AddScoped<IUserService,UserService>();
             services.AddScoped<IEncrypter,Encrypter>();
             services.AddScoped<IUserRepository,InMemoryUserRepository>();
+            services.AddMemoryCache();
             services.AddMvc();
 
             var builder = new ContainerBuilder();
@@ -43,6 +60,7 @@ namespace DocumentExplorer.Api
             builder.RegisterModule(new SettingsModule(ConfigurationRoot));
             builder.RegisterModule<CommandModule>();
             builder.RegisterType<Encrypter>().As<IEncrypter>().SingleInstance();
+            builder.RegisterType<JwtHandler>().As<IJwtHandler>().SingleInstance();
             ApplicationContainer = builder.Build();
 
             return new AutofacServiceProvider(ApplicationContainer);
@@ -55,7 +73,7 @@ namespace DocumentExplorer.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseAuthentication();
             app.UseMvc();
             appLifetime.ApplicationStopped.Register(()=> ApplicationContainer.Dispose());
         }
