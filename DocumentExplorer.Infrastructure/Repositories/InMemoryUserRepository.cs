@@ -9,14 +9,20 @@ namespace DocumentExplorer.Infrastructure.Repositories
 {
     public class InMemoryUserRepository : IUserRepository
     {
-        private static ISet<User> _users = new HashSet<User>
+        private ISet<User> _users = new HashSet<User>
         {
-            new User("usr1","secret123",Guid.NewGuid().ToString("N"),Roles.User),
-            new User("usr2","secret123",Guid.NewGuid().ToString("N"),Roles.User),
-            new User("usr3","secret123",Guid.NewGuid().ToString("N"),Roles.User),
-            new User("adm1","secret123",Guid.NewGuid().ToString("N"),Roles.Admin),
-            new User("adm2","secret123",Guid.NewGuid().ToString("N"),Roles.Admin),
-            new User("adm3","secret123",Guid.NewGuid().ToString("N"),Roles.Admin)
+            new User("usr1","pvVHMQ0CbpqtfRtvkR8/6sDvoetqFBtP72rlrn59BvQpcoJwG9nq8w==",//secret123
+            "pQJuj+pcybjoJWAB0GeDwEKtJcKza9Ku/uvjQDtkUlQ5I9OvVddLmQ==","user"),
+            new User("usr2","pvVHMQ0CbpqtfRtvkR8/6sDvoetqFBtP72rlrn59BvQpcoJwG9nq8w==",
+            "pQJuj+pcybjoJWAB0GeDwEKtJcKza9Ku/uvjQDtkUlQ5I9OvVddLmQ==","user"),
+            new User("usr3","pvVHMQ0CbpqtfRtvkR8/6sDvoetqFBtP72rlrn59BvQpcoJwG9nq8w==",
+            "pQJuj+pcybjoJWAB0GeDwEKtJcKza9Ku/uvjQDtkUlQ5I9OvVddLmQ==","user"),
+            new User("adm1","pvVHMQ0CbpqtfRtvkR8/6sDvoetqFBtP72rlrn59BvQpcoJwG9nq8w==",
+            "pQJuj+pcybjoJWAB0GeDwEKtJcKza9Ku/uvjQDtkUlQ5I9OvVddLmQ==","admin"),
+            new User("adm2","pvVHMQ0CbpqtfRtvkR8/6sDvoetqFBtP72rlrn59BvQpcoJwG9nq8w==",
+            "pQJuj+pcybjoJWAB0GeDwEKtJcKza9Ku/uvjQDtkUlQ5I9OvVddLmQ==","admin"),
+            new User("adm3","pvVHMQ0CbpqtfRtvkR8/6sDvoetqFBtP72rlrn59BvQpcoJwG9nq8w==",
+            "pQJuj+pcybjoJWAB0GeDwEKtJcKza9Ku/uvjQDtkUlQ5I9OvVddLmQ==","admin")
         };
         public async Task AddAsync(User user)
         {

@@ -13,6 +13,8 @@ using Microsoft.Extensions.Options;
 using DocumentExplorer.Infrastructure.Mappers;
 using DocumentExplorer.Infrastructure.IoC.Modules;
 using DocumentExplorer.Infrastructure.Services;
+using DocumentExplorer.Core.Repositories;
+using DocumentExplorer.Infrastructure.Repositories;
 
 namespace DocumentExplorer.Api
 {
@@ -31,11 +33,15 @@ namespace DocumentExplorer.Api
         {
 
             services.AddSingleton(AutoMapperConfig.Initialize());
+            services.AddScoped<IUserService,UserService>();
+            services.AddScoped<IEncrypter,Encrypter>();
+            services.AddScoped<IUserRepository,InMemoryUserRepository>();
             services.AddMvc();
 
             var builder = new ContainerBuilder();
             builder.Populate(services);
             builder.RegisterModule(new SettingsModule(ConfigurationRoot));
+            builder.RegisterModule<CommandModule>();
             builder.RegisterType<Encrypter>().As<IEncrypter>().SingleInstance();
             ApplicationContainer = builder.Build();
 
