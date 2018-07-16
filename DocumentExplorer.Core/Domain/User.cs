@@ -31,7 +31,7 @@ namespace DocumentExplorer.Core.Domain
 
         public void SetRole(string role)
         {
-            if(role != "user" && role !="admin")
+            if(role != Roles.User && role !=Roles.Admin)
             {
                 throw new Exception($"Role {role} does not exist.");
             }
