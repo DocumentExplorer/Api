@@ -11,17 +11,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using DocumentExplorer.Infrastructure.Mappers;
+using DocumentExplorer.Infrastructure.IoC.Modules;
 
 namespace DocumentExplorer.Api
 {
     public class Startup
     {
-        public IConfiguration Configuration { get; }
+        public IConfiguration ConfigurationRoot { get; }
         public IContainer ApplicationContainer { get; private set; }
 
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            ConfigurationRoot = configuration;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -33,6 +34,7 @@ namespace DocumentExplorer.Api
 
             var builder = new ContainerBuilder();
             builder.Populate(services);
+            builder.RegisterModule(new SettingsModule(ConfigurationRoot));
             ApplicationContainer = builder.Build();
 
             return new AutofacServiceProvider(ApplicationContainer);
