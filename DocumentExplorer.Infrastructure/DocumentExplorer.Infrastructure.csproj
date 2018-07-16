@@ -8,4 +8,8 @@
     <ProjectReference Include="..\DocumentExplorer.Core\DocumentExplorer.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.8.1" />
+  </ItemGroup>
+
 </Project>
