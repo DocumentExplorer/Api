@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using DocumentExplorer.Infrastructure.Mappers;
 using DocumentExplorer.Infrastructure.IoC.Modules;
+using DocumentExplorer.Infrastructure.Services;
 
 namespace DocumentExplorer.Api
 {
@@ -35,6 +36,7 @@ namespace DocumentExplorer.Api
             var builder = new ContainerBuilder();
             builder.Populate(services);
             builder.RegisterModule(new SettingsModule(ConfigurationRoot));
+            builder.RegisterType<Encrypter>().As<IEncrypter>().SingleInstance();
             ApplicationContainer = builder.Build();
 
             return new AutofacServiceProvider(ApplicationContainer);
