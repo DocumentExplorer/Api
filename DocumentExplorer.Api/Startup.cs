@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using DocumentExplorer.Infrastructure.Mappers;
 
 namespace DocumentExplorer.Api
 {
@@ -26,6 +27,8 @@ namespace DocumentExplorer.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+
+            services.AddSingleton(AutoMapperConfig.Initialize());
             services.AddMvc();
 
             var builder = new ContainerBuilder();
