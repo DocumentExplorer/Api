@@ -79,6 +79,7 @@ namespace DocumentExplorer.Api.Controllers
             return Json(jwt);
         }
 
+        [Authorize]
         [HttpDelete("logout")]
         public IActionResult Logout()
         {
