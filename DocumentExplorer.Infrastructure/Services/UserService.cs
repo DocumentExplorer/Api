@@ -75,5 +75,13 @@ namespace DocumentExplorer.Infrastructure.Services
             var users = await _userRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<User>,List<UserDto>>(users);
         }
+
+        public async Task DeleteUser(Guid id)
+        {
+            var user = await _userRepository.GetAsync(id);
+            if(user == null)
+                throw new Exception($"User with id: {id} does not exist.");
+            await _userRepository.RemoveAsync(user);
+        }
     }
 }

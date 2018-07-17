@@ -86,6 +86,15 @@ namespace DocumentExplorer.Api.Controllers
             return NoContent();
         }
 
+        [Authorize("admin")]
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteUser(Guid id)
+        {
+            await _userService.DeleteUser(id);
+            return NoContent();
+        }
+
+
         private bool IsAuthorized(string username)
             => IsRequestedByTheUser(username) || IsRequestedByAdmin();
 

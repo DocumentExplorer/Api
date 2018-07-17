@@ -12,5 +12,6 @@ namespace DocumentExplorer.Infrastructure.Services
         Task<UserDto> GetAsync(string username);
         Task<UserDto> GetAsync(Guid id);
         Task<IEnumerable<UserDto>> GetAllAsync();
+        Task DeleteUser(Guid id);
     }
 }
