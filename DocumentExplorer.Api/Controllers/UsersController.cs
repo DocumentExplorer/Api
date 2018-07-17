@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DocumentExplorer.Infrastructure.Commands;
 using DocumentExplorer.Infrastructure.Commands.Users;
 using DocumentExplorer.Infrastructure.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -20,19 +21,8 @@ namespace DocumentExplorer.Api.Controllers
             _commandDispatcher = commandDispatcher;
             _cache = cache;
         }
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2", DateTime.Now.ToString() };
-        }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
+        [Authorize("admin")]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody]Register command)
         {
@@ -47,18 +37,6 @@ namespace DocumentExplorer.Api.Controllers
             await _commandDispatcher.DispatchAsync(command);
             var jwt = _cache.GetJwt(command.TokenId);
             return Json(jwt);
-        }
-
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }

@@ -19,7 +19,7 @@ namespace DocumentExplorer.Core.Domain
             Id = Guid.NewGuid();
             SetUsername(username);
             SetPassword(hash, salt);
-            SetRole(Role);
+            SetRole(role);
         }
 
         public void SetPassword(string hash, string salt)
@@ -30,6 +30,10 @@ namespace DocumentExplorer.Core.Domain
 
         public void SetRole(string role)
         {
+            if(role != Roles.User && Roles.Admin != role)
+            {
+                throw new Exception($"Role {role} does not exist.");
+            }
             Role = role;
         }
         private void SetUsername(string username)

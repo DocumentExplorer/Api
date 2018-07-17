@@ -39,10 +39,6 @@ namespace DocumentExplorer.Infrastructure.Services
         public async Task RegisterAsync(string username, string password, string role)
         {
             var user = await _userRepository.GetAsync(username);
-            if(role != Roles.User && Roles.Admin != role)
-            {
-                throw new Exception($"Role {role} does not exist.");
-            }
             if (user != null)
             {
                 throw new Exception($"User with username: {username} already exist.");

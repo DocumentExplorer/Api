@@ -18,6 +18,7 @@ using DocumentExplorer.Infrastructure.Repositories;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using DocumentExplorer.Infrastructure.Settings;
 
 namespace DocumentExplorer.Api
 {
@@ -53,6 +54,8 @@ namespace DocumentExplorer.Api
             services.AddScoped<IEncrypter,Encrypter>();
             services.AddScoped<IUserRepository,InMemoryUserRepository>();
             services.AddMemoryCache();
+            services.AddAuthorization(x => x.AddPolicy("admin", p=>p.RequireRole("admin")));
+            services.AddAuthorization(x => x.AddPolicy("user", p=>p.RequireRole("user")));
             services.AddMvc();
 
             var builder = new ContainerBuilder();
@@ -61,6 +64,7 @@ namespace DocumentExplorer.Api
             builder.RegisterModule<CommandModule>();
             builder.RegisterType<Encrypter>().As<IEncrypter>().SingleInstance();
             builder.RegisterType<JwtHandler>().As<IJwtHandler>().SingleInstance();
+            builder.RegisterType<DataInitializer>().As<IDataInitializer>().SingleInstance();
             ApplicationContainer = builder.Build();
 
             return new AutofacServiceProvider(ApplicationContainer);
@@ -74,6 +78,13 @@ namespace DocumentExplorer.Api
                 app.UseDeveloperExceptionPage();
             }
             app.UseAuthentication();
+
+            var generalSettings = app.ApplicationServices.GetService<GeneralSettings>();
+            if(generalSettings.DataInitialize)
+            {
+                var dataInitilizer = app.ApplicationServices.GetService<IDataInitializer>();
+                dataInitilizer.SeedAsync();
+            }
             app.UseMvc();
             appLifetime.ApplicationStopped.Register(()=> ApplicationContainer.Dispose());
         }
