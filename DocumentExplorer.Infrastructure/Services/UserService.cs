@@ -83,5 +83,16 @@ namespace DocumentExplorer.Infrastructure.Services
                 throw new Exception($"User with id: {id} does not exist.");
             await _userRepository.RemoveAsync(user);
         }
+
+        public async Task ChangePassword(Guid id, string password)
+        {
+            var user = await _userRepository.GetAsync(id);
+            if(user == null)
+                throw new Exception($"User with id: {id} does not exist.");
+            var salt = _encrypter.GetSalt(password);
+            var hash = _encrypter.GetHash(password,salt);
+            user.SetPassword(hash,salt);
+            await _userRepository.UpdateAsync(user);
+        }
     }
 }

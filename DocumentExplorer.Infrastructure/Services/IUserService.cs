@@ -13,5 +13,6 @@ namespace DocumentExplorer.Infrastructure.Services
         Task<UserDto> GetAsync(Guid id);
         Task<IEnumerable<UserDto>> GetAllAsync();
         Task DeleteUser(Guid id);
+        Task ChangePassword(Guid id, string password);
     }
 }

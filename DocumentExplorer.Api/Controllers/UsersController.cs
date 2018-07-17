@@ -67,7 +67,7 @@ namespace DocumentExplorer.Api.Controllers
         public async Task<IActionResult> Register([FromBody]Register command)
         {
             await _commandDispatcher.DispatchAsync(command);
-            return Created($"users/{command.Username}", new object());
+            return Created($"users/username/{command.Username}", new object());
         }
 
         [HttpPost("login")]
@@ -91,6 +91,14 @@ namespace DocumentExplorer.Api.Controllers
         public async Task<IActionResult> DeleteUser(Guid id)
         {
             await _userService.DeleteUser(id);
+            return NoContent();
+        }
+
+        [Authorize("admin")]
+        [HttpPut("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody]ChangePassword command)
+        {
+            await _commandDispatcher.DispatchAsync(command);
             return NoContent();
         }
 
