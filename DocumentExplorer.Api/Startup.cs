@@ -15,6 +15,7 @@ using DocumentExplorer.Infrastructure.IoC.Modules;
 using DocumentExplorer.Infrastructure.Services;
 using DocumentExplorer.Core.Repositories;
 using DocumentExplorer.Infrastructure.Repositories;
+using DocumentExplorer.Infrastructure.EF;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -54,7 +55,6 @@ namespace DocumentExplorer.Api
             services.AddSingleton(AutoMapperConfig.Initialize());
             services.AddScoped<IUserService,UserService>();
             services.AddScoped<IEncrypter,Encrypter>();
-            services.AddScoped<IUserRepository,InMemoryUserRepository>();
             services.AddMemoryCache();
             services.AddAuthorization(x => x.AddPolicy("admin", p=>p.RequireRole("admin")));
             services.AddAuthorization(x => x.AddPolicy("user", p=>p.RequireRole("user")));
@@ -62,11 +62,14 @@ namespace DocumentExplorer.Api
             services.AddTransient<ITokenManager,TokenManager>();
             services.AddSingleton<IHttpContextAccessor,HttpContextAccessor>();
             services.AddMvc();
+            services.AddEntityFrameworkSqlServer().AddEntityFrameworkInMemoryDatabase()
+                .AddDbContext<DocumentExplorerContext>();
 
             var builder = new ContainerBuilder();
             builder.Populate(services);
             builder.RegisterModule(new SettingsModule(ConfigurationRoot));
             builder.RegisterModule<CommandModule>();
+            builder.RegisterModule<SqlModule>();
             builder.RegisterType<Encrypter>().As<IEncrypter>().SingleInstance();
             builder.RegisterType<JwtHandler>().As<IJwtHandler>().SingleInstance();
             builder.RegisterType<DataInitializer>().As<IDataInitializer>().SingleInstance();

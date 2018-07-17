@@ -1,7 +1,3 @@
-CREATE DATABASE DocumentExplorer
-
-USE DocumentExplorer
-
 CREATE TABLE Users(
     
     Id UNIQUEIDENTIFIER PRIMARY KEY NOT NULL,
@@ -10,3 +6,5 @@ CREATE TABLE Users(
     Salt nvarchar(200) NOT NULL,
     Role nvarchar(5) NOT NULL,
 )
+
+SELECT * FROM Users

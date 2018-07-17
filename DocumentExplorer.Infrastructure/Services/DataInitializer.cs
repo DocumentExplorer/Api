@@ -13,16 +13,14 @@ namespace DocumentExplorer.Infrastructure.Services
         }
         public async Task SeedAsync()
         {
-            var tasks = new List<Task>();
             for(int i=1; i<=3; i++)
             {
-                tasks.Add(_userService.RegisterAsync($"usr{i}","secret123",Roles.User));
+                await _userService.RegisterAsync($"usr{i}","secret123",Roles.User);
             }
             for(int i=1; i<=3; i++)
             {
-                tasks.Add(_userService.RegisterAsync($"adm{i}","secret123",Roles.Admin));
+                await _userService.RegisterAsync($"adm{i}","secret123",Roles.Admin);
             }
-            await Task.WhenAll(tasks);
         }
     }
 }
