@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using DocumentExplorer.Core.Domain;
@@ -57,6 +58,22 @@ namespace DocumentExplorer.Infrastructure.Services
                 throw new Exception($"User '{username}' does not exist.");
             }
             return _mapper.Map<User,UserDto>(user);
+        }
+
+        public async Task<UserDto> GetAsync(Guid id)
+        {
+            var user = await _userRepository.GetAsync(id);
+            if (user == null)
+            {
+                throw new Exception($"User with id'{id}' does not exist.");
+            }
+            return _mapper.Map<User,UserDto>(user);
+        }
+
+        public async Task<IEnumerable<UserDto>> GetAllAsync()
+        {
+            var users = await _userRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<User>,List<UserDto>>(users);
         }
     }
 }

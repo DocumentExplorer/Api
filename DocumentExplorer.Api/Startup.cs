@@ -19,6 +19,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using DocumentExplorer.Infrastructure.Settings;
+using Microsoft.AspNetCore.Http;
 
 namespace DocumentExplorer.Api
 {
@@ -39,7 +40,8 @@ namespace DocumentExplorer.Api
             {
                 ValidIssuer = ConfigurationRoot["jwt:issuer"],
                 ValidateAudience = false,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigurationRoot["jwt:key"]))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigurationRoot["jwt:key"])),
+                SaveSigninToken = true
             };
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
@@ -56,6 +58,9 @@ namespace DocumentExplorer.Api
             services.AddMemoryCache();
             services.AddAuthorization(x => x.AddPolicy("admin", p=>p.RequireRole("admin")));
             services.AddAuthorization(x => x.AddPolicy("user", p=>p.RequireRole("user")));
+            services.AddTransient<TokenManagerMiddleware>();
+            services.AddTransient<ITokenManager,TokenManager>();
+            services.AddSingleton<IHttpContextAccessor,HttpContextAccessor>();
             services.AddMvc();
 
             var builder = new ContainerBuilder();
@@ -77,6 +82,7 @@ namespace DocumentExplorer.Api
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseMiddleware<TokenManagerMiddleware>();
             app.UseAuthentication();
 
             var generalSettings = app.ApplicationServices.GetService<GeneralSettings>();

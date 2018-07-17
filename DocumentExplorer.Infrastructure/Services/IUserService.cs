@@ -10,5 +10,7 @@ namespace DocumentExplorer.Infrastructure.Services
         Task RegisterAsync(string username, string password, string role);
         Task LoginAsync(string username, string password);
         Task<UserDto> GetAsync(string username);
+        Task<UserDto> GetAsync(Guid id);
+        Task<IEnumerable<UserDto>> GetAllAsync();
     }
 }

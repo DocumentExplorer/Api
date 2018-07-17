@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using AutoMapper;
 using DocumentExplorer.Core.Domain;
 using DocumentExplorer.Infrastructure.DTO;
