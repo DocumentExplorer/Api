@@ -68,7 +68,8 @@ namespace DocumentExplorer.Api
             {
                     a.AllowAnyOrigin()
                     .AllowAnyMethod()
-                    .AllowAnyHeader();
+                    .AllowAnyHeader()
+                    .AllowCredentials();
             }));
             services.AddMvc();
             //services.AddEntityFrameworkSqlServer().AddEntityFrameworkInMemoryDatabase()
