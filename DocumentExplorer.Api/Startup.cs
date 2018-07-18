@@ -63,6 +63,7 @@ namespace DocumentExplorer.Api
             services.AddTransient<TokenManagerMiddleware>();
             services.AddTransient<ITokenManager,TokenManager>();
             services.AddSingleton<IHttpContextAccessor,HttpContextAccessor>();
+            services.AddCors();
             services.AddMvc();
             //services.AddEntityFrameworkSqlServer().AddEntityFrameworkInMemoryDatabase()
             //    .AddDbContext<DocumentExplorerContext>();
@@ -90,7 +91,9 @@ namespace DocumentExplorer.Api
             }
             app.UseMiddleware<TokenManagerMiddleware>();
             app.UseAuthentication();
-
+            app.UseCors(builder => 
+                builder.WithOrigins("http://localhost:3000").AllowAnyHeader()
+                );
             MongoConfigurator.Initialize();
             var generalSettings = app.ApplicationServices.GetService<GeneralSettings>();
             if(generalSettings.DataInitialize)
