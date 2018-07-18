@@ -2,6 +2,7 @@ using System.Reflection;
 using Autofac;
 using DocumentExplorer.Infrastructure.EF;
 using DocumentExplorer.Infrastructure.Extensions;
+using DocumentExplorer.Infrastructure.Mongo;
 using DocumentExplorer.Infrastructure.Settings;
 using Microsoft.Extensions.Configuration;
 
@@ -19,7 +20,8 @@ namespace DocumentExplorer.Infrastructure.IoC.Modules
         {
             builder.RegisterInstance(_configuration.GetSettings<JwtSettings>()).SingleInstance();
             builder.RegisterInstance(_configuration.GetSettings<GeneralSettings>()).SingleInstance();
-            builder.RegisterInstance(_configuration.GetSettings<SqlSettings>()).SingleInstance();
+            //builder.RegisterInstance(_configuration.GetSettings<SqlSettings>()).SingleInstance();
+            builder.RegisterInstance(_configuration.GetSettings<MongoSettings>()).SingleInstance();
         }
     }
 }

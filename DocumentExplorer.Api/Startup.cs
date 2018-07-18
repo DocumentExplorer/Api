@@ -21,6 +21,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using DocumentExplorer.Infrastructure.Settings;
 using Microsoft.AspNetCore.Http;
+using DocumentExplorer.Infrastructure.Mongo;
 
 namespace DocumentExplorer.Api
 {
@@ -55,6 +56,7 @@ namespace DocumentExplorer.Api
             services.AddSingleton(AutoMapperConfig.Initialize());
             services.AddScoped<IUserService,UserService>();
             services.AddScoped<IEncrypter,Encrypter>();
+            services.AddScoped<IUserRepository, InMemoryUserRepository>();
             services.AddMemoryCache();
             services.AddAuthorization(x => x.AddPolicy("admin", p=>p.RequireRole("admin")));
             services.AddAuthorization(x => x.AddPolicy("user", p=>p.RequireRole("user")));
@@ -62,14 +64,15 @@ namespace DocumentExplorer.Api
             services.AddTransient<ITokenManager,TokenManager>();
             services.AddSingleton<IHttpContextAccessor,HttpContextAccessor>();
             services.AddMvc();
-            services.AddEntityFrameworkSqlServer().AddEntityFrameworkInMemoryDatabase()
-                .AddDbContext<DocumentExplorerContext>();
+            //services.AddEntityFrameworkSqlServer().AddEntityFrameworkInMemoryDatabase()
+            //    .AddDbContext<DocumentExplorerContext>();
 
             var builder = new ContainerBuilder();
             builder.Populate(services);
             builder.RegisterModule(new SettingsModule(ConfigurationRoot));
             builder.RegisterModule<CommandModule>();
-            builder.RegisterModule<SqlModule>();
+            //builder.RegisterModule<SqlModule>();
+            builder.RegisterModule<MongoModule>();
             builder.RegisterType<Encrypter>().As<IEncrypter>().SingleInstance();
             builder.RegisterType<JwtHandler>().As<IJwtHandler>().SingleInstance();
             builder.RegisterType<DataInitializer>().As<IDataInitializer>().SingleInstance();
@@ -88,6 +91,7 @@ namespace DocumentExplorer.Api
             app.UseMiddleware<TokenManagerMiddleware>();
             app.UseAuthentication();
 
+            MongoConfigurator.Initialize();
             var generalSettings = app.ApplicationServices.GetService<GeneralSettings>();
             if(generalSettings.DataInitialize)
             {
