@@ -62,6 +62,7 @@ namespace DocumentExplorer.Api
             services.AddAuthorization(x => x.AddPolicy("admin", p=>p.RequireRole("admin")));
             services.AddAuthorization(x => x.AddPolicy("user", p=>p.RequireRole("user")));
             services.AddTransient<TokenManagerMiddleware>();
+            services.AddTransient<CorsMiddleware>();
             services.AddTransient<ITokenManager,TokenManager>();
             services.AddSingleton<IHttpContextAccessor,HttpContextAccessor>();
             services.AddCors(o => o.AddPolicy("MyPolicy", a =>
