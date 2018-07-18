@@ -1,28 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using DocumentExplorer.Infrastructure.Mappers;
 using DocumentExplorer.Infrastructure.IoC.Modules;
 using DocumentExplorer.Infrastructure.Services;
 using DocumentExplorer.Core.Repositories;
 using DocumentExplorer.Infrastructure.Repositories;
-using DocumentExplorer.Infrastructure.EF;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using DocumentExplorer.Infrastructure.Settings;
 using Microsoft.AspNetCore.Http;
 using DocumentExplorer.Infrastructure.Mongo;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 
 namespace DocumentExplorer.Api
 {
@@ -81,6 +74,7 @@ namespace DocumentExplorer.Api
             builder.RegisterModule<CommandModule>();
             //builder.RegisterModule<SqlModule>();
             builder.RegisterModule<MongoModule>();
+            builder.RegisterModule<BlobStorageModule>();
             builder.RegisterType<Encrypter>().As<IEncrypter>().SingleInstance();
             builder.RegisterType<JwtHandler>().As<IJwtHandler>().SingleInstance();
             builder.RegisterType<DataInitializer>().As<IDataInitializer>().SingleInstance();

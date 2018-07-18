@@ -1,5 +1,6 @@
 using System.Reflection;
 using Autofac;
+using DocumentExplorer.Infrastructure.BlobStorage;
 using DocumentExplorer.Infrastructure.EF;
 using DocumentExplorer.Infrastructure.Extensions;
 using DocumentExplorer.Infrastructure.Mongo;
@@ -22,6 +23,7 @@ namespace DocumentExplorer.Infrastructure.IoC.Modules
             builder.RegisterInstance(_configuration.GetSettings<GeneralSettings>()).SingleInstance();
             //builder.RegisterInstance(_configuration.GetSettings<SqlSettings>()).SingleInstance();
             builder.RegisterInstance(_configuration.GetSettings<MongoSettings>()).SingleInstance();
+            builder.RegisterInstance(_configuration.GetSettings<BlobStorageSettings>()).SingleInstance();
         }
     }
 }
