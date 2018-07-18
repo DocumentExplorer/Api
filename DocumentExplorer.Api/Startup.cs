@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using DocumentExplorer.Infrastructure.Settings;
 using Microsoft.AspNetCore.Http;
 using DocumentExplorer.Infrastructure.Mongo;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 
 namespace DocumentExplorer.Api
 {
@@ -34,6 +35,7 @@ namespace DocumentExplorer.Api
         {
             ConfigurationRoot = configuration;
         }
+
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -52,7 +54,6 @@ namespace DocumentExplorer.Api
             });
 
 
-
             services.AddSingleton(AutoMapperConfig.Initialize());
             services.AddScoped<IUserService,UserService>();
             services.AddScoped<IEncrypter,Encrypter>();
@@ -63,7 +64,12 @@ namespace DocumentExplorer.Api
             services.AddTransient<TokenManagerMiddleware>();
             services.AddTransient<ITokenManager,TokenManager>();
             services.AddSingleton<IHttpContextAccessor,HttpContextAccessor>();
-            services.AddCors();
+            services.AddCors(o => o.AddPolicy("MyPolicy", a =>
+            {
+                a.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            }));
             services.AddMvc();
             //services.AddEntityFrameworkSqlServer().AddEntityFrameworkInMemoryDatabase()
             //    .AddDbContext<DocumentExplorerContext>();
@@ -91,9 +97,7 @@ namespace DocumentExplorer.Api
             }
             app.UseMiddleware<TokenManagerMiddleware>();
             app.UseAuthentication();
-            app.UseCors(builder => 
-                builder.WithOrigins("http://localhost:3000").AllowAnyHeader()
-                );
+            app.UseCors("MyPolicy");
             MongoConfigurator.Initialize();
             var generalSettings = app.ApplicationServices.GetService<GeneralSettings>();
             if(generalSettings.DataInitialize)
