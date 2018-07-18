@@ -66,7 +66,7 @@ namespace DocumentExplorer.Api
             services.AddSingleton<IHttpContextAccessor,HttpContextAccessor>();
             services.AddCors(o => o.AddPolicy("MyPolicy", a =>
             {
-                a.AllowAnyOrigin()
+                    a.AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader();
             }));
