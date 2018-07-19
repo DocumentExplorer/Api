@@ -32,7 +32,7 @@ namespace DocumentExplorer.Core.Domain
         {
             if(role != Roles.User && Roles.Admin != role)
             {
-                throw new Exception($"Role {role} does not exist.");
+                throw new DomainException(ErrorCodes.InvalidRole);
             }
             Role = role;
         }
@@ -40,11 +40,11 @@ namespace DocumentExplorer.Core.Domain
         {
             if(username == null)
             {
-                throw new ArgumentNullException();
+                throw new DomainException(ErrorCodes.InvalidUsername);
             }
             if(username.Length!=4)
             {
-                throw new Exception("User username have to has 4 letters.");
+                throw new DomainException(ErrorCodes.InvalidUsername);
             }
             Username = username;
         }

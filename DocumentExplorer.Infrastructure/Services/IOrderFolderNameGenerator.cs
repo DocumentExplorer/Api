@@ -9,6 +9,6 @@ namespace DocumentExplorer.Infrastructure.Services
     {
         string OrderToName(Order order);
         Order NameToOrder(string order);
-        List<Order> ListOfOrders(List<string> orders)
+        List<Order> ListOfOrders(List<string> orders);
     }
 }

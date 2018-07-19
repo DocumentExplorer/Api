@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using DocumentExplorer.Infrastructure.Settings;
 using Microsoft.AspNetCore.Http;
 using DocumentExplorer.Infrastructure.Mongo;
+using DocumentExplorer.Api.Framework;
 
 namespace DocumentExplorer.Api
 {
@@ -49,6 +50,7 @@ namespace DocumentExplorer.Api
 
             services.AddSingleton(AutoMapperConfig.Initialize());
             services.AddScoped<IUserService,UserService>();
+            services.AddScoped<IHandler, Handler>();
             services.AddScoped<IEncrypter,Encrypter>();
             services.AddScoped<IUserRepository, InMemoryUserRepository>();
             services.AddScoped<IOrderFolderNameGenerator, OrderFolderNameGenerator>();
@@ -93,6 +95,7 @@ namespace DocumentExplorer.Api
             }
             app.UseMiddleware<TokenManagerMiddleware>();
             app.UseAuthentication();
+            app.UseExceptionMiddleware();
             app.UseCors("MyPolicy");
             MongoConfigurator.Initialize();
             var generalSettings = app.ApplicationServices.GetService<GeneralSettings>();

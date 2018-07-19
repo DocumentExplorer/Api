@@ -12,18 +12,24 @@ namespace DocumentExplorer.Infrastructure.Handlers.Users
         private readonly IUserService _userService;
         private readonly IJwtHandler _jwtHandler;
         private readonly IMemoryCache _cache;
-        public LoginHandler(IUserService userService, IJwtHandler jwtHandler, IMemoryCache cache)
+        private readonly IHandler _handler;
+        public LoginHandler(IHandler handler, IUserService userService, IJwtHandler jwtHandler, IMemoryCache cache)
         {
             _userService = userService;
             _jwtHandler = jwtHandler;
             _cache = cache;
+            _handler = handler;
         }
+
         public async Task HandleAsync(Login command)
-        {
-            await _userService.LoginAsync(command.Username, command.Password);
-            var user = await _userService.GetAsync(command.Username);
-            var jwt = _jwtHandler.CreateToken(command.Username,user.Role);
-            _cache.SetJwt(command.TokenId,jwt);
-        }
+            => await _handler
+            .Run(async () =>
+            {
+                await _userService.LoginAsync(command.Username, command.Password);
+                var user = await _userService.GetAsync(command.Username);
+                var jwt = _jwtHandler.CreateToken(command.Username, user.Role);
+                _cache.SetJwt(command.TokenId, jwt);
+            })
+            .ExecuteAsync();
     }
 }

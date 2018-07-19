@@ -2,7 +2,6 @@
 using DocumentExplorer.Core.Repositories;
 using DocumentExplorer.Infrastructure.BlobStorage;
 using DocumentExplorer.Infrastructure.Services;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

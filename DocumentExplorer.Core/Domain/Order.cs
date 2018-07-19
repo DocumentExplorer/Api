@@ -49,7 +49,7 @@ namespace DocumentExplorer.Core.Domain
 
         private void SetId(int id)
         {
-            if (id == 0) throw new ArgumentOutOfRangeException();
+            if (id <= 0) throw new DomainException(ErrorCodes.IvalidId);
             Id = id;
         }
 
@@ -65,9 +65,9 @@ namespace DocumentExplorer.Core.Domain
 
         private string SetCountry(string country)
         {
-            if (country == null) throw new ArgumentNullException();
-            if (country.Length != 2) throw new Exception("Country should contain 2 characters.");
-            if (!Regex.IsMatch(country, CountryRegex)) throw new Exception("Country should contains only letters.");
+            if (country == null) throw new DomainException(ErrorCodes.InvalidCountry);
+            if (country.Length != 2) throw new DomainException(ErrorCodes.InvalidCountry);
+            if (!Regex.IsMatch(country, CountryRegex)) throw new DomainException(ErrorCodes.InvalidCountry);
             return country.ToUpper();
         }
 
@@ -83,14 +83,14 @@ namespace DocumentExplorer.Core.Domain
 
         private string SetIdentyficationNumber(string number)
         {
-            if (number == null) throw new ArgumentNullException();
+            if (number == null) throw new DomainException(ErrorCodes.InvalidNIP);
             return number;
         }
 
         private string SetOwner(string owner)
         {
-            if (owner == null) throw new ArgumentNullException();
-            if (owner.Length != 4) throw new Exception("Owner should contain 2 characters.");
+            if (owner == null) throw new DomainException(ErrorCodes.InvalidUsername);
+            if (owner.Length != 4) throw new DomainException(ErrorCodes.InvalidUsername);
             return owner.ToLower();
         }
     }
