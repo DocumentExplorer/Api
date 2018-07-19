@@ -64,6 +64,12 @@ namespace DocumentExplorer.Infrastructure.BlobStorage
             }
         }
 
+        public async Task DeleteAsync(string blobName)
+        {
+            CloudBlockBlob blockBlob = await GetBlockBlobAsync(blobName);
+            await blockBlob.DeleteIfExistsAsync();
+        }
+
         public async Task DownloadAsync(string blobName, string path)
         {
             CloudBlockBlob blockBlob = await GetBlockBlobAsync(blobName);

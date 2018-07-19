@@ -4,6 +4,7 @@ using DocumentExplorer.Infrastructure.BlobStorage;
 using DocumentExplorer.Infrastructure.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DocumentExplorer.Infrastructure.Repositories
@@ -22,24 +23,21 @@ namespace DocumentExplorer.Infrastructure.Repositories
         public async Task AddAsync(Order order, string path)
             => await _blobStorageContext.UploadAsync(_orderFolderNameGenerator.OrderToName(order), $"Uploads/{path}");
 
-        public Task<IEnumerable<Order>> GetAllAsync()
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<IEnumerable<Order>> GetAllAsync()
+            => _orderFolderNameGenerator.ListOfOrders(await _blobStorageContext.ListFoldersAsync());
 
-        public Task<Order> GetAsync(int Id)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<Order> GetAsync(int id)
+            => _orderFolderNameGenerator.ListOfOrders(await _blobStorageContext.ListFoldersAsync()).SingleOrDefault(x=> x.Id == id);
 
-        public Task RemoveAsync(Order order)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task RemoveAsync(Order order)
+            => await _blobStorageContext.DeleteAsync(_orderFolderNameGenerator.OrderToName(order));
+            
 
-        public Task UpdateAsync(Order order)
+        public async Task UpdateAsync(Order order, string path)
         {
-            throw new NotImplementedException();
+            var orderToDelete = await GetAsync(order.Id);
+            await RemoveAsync(orderToDelete);
+            await AddAsync(order, $"Uploads/{path}");
         }
     }
 }

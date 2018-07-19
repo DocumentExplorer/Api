@@ -12,6 +12,6 @@ namespace DocumentExplorer.Core.Repositories
         Task<IEnumerable<Order>> GetAllAsync();
         Task AddAsync(Order order, string path);
         Task RemoveAsync(Order order);
-        Task UpdateAsync(Order order);
+        Task UpdateAsync(Order order, string path);
     }
 }

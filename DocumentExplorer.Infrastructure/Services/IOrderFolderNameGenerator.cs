@@ -8,5 +8,7 @@ namespace DocumentExplorer.Infrastructure.Services
     public interface IOrderFolderNameGenerator
     {
         string OrderToName(Order order);
+        Order NameToOrder(string order);
+        List<Order> ListOfOrders(List<string> orders)
     }
 }

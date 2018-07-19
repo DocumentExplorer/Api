@@ -51,6 +51,7 @@ namespace DocumentExplorer.Api
             services.AddScoped<IUserService,UserService>();
             services.AddScoped<IEncrypter,Encrypter>();
             services.AddScoped<IUserRepository, InMemoryUserRepository>();
+            services.AddScoped<IOrderFolderNameGenerator, OrderFolderNameGenerator>();
             services.AddMemoryCache();
             services.AddAuthorization(x => x.AddPolicy("admin", p=>p.RequireRole("admin")));
             services.AddAuthorization(x => x.AddPolicy("user", p=>p.RequireRole("user")));
