@@ -10,8 +10,8 @@ namespace DocumentExplorer.Core.Repositories
     {
         Task<Order> GetAsync(int Id);
         Task<IEnumerable<Order>> GetAllAsync();
-        Task AddAsync(Order order, string path);
+        Task AddAsync(Order order);
         Task RemoveAsync(Order order);
-        Task UpdateAsync(Order order, string path);
+        Task UpdateAsync(Order order);
     }
 }

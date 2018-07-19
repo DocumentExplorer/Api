@@ -50,6 +50,7 @@ namespace DocumentExplorer.Api
 
             services.AddSingleton(AutoMapperConfig.Initialize());
             services.AddScoped<IUserService,UserService>();
+            services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IHandler, Handler>();
             services.AddScoped<IEncrypter,Encrypter>();
             services.AddScoped<IUserRepository, InMemoryUserRepository>();
@@ -77,7 +78,7 @@ namespace DocumentExplorer.Api
             builder.RegisterModule<CommandModule>();
             //builder.RegisterModule<SqlModule>();
             builder.RegisterModule<MongoModule>();
-            builder.RegisterModule<BlobStorageModule>();
+            //builder.RegisterModule<BlobStorageModule>();
             builder.RegisterType<Encrypter>().As<IEncrypter>().SingleInstance();
             builder.RegisterType<JwtHandler>().As<IJwtHandler>().SingleInstance();
             builder.RegisterType<DataInitializer>().As<IDataInitializer>().SingleInstance();

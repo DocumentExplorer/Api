@@ -31,7 +31,9 @@ namespace DocumentExplorer.Infrastructure.IoC.Modules
 
             var assembly = typeof(MongoModule).GetTypeInfo().Assembly;
 
-            builder.RegisterAssemblyTypes(assembly).Where(x => x.IsAssignableTo<IMongoRepository>()).AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterAssemblyTypes(assembly)
+                .Where(x => x.IsAssignableTo<IMongoRepository>())
+                .AsImplementedInterfaces().InstancePerLifetimeScope();
 
         }
     }

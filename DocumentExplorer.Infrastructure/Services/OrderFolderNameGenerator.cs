@@ -57,7 +57,7 @@ namespace DocumentExplorer.Infrastructure.Services
                 }
             }
 
-            return new Order(orderNumber, clientCountry, clientIdentificationNumber, brokerCountry, brokerIdentificationNumber, tab[3], creationDate,secondOwnerName,invoiceNumber, isCMR, isFVP);
+            return new Order(orderNumber, clientCountry, clientIdentificationNumber, brokerCountry, brokerIdentificationNumber, tab[3], creationDate,order,secondOwnerName,invoiceNumber, isCMR, isFVP);
         }
 
         private int GetInvoiceNumber(string tabElement)

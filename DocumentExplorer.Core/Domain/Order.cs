@@ -18,9 +18,12 @@ namespace DocumentExplorer.Core.Domain
         public bool IsFVP { get; set; }
         public bool IsCMR { get; set; }
         public DateTime CreationDate { get; set; }
+        public string PathToFolder { get; set; }
 
-        public Order(int id, string clientCountry, string clientIdentificationNumber, string brokerCountry, string brokerIdentificationNumber, string owner1Name, 
-            DateTime creationDate,string owner2Name=null, int invoiceNumber=0, bool isCMR=false, bool isFVP=false)
+        public Order(int id, string clientCountry, string clientIdentificationNumber, 
+            string brokerCountry, string brokerIdentificationNumber, string owner1Name, 
+            DateTime creationDate, string pathToFolder = null,string owner2Name=null, int invoiceNumber=0, 
+            bool isCMR=false, bool isFVP=false)
         {
             SetId(id);
             SetClientCountry(clientCountry);
@@ -33,6 +36,7 @@ namespace DocumentExplorer.Core.Domain
             IsCMR = isCMR;
             IsFVP = isCMR;
             SetCreationDate(creationDate);
+            PathToFolder = pathToFolder;
         }
 
 
@@ -65,9 +69,12 @@ namespace DocumentExplorer.Core.Domain
 
         private string SetCountry(string country)
         {
-            if (country == null) throw new DomainException(ErrorCodes.InvalidCountry);
-            if (country.Length != 2) throw new DomainException(ErrorCodes.InvalidCountry);
-            if (!Regex.IsMatch(country, CountryRegex)) throw new DomainException(ErrorCodes.InvalidCountry);
+            if (country == null)
+                throw new DomainException(ErrorCodes.InvalidCountry);
+            if (country.Length != 2)
+                throw new DomainException(ErrorCodes.InvalidCountry);
+            if (!Regex.IsMatch(country, CountryRegex))
+                throw new DomainException(ErrorCodes.InvalidCountry);
             return country.ToUpper();
         }
 
@@ -89,8 +96,12 @@ namespace DocumentExplorer.Core.Domain
 
         private string SetOwner(string owner)
         {
-            if (owner == null) throw new DomainException(ErrorCodes.InvalidUsername);
-            if (owner.Length != 4) throw new DomainException(ErrorCodes.InvalidUsername);
+            if (owner == null)
+            {
+                return null;
+            }
+            if (owner.Length != 4)
+                throw new DomainException(ErrorCodes.InvalidUsername);
             return owner.ToLower();
         }
     }

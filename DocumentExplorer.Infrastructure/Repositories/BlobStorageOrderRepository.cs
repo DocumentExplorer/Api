@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DocumentExplorer.Infrastructure.Repositories
 {
-    public class BlobStorageOrderRepository : IOrderRepository, IBlobStorageRepository
+    public class BlobStorageOrderRepository  //IOrderRepository, IBlobStorageRepository
     {
         private readonly BlobStorageContext _blobStorageContext;
         private readonly IOrderFolderNameGenerator _orderFolderNameGenerator;
