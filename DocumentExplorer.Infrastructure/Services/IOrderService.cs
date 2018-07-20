@@ -13,5 +13,6 @@ namespace DocumentExplorer.Infrastructure.Services
             string brokerCountry, string brokerIdentificationNumber, string owner1Name);
         Task<IEnumerable<OrderDto>> GetAllAsync();
         Task<OrderDto> GetAsync(int id);
+        Task DeleteAsync(int id);
     }
 }

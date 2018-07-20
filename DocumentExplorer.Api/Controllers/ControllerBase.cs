@@ -17,7 +17,10 @@ namespace DocumentExplorer.Api.Controllers
         }
 
         protected bool IsAuthorized(string username)
-            => IsRequestedByTheUser(username) || IsRequestedByAdmin();
+        {
+            if(username== null) return false;
+            return IsRequestedByTheUser(username) || IsRequestedByAdmin();
+        }
 
         protected bool IsRequestedByTheUser(string username)
             => Username == username;

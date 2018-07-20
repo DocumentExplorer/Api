@@ -6,6 +6,7 @@ using DocumentExplorer.Infrastructure.Exceptions;
 using DocumentExplorer.Infrastructure.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DocumentExplorer.Infrastructure.Services
@@ -37,9 +38,16 @@ namespace DocumentExplorer.Infrastructure.Services
             await _orderRepository.AddAsync(order);
         }
 
+        public async Task DeleteAsync(int id)
+        {
+            var order = await _orderRepository.GetOrFailAsync(id);
+            await _orderRepository.RemoveAsync(order);
+        }
+
         public async Task<IEnumerable<OrderDto>> GetAllAsync()
         {
             var orders = await _orderRepository.GetAllAsync();
+            orders = orders.OrderBy(o => o.Id);
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
         }
 
