@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DocumentExplorer.Infrastructure.Commands;
@@ -7,24 +6,20 @@ using DocumentExplorer.Infrastructure.Commands.Users;
 using DocumentExplorer.Infrastructure.Extensions;
 using DocumentExplorer.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace DocumentExplorer.Api.Controllers
 {
     [Route("[controller]")]
-    public class UsersController : Controller
+    public class UsersController : ControllerBase
     {
-        private readonly ICommandDispatcher _commandDispatcher;
         private readonly IMemoryCache _cache;
         private readonly IUserService _userService;
         private readonly ITokenManager _tokenManager;
         public UsersController(ICommandDispatcher commandDispatcher, IMemoryCache cache, 
-            IUserService userService, ITokenManager tokenManager)
+            IUserService userService, ITokenManager tokenManager) : base(commandDispatcher)
         {
-            _commandDispatcher = commandDispatcher;
             _cache = cache;
             _userService = userService;
             _tokenManager = tokenManager;
@@ -66,7 +61,7 @@ namespace DocumentExplorer.Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody]Register command)
         {
-            await _commandDispatcher.DispatchAsync(command);
+            await DispatchAsync(command);
             return Created($"users/username/{command.Username}", new object());
         }
 
@@ -74,7 +69,7 @@ namespace DocumentExplorer.Api.Controllers
         public async Task<IActionResult> Login([FromBody]Login command)
         {
             command.TokenId = Guid.NewGuid();
-            await _commandDispatcher.DispatchAsync(command);
+            await DispatchAsync(command);
             var jwt = _cache.GetJwt(command.TokenId);
             return Json(jwt);
         }
@@ -99,18 +94,8 @@ namespace DocumentExplorer.Api.Controllers
         [HttpPut("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody]ChangePassword command)
         {
-            await _commandDispatcher.DispatchAsync(command);
+            await DispatchAsync(command);
             return NoContent();
         }
-
-
-        private bool IsAuthorized(string username)
-            => IsRequestedByTheUser(username) || IsRequestedByAdmin();
-
-        private bool IsRequestedByTheUser(string username)
-            => User.Claims.ElementAt(0).Value == username;
-
-        private bool IsRequestedByAdmin()
-           =>  User.Claims.ElementAt(1).Value == "admin";
     }
 }

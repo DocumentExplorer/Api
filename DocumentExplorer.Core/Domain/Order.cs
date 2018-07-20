@@ -5,7 +5,6 @@ namespace DocumentExplorer.Core.Domain
 {
     public class Order
     {
-        private readonly string CountryRegex = @"^[a-zA-Z]+$";
 
         public int Id { get; private set; }
         public string ClientCountry { get; private set; }
@@ -18,26 +17,40 @@ namespace DocumentExplorer.Core.Domain
         public bool IsFVP { get; set; }
         public bool IsCMR { get; set; }
         public DateTime CreationDate { get; set; }
+        public string CreationDateString 
+        {
+            get
+            {
+                return CreationDate.ToString(@"dd.MM.yyyy HH:mm:ss");
+            }
+        }
+        public string PathToFolder { get; set; }
 
-        public Order(int id, string clientCountry, string clientIdentificationNumber, string brokerCountry, string brokerIdentificationNumber, string owner1Name, 
-            DateTime creationDate,string owner2Name=null, int invoiceNumber=0, bool isCMR=false, bool isFVP=false)
+        public Order(int id, string clientCountry, string clientIdentificationNumber, 
+            string brokerCountry, string brokerIdentificationNumber, string owner1Name, 
+            DateTime creationDate, string pathToFolder = null,string owner2Name=null, int invoiceNumber=0, 
+            bool isCMR=false, bool isFVP=false)
         {
             SetId(id);
             SetClientCountry(clientCountry);
-            SetClientIdentyficationNumber(clientIdentificationNumber);
+            SetClientIdentificationNumber(clientIdentificationNumber);
             SetBrokerCountry(brokerCountry);
-            SetBrokerIdentyficationNumber(brokerIdentificationNumber);
+            SetBrokerIdentificationNumber(brokerIdentificationNumber);
             Owner1Name = SetOwner(owner1Name);
             SetOwner2Name(owner2Name);
             InvoiceNumber = invoiceNumber;
             IsCMR = isCMR;
             IsFVP = isCMR;
             SetCreationDate(creationDate);
+            PathToFolder = pathToFolder;
         }
 
 
-        public void SetOwner2Name(string owner)
+        public void SetOwner2Name(string owner, string authUsername=null)
         {
+            if(Owner2Name == owner) return;
+            if(Owner1Name == owner) throw new DomainException(ErrorCodes.UserIsAleardyFirstOwner);
+            if(Owner2Name == authUsername) throw new DomainException(ErrorCodes.UserCannotChangeHisOwnOwnership);
             Owner2Name = SetOwner(owner);
         }
 
@@ -53,35 +66,38 @@ namespace DocumentExplorer.Core.Domain
             Id = id;
         }
 
-        private void SetClientCountry(string country)
+        public void SetClientCountry(string country)
         {
             ClientCountry = SetCountry(country);
         }
 
-        private void SetBrokerCountry(string country)
+        public void SetBrokerCountry(string country)
         {
             BrokerCountry = SetCountry(country);
         }
 
         private string SetCountry(string country)
         {
-            if (country == null) throw new DomainException(ErrorCodes.InvalidCountry);
-            if (country.Length != 2) throw new DomainException(ErrorCodes.InvalidCountry);
-            if (!Regex.IsMatch(country, CountryRegex)) throw new DomainException(ErrorCodes.InvalidCountry);
+            if (country == null)
+                throw new DomainException(ErrorCodes.InvalidCountry);
+            if (country.Length != 2)
+                throw new DomainException(ErrorCodes.InvalidCountry);
+            if (!Regex.IsMatch(country, DomainRegex.CountryRegex))
+                throw new DomainException(ErrorCodes.InvalidCountry);
             return country.ToUpper();
         }
 
-        private void SetClientIdentyficationNumber(string number)
+        public void SetClientIdentificationNumber(string number)
         {
-            ClientIdentificationNumber = SetIdentyficationNumber(number);
+            ClientIdentificationNumber = SetIdentificationNumber(number);
         }
 
-        private void SetBrokerIdentyficationNumber(string number)
+        public void SetBrokerIdentificationNumber(string number)
         {
-            BrokerIdentificationNumber = SetIdentyficationNumber(number);
+            BrokerIdentificationNumber = SetIdentificationNumber(number);
         }
 
-        private string SetIdentyficationNumber(string number)
+        private string SetIdentificationNumber(string number)
         {
             if (number == null) throw new DomainException(ErrorCodes.InvalidNIP);
             return number;
@@ -89,8 +105,12 @@ namespace DocumentExplorer.Core.Domain
 
         private string SetOwner(string owner)
         {
-            if (owner == null) throw new DomainException(ErrorCodes.InvalidUsername);
-            if (owner.Length != 4) throw new DomainException(ErrorCodes.InvalidUsername);
+            if (owner == null)
+            {
+                return null;
+            }
+            if (owner.Length != 4)
+                throw new DomainException(ErrorCodes.InvalidUsername);
             return owner.ToLower();
         }
     }
