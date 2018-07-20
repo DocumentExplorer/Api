@@ -3,6 +3,8 @@ using DocumentExplorer.Infrastructure.Commands.Orders;
 using DocumentExplorer.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using System;
 using System.Threading.Tasks;
 
 namespace DocumentExplorer.Api.Controllers
@@ -11,7 +13,7 @@ namespace DocumentExplorer.Api.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly IOrderService _orderService; 
-        public OrdersController(ICommandDispatcher commandDispatcher, IOrderService orderService) : base(commandDispatcher)
+        public OrdersController(ICommandDispatcher commandDispatcher, IOrderService orderService, IMemoryCache cache) : base(commandDispatcher, cache)
         {
             _orderService = orderService;
         }
@@ -20,8 +22,9 @@ namespace DocumentExplorer.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> AddAsync([FromBody]AddOrder command)
         {
+            command.CacheId = Guid.NewGuid();
             await DispatchAsync(command);
-            return Created($"orders/{command.Id}", null);
+            return Created($"orders/{Cache.Get(command.CacheId)}", null);
         }
 
         [Authorize]
@@ -34,7 +37,7 @@ namespace DocumentExplorer.Api.Controllers
 
         [Authorize]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetAsync(int id)
+        public async Task<IActionResult> GetAsync(Guid id)
         {
             var order = await _orderService.GetAsync(id);
             return Json(order);
@@ -42,7 +45,7 @@ namespace DocumentExplorer.Api.Controllers
 
         [Authorize]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(int id)
+        public async Task<IActionResult> DeleteAsync(Guid id)
         {
             var order = await _orderService.GetAsync(id);
             if((!IsAuthorized(order.Owner1Name)) && (!IsAuthorized(order.Owner2Name)))

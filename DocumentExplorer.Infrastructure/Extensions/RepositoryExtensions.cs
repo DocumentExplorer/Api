@@ -30,7 +30,7 @@ namespace DocumentExplorer.Infrastructure.Extensions
             return user;
         }
 
-        public static async Task<Order> GetOrFailAsync(this IOrderRepository orderRepository, int id)
+        public static async Task<Order> GetOrFailAsync(this IOrderRepository orderRepository, Guid id)
         {
             var order = await orderRepository.GetAsync(id);
             if(order == null)

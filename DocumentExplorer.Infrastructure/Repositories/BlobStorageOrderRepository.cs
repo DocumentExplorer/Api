@@ -25,18 +25,18 @@ namespace DocumentExplorer.Infrastructure.Repositories
         public async Task<IEnumerable<Order>> GetAllAsync()
             => _orderFolderNameGenerator.ListOfOrders(await _blobStorageContext.ListFoldersAsync());
 
-        public async Task<Order> GetAsync(int id)
-            => _orderFolderNameGenerator.ListOfOrders(await _blobStorageContext.ListFoldersAsync()).SingleOrDefault(x=> x.Id == id);
+        //public async Task<Order> GetAsync(int id)
+          //  => _orderFolderNameGenerator.ListOfOrders(await _blobStorageContext.ListFoldersAsync()).SingleOrDefault(x=> x.Id == id);
 
         public async Task RemoveAsync(Order order)
             => await _blobStorageContext.DeleteAsync(_orderFolderNameGenerator.OrderToName(order));
             
 
-        public async Task UpdateAsync(Order order, string path)
+        /*public async Task UpdateAsync(Order order, string path)
         {
             var orderToDelete = await GetAsync(order.Id);
             await RemoveAsync(orderToDelete);
             await AddAsync(order, $"Uploads/{path}");
-        }
+        }*/
     }
 }

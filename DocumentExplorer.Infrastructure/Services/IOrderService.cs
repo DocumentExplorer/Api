@@ -9,12 +9,12 @@ namespace DocumentExplorer.Infrastructure.Services
 {
     public interface IOrderService
     {
-        Task AddOrderAsync(int id, string clientCountry, string clientIdentificationNumber,
+        Task AddOrderAsync(Guid cacheId, int number, string clientCountry, string clientIdentificationNumber,
             string brokerCountry, string brokerIdentificationNumber, string owner1Name);
         Task<IEnumerable<OrderDto>> GetAllAsync();
-        Task<OrderDto> GetAsync(int id);
-        Task DeleteAsync(int id);
-        Task EditOrderAsync(int id, string clientCountry, string clientIdentificationNumber, 
+        Task<OrderDto> GetAsync(Guid id);
+        Task DeleteAsync(Guid id);
+        Task EditOrderAsync(Guid id, int number, string clientCountry, string clientIdentificationNumber, 
             string brokerCountry, string brokerIdentificationNumber, string owner2Name, string username);
     }
 }

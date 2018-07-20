@@ -23,7 +23,7 @@ namespace DocumentExplorer.Infrastructure.Repositories
         public async Task<IEnumerable<Order>> GetAllAsync()
             => await Orders.Find(_ => true).ToListAsync();
 
-        public async Task<Order> GetAsync(int id)
+        public async Task<Order> GetAsync(Guid id)
             => await Orders.Find(x => x.Id == id).FirstOrDefaultAsync();
 
         public async Task RemoveAsync(Order order)

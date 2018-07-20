@@ -14,13 +14,11 @@ namespace DocumentExplorer.Api.Controllers
     [Route("[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly IMemoryCache _cache;
         private readonly IUserService _userService;
         private readonly ITokenManager _tokenManager;
         public UsersController(ICommandDispatcher commandDispatcher, IMemoryCache cache, 
-            IUserService userService, ITokenManager tokenManager) : base(commandDispatcher)
+            IUserService userService, ITokenManager tokenManager) : base(commandDispatcher, cache)
         {
-            _cache = cache;
             _userService = userService;
             _tokenManager = tokenManager;
         }
@@ -70,7 +68,7 @@ namespace DocumentExplorer.Api.Controllers
         {
             command.TokenId = Guid.NewGuid();
             await DispatchAsync(command);
-            var jwt = _cache.GetJwt(command.TokenId);
+            var jwt = Cache.GetJwt(command.TokenId);
             return Json(jwt);
         }
 

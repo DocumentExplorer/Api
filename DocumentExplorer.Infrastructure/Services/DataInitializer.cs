@@ -27,11 +27,11 @@ namespace DocumentExplorer.Infrastructure.Services
             var random = new Random();
             for (int i = 1; i <= 3; i++)
             {
-                await _orderService.AddOrderAsync(i, "PL", random.Next(1, 100000).ToString(), "PL", random.Next(1, 100000).ToString(), $"usr{i}");
+                await _orderService.AddOrderAsync(Guid.NewGuid(),i, "PL", random.Next(1, 100000).ToString(), "PL", random.Next(1, 100000).ToString(), $"usr{i}");
             }
             for (int i = 1; i <= 3; i++)
             {
-                await _orderService.AddOrderAsync(i+3, "PL", random.Next(1, 100000).ToString(), "PL", random.Next(1, 100000).ToString(), $"adm{i}");
+                await _orderService.AddOrderAsync(Guid.NewGuid(), i+3, "PL", random.Next(1, 100000).ToString(), "PL", random.Next(1, 100000).ToString(), $"adm{i}");
             }
         }
     }

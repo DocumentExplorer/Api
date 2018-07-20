@@ -175,7 +175,7 @@ namespace DocumentExplorer.Infrastructure.Services
         }
 
         private string GetFolderBeginingName(Order order)
-            => $"zl{AddLeadingZeros(order.Id)}_k{order.ClientCountry}{order.ClientIdentificationNumber}_p{order.BrokerCountry}{order.BrokerIdentificationNumber}_{order.Owner1Name}";
+            => $"zl{AddLeadingZeros(order.Number)}_k{order.ClientCountry}{order.ClientIdentificationNumber}_p{order.BrokerCountry}{order.BrokerIdentificationNumber}_{order.Owner1Name}";
 
         private string GetInvoiceNumber(Order order)
         {

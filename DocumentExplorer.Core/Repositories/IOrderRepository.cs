@@ -8,7 +8,7 @@ namespace DocumentExplorer.Core.Repositories
 {
     public interface IOrderRepository
     {
-        Task<Order> GetAsync(int Id);
+        Task<Order> GetAsync(Guid id);
         Task<IEnumerable<Order>> GetAllAsync();
         Task AddAsync(Order order);
         Task RemoveAsync(Order order);

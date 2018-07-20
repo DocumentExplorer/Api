@@ -5,8 +5,8 @@ namespace DocumentExplorer.Core.Domain
 {
     public class Order
     {
-
-        public int Id { get; private set; }
+        public Guid Id { get; private set; }
+        public int Number { get; private set; }
         public string ClientCountry { get; private set; }
         public string ClientIdentificationNumber { get; private set; }
         public string BrokerCountry { get; private set; }
@@ -21,17 +21,25 @@ namespace DocumentExplorer.Core.Domain
         {
             get
             {
-                return CreationDate.ToString(@"dd.MM.yyyy HH:mm:ss");
+                var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
+                DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc(CreationDate, timeZoneInfo);
+                return cstTime.ToString(@"dd.MM.yyyy HH:mm:ss");
             }
         }
         public string PathToFolder { get; set; }
 
-        public Order(int id, string clientCountry, string clientIdentificationNumber, 
+        protected Order()
+        {
+
+        }
+
+        public Order(int number, string clientCountry, string clientIdentificationNumber, 
             string brokerCountry, string brokerIdentificationNumber, string owner1Name, 
             DateTime creationDate, string pathToFolder = null,string owner2Name=null, int invoiceNumber=0, 
             bool isCMR=false, bool isFVP=false)
         {
-            SetId(id);
+            Id = Guid.NewGuid();
+            SetNumber(number);
             SetClientCountry(clientCountry);
             SetClientIdentificationNumber(clientIdentificationNumber);
             SetBrokerCountry(brokerCountry);
@@ -59,11 +67,10 @@ namespace DocumentExplorer.Core.Domain
             if (date == new DateTime()) CreationDate = DateTime.UtcNow;
             else CreationDate = date;
         }
-
-        private void SetId(int id)
+        public void SetNumber(int number)
         {
-            if (id <= 0) throw new DomainException(ErrorCodes.IvalidId);
-            Id = id;
+            if (number <= 0 || number>=10000) throw new DomainException(ErrorCodes.IvalidId);
+            Number = number;
         }
 
         public void SetClientCountry(string country)

@@ -21,10 +21,13 @@ namespace DocumentExplorer.Infrastructure.Handlers.Orders
 
         public async Task HandleAsync(AddOrder command)
             => await _handler
-            .Run(async () => await _orderService.AddOrderAsync(command.Id,
+            .Run(async () => 
+            {
+                await _orderService.AddOrderAsync(command.CacheId,command.Number,
                 command.ClientCountry, command.ClientIdentificationNumber,
                 command.BrokerCountry, command.BrokerIdentificationNumber,
-                command.Username))
+                command.Username);
+            })
             .OnCustomError((DocumentExplorerException ex) =>
             {
                 throw new ServiceException(ex.Code);
