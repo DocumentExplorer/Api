@@ -12,5 +12,6 @@ namespace DocumentExplorer.Infrastructure.Services
         Task AddOrderAsync(int id, string clientCountry, string clientIdentificationNumber,
             string brokerCountry, string brokerIdentificationNumber, string owner1Name);
         Task<IEnumerable<OrderDto>> GetAllAsync();
+        Task<OrderDto> GetAsync(int id);
     }
 }

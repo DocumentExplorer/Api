@@ -31,5 +31,13 @@ namespace DocumentExplorer.Api.Controllers
             var orders = await _orderService.GetAllAsync();
             return Json(orders);
         }
+
+        [Authorize]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetAsync(int id)
+        {
+            var order = await _orderService.GetAsync(id);
+            return Json(order);
+        }
     }
 }

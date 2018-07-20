@@ -3,6 +3,7 @@ using DocumentExplorer.Core.Domain;
 using DocumentExplorer.Core.Repositories;
 using DocumentExplorer.Infrastructure.DTO;
 using DocumentExplorer.Infrastructure.Exceptions;
+using DocumentExplorer.Infrastructure.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -40,6 +41,12 @@ namespace DocumentExplorer.Infrastructure.Services
         {
             var orders = await _orderRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
+        }
+
+        public async Task<OrderDto> GetAsync(int id)
+        {
+            var order = await _orderRepository.GetOrFailAsync(id);
+            return _mapper.Map<OrderDto>(order);
         }
     }
 }
