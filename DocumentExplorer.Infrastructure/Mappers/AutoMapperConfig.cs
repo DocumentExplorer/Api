@@ -11,6 +11,8 @@ namespace DocumentExplorer.Infrastructure.Mappers
             => new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<User, UserDto>();
+                cfg.CreateMap<Order, OrderDto>();
+                cfg.ReplaceMemberName("CreationDateString", "Date");
             })
             .CreateMapper();
     }

@@ -18,6 +18,13 @@ namespace DocumentExplorer.Core.Domain
         public bool IsFVP { get; set; }
         public bool IsCMR { get; set; }
         public DateTime CreationDate { get; set; }
+        public string CreationDateString 
+        {
+            get
+            {
+                return CreationDate.ToString(@"dd.MM.yyyy HH:mm:ss");
+            }
+        }
         public string PathToFolder { get; set; }
 
         public Order(int id, string clientCountry, string clientIdentificationNumber, 

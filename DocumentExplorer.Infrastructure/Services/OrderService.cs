@@ -1,7 +1,10 @@
-﻿using DocumentExplorer.Core.Domain;
+﻿using AutoMapper;
+using DocumentExplorer.Core.Domain;
 using DocumentExplorer.Core.Repositories;
+using DocumentExplorer.Infrastructure.DTO;
 using DocumentExplorer.Infrastructure.Exceptions;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DocumentExplorer.Infrastructure.Services
@@ -10,12 +13,15 @@ namespace DocumentExplorer.Infrastructure.Services
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderFolderNameGenerator _orderFolderNameGenerator;
+        private readonly IMapper _mapper;
 
         public OrderService(IOrderRepository orderRepository, 
-            IOrderFolderNameGenerator orderFolderNameGenerator)
+            IOrderFolderNameGenerator orderFolderNameGenerator,
+            IMapper mapper)
         {
             _orderRepository = orderRepository;
             _orderFolderNameGenerator = orderFolderNameGenerator;
+            _mapper = mapper;
         }
 
 
@@ -28,6 +34,12 @@ namespace DocumentExplorer.Infrastructure.Services
                 brokerIdentificationNumber, owner1Name, new DateTime());
             order.PathToFolder = _orderFolderNameGenerator.OrderToName(order);
             await _orderRepository.AddAsync(order);
+        }
+
+        public async Task<IEnumerable<OrderDto>> GetAllAsync()
+        {
+            var orders = await _orderRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<OrderDto>>(orders);
         }
     }
 }

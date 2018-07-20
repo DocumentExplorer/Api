@@ -1,5 +1,6 @@
 ﻿using DocumentExplorer.Infrastructure.Commands;
 using DocumentExplorer.Infrastructure.Commands.Orders;
+using DocumentExplorer.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -9,17 +10,26 @@ namespace DocumentExplorer.Api.Controllers
     [Route("[controller]")]
     public class OrdersController : ControllerBase
     {
-        public OrdersController(ICommandDispatcher commandDispatcher) : base(commandDispatcher)
+        private readonly IOrderService _orderService; 
+        public OrdersController(ICommandDispatcher commandDispatcher, IOrderService orderService) : base(commandDispatcher)
         {
-
+            _orderService = orderService;
         }
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody]AddOrder command)
+        public async Task<IActionResult> AddAsync([FromBody]AddOrder command)
         {
             await DispatchAsync(command);
             return Created($"orders/{command.Id}", null);
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetAllAsync()
+        {
+            var orders = await _orderService.GetAllAsync();
+            return Json(orders);
         }
     }
 }
