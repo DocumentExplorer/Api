@@ -14,5 +14,7 @@ namespace DocumentExplorer.Infrastructure.Services
         Task<IEnumerable<OrderDto>> GetAllAsync();
         Task<OrderDto> GetAsync(int id);
         Task DeleteAsync(int id);
+        Task EditOrderAsync(int id, string clientCountry, string clientIdentificationNumber, 
+            string brokerCountry, string brokerIdentificationNumber, string owner2Name, string username);
     }
 }

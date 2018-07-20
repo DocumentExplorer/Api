@@ -44,12 +44,25 @@ namespace DocumentExplorer.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
-             var order = await _orderService.GetAsync(id);
+            var order = await _orderService.GetAsync(id);
             if((!IsAuthorized(order.Owner1Name)) && (!IsAuthorized(order.Owner2Name)))
             {
                 return StatusCode(403);
             }
             await _orderService.DeleteAsync(id);
+            return NoContent();
+        }
+
+        [Authorize]
+        [HttpPut]
+        public async Task<IActionResult> EditAsync([FromBody]EditOrder command)
+        {
+            var order = await _orderService.GetAsync(command.Id);
+            if((!IsAuthorized(order.Owner1Name)) && (!IsAuthorized(order.Owner2Name)))
+            {
+                return StatusCode(403);
+            }
+            await DispatchAsync(command);
             return NoContent();
         }
     }

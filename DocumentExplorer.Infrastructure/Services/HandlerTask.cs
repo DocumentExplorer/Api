@@ -113,6 +113,10 @@ namespace DocumentExplorer.Infrastructure.Services
                 {
                     await _onCustomErrorAsync(customException);
                 }
+                if(_onCustomError != null)
+                {
+                    _onCustomError(customException);
+                }
 
             }
 

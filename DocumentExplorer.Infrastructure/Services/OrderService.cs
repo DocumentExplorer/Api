@@ -44,6 +44,18 @@ namespace DocumentExplorer.Infrastructure.Services
             await _orderRepository.RemoveAsync(order);
         }
 
+        public async Task EditOrderAsync(int id, string clientCountry, string clientIdentificationNumber, 
+            string brokerCountry, string brokerIdentificationNumber, string owner2Name, string username)
+        {
+            var order = await _orderRepository.GetOrFailAsync(id);
+            order.SetClientCountry(clientCountry);
+            order.SetClientIdentificationNumber(clientIdentificationNumber);
+            order.SetBrokerCountry(brokerCountry);
+            order.SetBrokerIdentificationNumber(brokerIdentificationNumber);
+            order.SetOwner2Name(owner2Name, username);
+            await _orderRepository.UpdateAsync(order);
+        }
+
         public async Task<IEnumerable<OrderDto>> GetAllAsync()
         {
             var orders = await _orderRepository.GetAllAsync();
