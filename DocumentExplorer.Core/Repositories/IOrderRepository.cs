@@ -10,6 +10,7 @@ namespace DocumentExplorer.Core.Repositories
     {
         Task<Order> GetAsync(Guid id);
         Task<IEnumerable<Order>> GetAllAsync();
+        Task<IEnumerable<Order>> GetAllByUser(string username);
         Task AddAsync(Order order);
         Task RemoveAsync(Order order);
         Task UpdateAsync(Order order);

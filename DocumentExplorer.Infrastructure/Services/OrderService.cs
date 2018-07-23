@@ -67,6 +67,13 @@ namespace DocumentExplorer.Infrastructure.Services
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
         }
 
+        public async Task<IEnumerable<OrderDto>> GetAllByUserAsync(string username)
+        {
+            var orders = await _orderRepository.GetAllByUser(username);
+            orders = orders.OrderBy(o => o.CreationDate);
+            return _mapper.Map<IEnumerable<OrderDto>>(orders);
+        }
+
         public async Task<OrderDto> GetAsync(Guid id)
         {
             var order = await _orderRepository.GetOrFailAsync(id);

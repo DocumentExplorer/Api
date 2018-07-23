@@ -32,6 +32,9 @@ namespace DocumentExplorer.Infrastructure.Repositories
         public async Task UpdateAsync(Order order)
             => await Orders.ReplaceOneAsync(x => x.Id == order.Id, order);
 
+        public async Task<IEnumerable<Order>> GetAllByUser(string username)
+            => await Orders.Find(x => x.Owner1Name == username).ToListAsync();
+
         private IMongoCollection<Order> Orders => _database.GetCollection<Order>("Orders");
     }
 }
