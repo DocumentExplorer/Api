@@ -39,5 +39,15 @@ namespace DocumentExplorer.Infrastructure.Extensions
             }
             return order;
         }
+
+        public static async Task<File> GetOrFailAsync(this IFileRepository fileRepository, Guid id)
+        {
+            var file = await fileRepository.GetAsync(id);
+            if(file == null)
+            {
+                throw new ServiceException(Exceptions.ErrorCodes.FileNotFound);
+            }
+            return file;
+        }
     }
 }

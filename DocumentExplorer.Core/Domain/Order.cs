@@ -13,20 +13,33 @@ namespace DocumentExplorer.Core.Domain
         public string BrokerIdentificationNumber { get; private set; }
         public string Owner1Name { get; private set; }
         public string Owner2Name { get; private set; }
-        public int InvoiceNumber { get; set; }
-        public bool IsFVP { get; set; }
-        public bool IsCMR { get; set; }
         public DateTime CreationDate { get; set; }
         public string CreationDateString 
         {
             get
             {
-                var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
-                DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc(CreationDate, timeZoneInfo);
-                return cstTime.ToString(@"dd.MM.yyyy HH:mm:ss");
+                //var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
+                //DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc(CreationDate, timeZoneInfo);
+                return CreationDate.ToString(@"dd.MM.yyyy HH:mm:ss");
             }
         }
+
+
+
+        public int InvoiceNumber { get; set; }
+
+        public bool IsFVP { get; set; }
+        public bool IsCMR { get; set; }
         public string PathToFolder { get; set; }
+        public Guid CMRId {get; private set;}
+        public Guid FVKId {get; private set;}
+        public Guid FVPId {get; private set;}
+        public Guid NIPId {get; private set;}
+        public Guid NotaId {get; private set;}
+        public Guid PPId {get; private set;}
+        public Guid RKId {get; private set;}
+        public Guid ZKId {get; private set;}
+        public Guid ZPId {get; private set;}
 
         protected Order()
         {
@@ -48,9 +61,83 @@ namespace DocumentExplorer.Core.Domain
             SetOwner2Name(owner2Name);
             InvoiceNumber = invoiceNumber;
             IsCMR = isCMR;
-            IsFVP = isCMR;
+            IsFVP = IsFVP;
             SetCreationDate(creationDate);
             PathToFolder = pathToFolder;
+        }
+
+        public string GetPathToFile(string fileType)
+        {
+            switch(fileType)
+            {
+                case "cmr":
+                    if(CMRId == null) throw new DomainException(ErrorCodes.FileDoesNotExists);
+                    fileType = $"{fileType}{AddLeadingZeros(Number)}";
+                    break;
+                case "fvk":
+                    if(FVKId == null) throw new DomainException(ErrorCodes.FileDoesNotExists);
+                    fileType = $"{fileType}{AddLeadingZeros(InvoiceNumber)}";
+                    break;
+                case "fvp":
+                    if(FVPId == null) throw new DomainException(ErrorCodes.FileDoesNotExists);
+                    fileType = $"{fileType}{AddLeadingZeros(Number)}";
+                    break;
+                case "nip":
+                    if(NIPId == null) throw new DomainException(ErrorCodes.FileDoesNotExists);
+                    fileType = $"{fileType}{AddLeadingZeros(Number)}";
+                    break;
+                case "nota":
+                    if(NotaId == null) throw new DomainException(ErrorCodes.FileDoesNotExists);
+                    fileType = $"{fileType}{AddLeadingZeros(Number)}";
+                    break;
+                case "pp":
+                    if(PPId == null) throw new DomainException(ErrorCodes.FileDoesNotExists);
+                    fileType = $"{fileType}{AddLeadingZeros(Number)}";
+                    break;
+                case "rk":
+                    if(RKId == null) throw new DomainException(ErrorCodes.FileDoesNotExists);
+                    fileType = $"{fileType}{AddLeadingZeros(Number)}";
+                    break;
+                case "zk":
+                    if(ZKId == null) throw new DomainException(ErrorCodes.FileDoesNotExists);
+                    fileType = $"{fileType}{AddLeadingZeros(Number)}";
+                    break;
+            }
+            return $"{PathToFolder}{fileType}.pdf";
+        }
+
+        public void LinkFile(File file, string fileType, int invoiceNumber)
+        {
+            switch(fileType)
+            {
+                case "cmr":
+                    CMRId = file.Id;
+                    IsCMR = true;
+                    break;
+                case "fvk":
+                    FVKId = file.Id;
+                    InvoiceNumber = invoiceNumber;
+                    break;
+                case "fvp":
+                    FVPId = file.Id;
+                    IsFVP = true;
+                    break;
+                case "nip":
+                    NIPId = file.Id;
+                    break;
+                case "nota":
+                    NotaId = file.Id;
+                    break;
+                case "pp":
+                    PPId = file.Id;
+                    break;
+                case "rk":
+                    RKId = file.Id;
+                    break;
+                case "zk":
+                    ZKId = file.Id;
+                    break;
+            }
         }
 
 
@@ -102,6 +189,17 @@ namespace DocumentExplorer.Core.Domain
         public void SetBrokerIdentificationNumber(string number)
         {
             BrokerIdentificationNumber = SetIdentificationNumber(number);
+        }
+
+        private string AddLeadingZeros(int number)
+        {
+            string s = number.ToString();
+            int zeroes = 4 - s.Length;
+            for(int i=0; i<zeroes; i++)
+            {
+                s = $"0{s}";
+            }
+            return s;
         }
 
         private string SetIdentificationNumber(string number)

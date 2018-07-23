@@ -28,10 +28,7 @@ namespace DocumentExplorer.Infrastructure.Handlers.Orders
                 command.BrokerCountry, command.BrokerIdentificationNumber,
                 command.Username);
             })
-            .OnCustomError((DocumentExplorerException ex) =>
-            {
-                throw new ServiceException(ex.Code);
-            }, true)
+            .OnCustomError(x => throw new ServiceException(x.Code), true)
             .ExecuteAsync();
     }
 }

@@ -22,7 +22,7 @@ namespace DocumentExplorer.Infrastructure.Handlers.Orders
             => await _handler
             .Run(async ()=> await _orderService.EditOrderAsync(command.Id,command.Number, command.ClientCountry, command.ClientIdentificationNumber,
             command.BrokerCountry, command.BrokerIdentificationNumber, command.Owner2Name, command.Username))
-            .OnCustomError((DocumentExplorerException ex) => throw new ServiceException(ex.Code), true)
+            .OnCustomError(x => throw new ServiceException(x.Code), true)
             .ExecuteAsync();
     }
 }

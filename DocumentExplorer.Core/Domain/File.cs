@@ -4,7 +4,12 @@ namespace DocumentExplorer.Core.Domain
 {
     public class File
     {
-        public Guid Id { get; set; }
+        public File(Guid id, string path)
+        {
+            Id = id;
+            Path = path;
+        }
+        public Guid Id { get; private set; }
         public string Path { get; set; }
     }
 }

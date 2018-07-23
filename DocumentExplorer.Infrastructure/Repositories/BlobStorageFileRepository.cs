@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DocumentExplorer.Infrastructure.Repositories
 {
-    public class BlobStorageOrderRepository  //IOrderRepository, IBlobStorageRepository
+    public class BlobStorageOrderRepository  : IRealFileRepository, IBlobStorageRepository
     {
         private readonly BlobStorageContext _blobStorageContext;
         private readonly IOrderFolderNameGenerator _orderFolderNameGenerator;
@@ -19,24 +19,14 @@ namespace DocumentExplorer.Infrastructure.Repositories
             _orderFolderNameGenerator = orderFolderNameGenerator;
         }
 
-        public async Task AddAsync(Order order, string path)
-            => await _blobStorageContext.UploadAsync(_orderFolderNameGenerator.OrderToName(order), $"Uploads/{path}");
 
-        public async Task<IEnumerable<Order>> GetAllAsync()
-            => _orderFolderNameGenerator.ListOfOrders(await _blobStorageContext.ListFoldersAsync());
+        public async Task AddAsync(string source, string destination)
+            => await _blobStorageContext.UploadAsync(destination, source);
 
-        //public async Task<Order> GetAsync(int id)
-          //  => _orderFolderNameGenerator.ListOfOrders(await _blobStorageContext.ListFoldersAsync()).SingleOrDefault(x=> x.Id == id);
+        public async Task GetAsync(string source, string destination)
+            => await _blobStorageContext.DownloadAsync(source,destination);
 
-        public async Task RemoveAsync(Order order)
-            => await _blobStorageContext.DeleteAsync(_orderFolderNameGenerator.OrderToName(order));
-            
-
-        /*public async Task UpdateAsync(Order order, string path)
-        {
-            var orderToDelete = await GetAsync(order.Id);
-            await RemoveAsync(orderToDelete);
-            await AddAsync(order, $"Uploads/{path}");
-        }*/
+        public async Task RemoveAsync(string path)
+            => await _blobStorageContext.DeleteAsync(path);
     }
 }
