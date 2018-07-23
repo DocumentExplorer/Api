@@ -70,6 +70,33 @@ namespace DocumentExplorer.Infrastructure.BlobStorage
             await blockBlob.DeleteIfExistsAsync();
         }
 
+
+        public async Task UpdateFolderName(string newFolderName, string oldFolderName)
+        {
+            var list = await GetBlobListAsync();
+            var blobs =  list.Where(x => x.Folder==oldFolderName.TrimEnd('/')).ToList();
+            foreach(var blob in blobs)
+            {
+                await UpdateBlobName($"{newFolderName}{blob.Name}",blob.BlobName);
+            }
+        }
+
+        private async Task UpdateBlobName(string newBlobName, string oldBlobName)
+        {
+            CloudBlockBlob blockCopy = await GetBlockBlobAsync(newBlobName);
+            if (!await blockCopy.ExistsAsync())  
+            {  
+                CloudBlockBlob blob = await GetBlockBlobAsync(oldBlobName);
+
+                if (await blob.ExistsAsync())  
+                {  
+                    await blockCopy.StartCopyAsync(blob);  
+                    await blob.DeleteIfExistsAsync();  
+                } 
+            } 
+
+        }
+
         public async Task DownloadAsync(string blobName, string path)
         {
             CloudBlockBlob blockBlob = await GetBlockBlobAsync(blobName);

@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using DocumentExplorer.Core.Domain;
 
-namespace DocumentExplorer.Infrastructure.Services
+namespace DocumentExplorer.Core.Domain
 {
-    public class OrderFolderNameGenerator : IOrderFolderNameGenerator
+    public static class OrderFolderNameGenerator
     {
-        public string OrderToName(Order order)
+        public static string OrderToName(Order order)
             => $"{GetYear(order)}/{GetMonth(order)}/{GetFolderBeginingName(order)}/";
 
-        public Order NameToOrder(string order)
+        public static Order NameToOrder(string order)
         {
             var tab = order.Split("/");
             var creationDate = GetCreationDate(tab[0], tab[1]);
@@ -38,7 +33,7 @@ namespace DocumentExplorer.Infrastructure.Services
             return new Order(orderNumber, clientCountry, clientIdentificationNumber, brokerCountry, brokerIdentificationNumber, tab[3], creationDate,order,invoiceNumber);
         }
 
-        private int GetInvoiceNumber(string tabElement)
+        private static int GetInvoiceNumber(string tabElement)
         {
             var onlyDigits = tabElement.Replace("fvk", string.Empty);
             var withoutLeadingZeroes = onlyDigits.TrimStart(new Char[] { '0' });
@@ -47,33 +42,33 @@ namespace DocumentExplorer.Infrastructure.Services
             return number;
         }
 
-        private string GetBrokerIdentificationNumber(string brokerString)
+        private static string GetBrokerIdentificationNumber(string brokerString)
         {
             var withoutBegining = brokerString.Replace("k", string.Empty);
             return withoutBegining.Replace(GetBrokerCountry(brokerString), string.Empty);
         }
 
-        private string GetClientIdentificationNumber(string clientString)
+        private static string GetClientIdentificationNumber(string clientString)
         {
             var withoutBegining = clientString.Replace("k", string.Empty);
             return withoutBegining.Replace(GetClientCountry(clientString), string.Empty);
         }
 
-        private string GetBrokerCountry(string brokerString)
+        private static string GetBrokerCountry(string brokerString)
         {
             var withoutBegining = brokerString.Replace("p", string.Empty);
             var country = withoutBegining.Substring(0, 2);
             return country;
         }
 
-        private string GetClientCountry(string clientString)
+        private static string GetClientCountry(string clientString)
         {
             var withoutBegining = clientString.Replace("k", string.Empty);
             var country = withoutBegining.Substring(0, 2);
             return country;
         }
 
-        private int GetOrderNumber(string tabElement)
+        private static int GetOrderNumber(string tabElement)
         {
             var onlyDigits = tabElement.Replace("zl", string.Empty);
             var withoutLeadingZeroes = onlyDigits.TrimStart(new Char[] { '0' });
@@ -82,30 +77,30 @@ namespace DocumentExplorer.Infrastructure.Services
             return number;
         }
 
-        private DateTime GetCreationDate(string year, string month)
+        private static DateTime GetCreationDate(string year, string month)
         {
             var yearInt = GetYear(year);
             var monthInt = GetMonth(month);
             return new DateTime(yearInt, monthInt, 1);
         }
 
-        private int GetYear(string tabElement)
+        private static int GetYear(string tabElement)
         {
             int year;
             int.TryParse(tabElement, out year);
             return year;
         }
 
-        private int GetMonth(string tabElement)
+        private static int GetMonth(string tabElement)
         {
             int month;
             int.TryParse(tabElement.Split("_")[0], out month);
             return month;
         }
 
-        private string GetYear(Order order)
+        private static string GetYear(Order order)
             => order.CreationDate.Year.ToString();
-        private string GetMonth(Order order)
+        private static string GetMonth(Order order)
         {
             string month = "";
             switch(order.CreationDate.Month)
@@ -152,10 +147,10 @@ namespace DocumentExplorer.Infrastructure.Services
             return month;
         }
 
-        private string GetFolderBeginingName(Order order)
+        private static string GetFolderBeginingName(Order order)
             => $"zl{AddLeadingZeros(order.Number)}_k{order.ClientCountry}{order.ClientIdentificationNumber}_p{order.BrokerCountry}{order.BrokerIdentificationNumber}_{order.Owner1Name}";
 
-        private string AddLeadingZeros(int number)
+        private static string AddLeadingZeros(int number)
         {
             string s = number.ToString();
             int zeroes = 4 - s.Length;

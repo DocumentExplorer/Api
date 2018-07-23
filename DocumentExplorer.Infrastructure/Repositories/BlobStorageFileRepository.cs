@@ -11,12 +11,10 @@ namespace DocumentExplorer.Infrastructure.Repositories
     public class BlobStorageOrderRepository  : IRealFileRepository, IBlobStorageRepository
     {
         private readonly BlobStorageContext _blobStorageContext;
-        private readonly IOrderFolderNameGenerator _orderFolderNameGenerator;
 
-        public BlobStorageOrderRepository(BlobStorageContext blobStorageContext, IOrderFolderNameGenerator orderFolderNameGenerator)
+        public BlobStorageOrderRepository(BlobStorageContext blobStorageContext)
         {
             _blobStorageContext = blobStorageContext;
-            _orderFolderNameGenerator = orderFolderNameGenerator;
         }
 
 
@@ -28,5 +26,8 @@ namespace DocumentExplorer.Infrastructure.Repositories
 
         public async Task RemoveAsync(string path)
             => await _blobStorageContext.DeleteAsync(path);
+
+        public async Task UpdateFolderName(string from, string to)
+            => await _blobStorageContext.UpdateFolderName(to, from);
     }
 }
