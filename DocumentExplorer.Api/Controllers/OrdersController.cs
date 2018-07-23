@@ -27,12 +27,11 @@ namespace DocumentExplorer.Api.Controllers
             return Created($"orders/{Cache.Get(command.CacheId)}", null);
         }
 
-        [Authorize("admin")]
-        [Authorize("complementer")]
+        [Authorize("complementerAndAdmin")]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var orders = await _orderService.GetAllByUserAsync(Username);
+            var orders = await _orderService.GetAllAsync();
             return Json(orders);
         }
 
