@@ -71,37 +71,39 @@ namespace DocumentExplorer.Core.Domain
             switch(fileType)
             {
                 case "cmr":
-                    if(CMRId == null) throw new DomainException(ErrorCodes.FileDoesNotExists);
+                    if(CMRId == Guid.Empty) throw new DomainException(ErrorCodes.FileDoesNotExists);
                     fileType = $"{fileType}{AddLeadingZeros(Number)}";
                     break;
                 case "fvk":
-                    if(FVKId == null) throw new DomainException(ErrorCodes.FileDoesNotExists);
+                    if(FVKId == Guid.Empty) throw new DomainException(ErrorCodes.FileDoesNotExists);
                     fileType = $"{fileType}{AddLeadingZeros(InvoiceNumber)}";
                     break;
                 case "fvp":
-                    if(FVPId == null) throw new DomainException(ErrorCodes.FileDoesNotExists);
+                    if(FVPId == Guid.Empty) throw new DomainException(ErrorCodes.FileDoesNotExists);
                     fileType = $"{fileType}{AddLeadingZeros(Number)}";
                     break;
                 case "nip":
-                    if(NIPId == null) throw new DomainException(ErrorCodes.FileDoesNotExists);
+                    if(NIPId == Guid.Empty) throw new DomainException(ErrorCodes.FileDoesNotExists);
                     fileType = $"{fileType}{AddLeadingZeros(Number)}";
                     break;
                 case "nota":
-                    if(NotaId == null) throw new DomainException(ErrorCodes.FileDoesNotExists);
+                    if(NotaId == Guid.Empty) throw new DomainException(ErrorCodes.FileDoesNotExists);
                     fileType = $"{fileType}{AddLeadingZeros(Number)}";
                     break;
                 case "pp":
-                    if(PPId == null) throw new DomainException(ErrorCodes.FileDoesNotExists);
+                    if(PPId == Guid.Empty) throw new DomainException(ErrorCodes.FileDoesNotExists);
                     fileType = $"{fileType}{AddLeadingZeros(Number)}";
                     break;
                 case "rk":
-                    if(RKId == null) throw new DomainException(ErrorCodes.FileDoesNotExists);
+                    if(RKId == Guid.Empty) throw new DomainException(ErrorCodes.FileDoesNotExists);
                     fileType = $"{fileType}{AddLeadingZeros(Number)}";
                     break;
                 case "zk":
-                    if(ZKId == null) throw new DomainException(ErrorCodes.FileDoesNotExists);
+                    if(ZKId == Guid.Empty) throw new DomainException(ErrorCodes.FileDoesNotExists);
                     fileType = $"{fileType}{AddLeadingZeros(Number)}";
                     break;
+                default:
+                    throw new DomainException(ErrorCodes.FileTypeNotSpecified);
             }
             return $"{PathToFolder}{fileType}.pdf";
         }
