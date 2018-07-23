@@ -27,9 +27,6 @@ namespace DocumentExplorer.Core.Domain
 
 
         public int InvoiceNumber { get; set; }
-
-        public bool IsFVP { get; set; }
-        public bool IsCMR { get; set; }
         public string PathToFolder { get; set; }
         public Guid CMRId {get; private set;}
         public Guid FVKId {get; private set;}
@@ -60,8 +57,6 @@ namespace DocumentExplorer.Core.Domain
             Owner1Name = SetOwner(owner1Name);
             SetOwner2Name(owner2Name);
             InvoiceNumber = invoiceNumber;
-            IsCMR = isCMR;
-            IsFVP = IsFVP;
             SetCreationDate(creationDate);
             PathToFolder = pathToFolder;
         }
@@ -114,7 +109,6 @@ namespace DocumentExplorer.Core.Domain
             {
                 case "cmr":
                     CMRId = file.Id;
-                    IsCMR = true;
                     break;
                 case "fvk":
                     FVKId = file.Id;
@@ -122,7 +116,6 @@ namespace DocumentExplorer.Core.Domain
                     break;
                 case "fvp":
                     FVPId = file.Id;
-                    IsFVP = true;
                     break;
                 case "nip":
                     NIPId = file.Id;

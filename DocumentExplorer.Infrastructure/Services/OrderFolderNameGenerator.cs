@@ -10,19 +10,7 @@ namespace DocumentExplorer.Infrastructure.Services
     public class OrderFolderNameGenerator : IOrderFolderNameGenerator
     {
         public string OrderToName(Order order)
-            => $"{GetYear(order)}/{GetMonth(order)}/{GetFolderBeginingName(order)}{GetInvoiceNumber(order)}{AddFVP(order)}{AddCMR(order)}{Add2OwnerName(order)}/";
-
-        public List<Order> ListOfOrders(List<string> orders)
-        {
-            List<Order> orderList = new List<Order>();
-
-            foreach(var order in orders)
-            {
-                orderList.Add(NameToOrder(order));
-            }
-
-            return orderList;
-        }
+            => $"{GetYear(order)}/{GetMonth(order)}/{GetFolderBeginingName(order)}/";
 
         public Order NameToOrder(string order)
         {
@@ -176,31 +164,6 @@ namespace DocumentExplorer.Infrastructure.Services
 
         private string GetFolderBeginingName(Order order)
             => $"zl{AddLeadingZeros(order.Number)}_k{order.ClientCountry}{order.ClientIdentificationNumber}_p{order.BrokerCountry}{order.BrokerIdentificationNumber}_{order.Owner1Name}";
-
-        private string GetInvoiceNumber(Order order)
-        {
-            if (order.InvoiceNumber != 0)
-                return $"_fvk{AddLeadingZeros(order.InvoiceNumber)}";
-            return string.Empty;
-        }
-
-        private string AddFVP(Order order)
-        {
-            if (order.IsFVP) return "_fvp";
-            return string.Empty;
-        }
-
-        private string AddCMR(Order order)
-        {
-            if (order.IsCMR) return "_cmr";
-            return string.Empty;
-        }
-
-        private string Add2OwnerName(Order order)
-        {
-            if (order.Owner2Name != null) return $"_{order.Owner2Name}";
-            return string.Empty;
-        }
 
         private string AddLeadingZeros(int number)
         {
