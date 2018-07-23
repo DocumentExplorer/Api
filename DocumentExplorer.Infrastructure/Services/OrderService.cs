@@ -47,14 +47,13 @@ namespace DocumentExplorer.Infrastructure.Services
         }
 
         public async Task EditOrderAsync(Guid id, int number, string clientCountry, string clientIdentificationNumber, 
-            string brokerCountry, string brokerIdentificationNumber, string owner2Name, string username)
+            string brokerCountry, string brokerIdentificationNumber)
         {
             var order = await _orderRepository.GetOrFailAsync(id);
             order.SetClientCountry(clientCountry);
             order.SetClientIdentificationNumber(clientIdentificationNumber);
             order.SetBrokerCountry(brokerCountry);
             order.SetBrokerIdentificationNumber(brokerIdentificationNumber);
-            order.SetOwner2Name(owner2Name, username);
             await _orderRepository.UpdateAsync(order);
         }
 

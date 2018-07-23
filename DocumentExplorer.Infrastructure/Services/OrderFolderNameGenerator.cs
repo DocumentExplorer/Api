@@ -24,9 +24,6 @@ namespace DocumentExplorer.Infrastructure.Services
             var brokerIdentificationNumber = GetBrokerIdentificationNumber(tab[2]);
 
             int invoiceNumber = 0;
-            bool isCMR = false;
-            bool isFVP = false;
-            string secondOwnerName = null;
 
             for(int i = 4; i<tab.Length; i++)
             {
@@ -35,17 +32,10 @@ namespace DocumentExplorer.Infrastructure.Services
                     case 7:
                         invoiceNumber = GetInvoiceNumber(tab[i]);
                         break;
-                    case 3:
-                        if (tab[i] == "cmr") isCMR = true;
-                        if (tab[i] == "fvp") isFVP = true;
-                        break;
-                    case 4:
-                        secondOwnerName = tab[i];
-                        break;
                 }
             }
 
-            return new Order(orderNumber, clientCountry, clientIdentificationNumber, brokerCountry, brokerIdentificationNumber, tab[3], creationDate,order,secondOwnerName,invoiceNumber, isCMR, isFVP);
+            return new Order(orderNumber, clientCountry, clientIdentificationNumber, brokerCountry, brokerIdentificationNumber, tab[3], creationDate,order,invoiceNumber);
         }
 
         private int GetInvoiceNumber(string tabElement)

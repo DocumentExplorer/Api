@@ -12,7 +12,6 @@ namespace DocumentExplorer.Core.Domain
         public string BrokerCountry { get; private set; }
         public string BrokerIdentificationNumber { get; private set; }
         public string Owner1Name { get; private set; }
-        public string Owner2Name { get; private set; }
         public DateTime CreationDate { get; set; }
         public string CreationDateString 
         {
@@ -45,8 +44,7 @@ namespace DocumentExplorer.Core.Domain
 
         public Order(int number, string clientCountry, string clientIdentificationNumber, 
             string brokerCountry, string brokerIdentificationNumber, string owner1Name, 
-            DateTime creationDate, string pathToFolder = null,string owner2Name=null, int invoiceNumber=0, 
-            bool isCMR=false, bool isFVP=false)
+            DateTime creationDate, string pathToFolder = null, int invoiceNumber=0)
         {
             Id = Guid.NewGuid();
             SetNumber(number);
@@ -55,7 +53,6 @@ namespace DocumentExplorer.Core.Domain
             SetBrokerCountry(brokerCountry);
             SetBrokerIdentificationNumber(brokerIdentificationNumber);
             Owner1Name = SetOwner(owner1Name);
-            SetOwner2Name(owner2Name);
             InvoiceNumber = invoiceNumber;
             SetCreationDate(creationDate);
             PathToFolder = pathToFolder;
@@ -133,15 +130,6 @@ namespace DocumentExplorer.Core.Domain
                     ZKId = file.Id;
                     break;
             }
-        }
-
-
-        public void SetOwner2Name(string owner, string authUsername=null)
-        {
-            if(Owner2Name == owner) return;
-            if(Owner1Name == owner) throw new DomainException(ErrorCodes.UserIsAleardyFirstOwner);
-            if(Owner2Name == authUsername) throw new DomainException(ErrorCodes.UserCannotChangeHisOwnOwnership);
-            Owner2Name = SetOwner(owner);
         }
 
         private void SetCreationDate(DateTime date)

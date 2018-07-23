@@ -21,7 +21,7 @@ namespace DocumentExplorer.Infrastructure.Handlers.Orders
         public async Task HandleAsync(EditOrder command)
             => await _handler
             .Run(async ()=> await _orderService.EditOrderAsync(command.Id,command.Number, command.ClientCountry, command.ClientIdentificationNumber,
-            command.BrokerCountry, command.BrokerIdentificationNumber, command.Owner2Name, command.Username))
+            command.BrokerCountry, command.BrokerIdentificationNumber))
             .OnCustomError(x => throw new ServiceException(x.Code), true)
             .ExecuteAsync();
     }
