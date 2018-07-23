@@ -57,6 +57,7 @@ namespace DocumentExplorer.Api
             services.AddMemoryCache();
             services.AddAuthorization(x => x.AddPolicy("admin", p=>p.RequireRole("admin")));
             services.AddAuthorization(x => x.AddPolicy("user", p=>p.RequireRole("user")));
+            services.AddAuthorization(x => x.AddPolicy("complementer", p=>p.RequireRole("complementer")));
             services.AddTransient<TokenManagerMiddleware>();
             services.AddTransient<ITokenManager,TokenManager>();
             services.AddSingleton<IHttpContextAccessor,HttpContextAccessor>();

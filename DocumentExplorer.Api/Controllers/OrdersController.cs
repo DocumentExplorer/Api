@@ -48,7 +48,7 @@ namespace DocumentExplorer.Api.Controllers
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
             var order = await _orderService.GetAsync(id);
-            if((!IsAuthorized(order.Owner1Name)) && (!IsAuthorized(order.Owner2Name)))
+            if(!IsAuthorizedPlusComplementer(order.Owner1Name))
             {
                 return StatusCode(403);
             }
@@ -61,7 +61,7 @@ namespace DocumentExplorer.Api.Controllers
         public async Task<IActionResult> EditAsync([FromBody]EditOrder command)
         {
             var order = await _orderService.GetAsync(command.Id);
-            if((!IsAuthorized(order.Owner1Name)) && (!IsAuthorized(order.Owner2Name)))
+            if(!IsAuthorizedPlusComplementer(order.Owner1Name))
             {
                 return StatusCode(403);
             }

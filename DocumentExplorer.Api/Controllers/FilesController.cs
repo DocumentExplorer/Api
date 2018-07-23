@@ -38,7 +38,7 @@ namespace DocumentExplorer.Api.Controllers
         {
             command.UploadId = uploadId;
             var order = await _orderService.GetAsync(command.OrderId);
-            if((!IsAuthorized(order.Owner1Name)) && (!IsAuthorized(order.Owner2Name)))
+            if(!IsAuthorizedPlusComplementer(order.Owner1Name))
             {
                 return StatusCode(403);
             }

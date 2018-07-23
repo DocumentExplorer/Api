@@ -30,7 +30,7 @@ namespace DocumentExplorer.Core.Domain
 
         public void SetRole(string role)
         {
-            if(role != Roles.User && Roles.Admin != role)
+            if(role != Roles.User && Roles.Admin != role && Roles.Complementer != role)
             {
                 throw new DomainException(ErrorCodes.InvalidRole);
             }

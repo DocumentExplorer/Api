@@ -11,7 +11,6 @@ namespace DocumentExplorer.Infrastructure.DTO
         public string BrokerCountry { get; set; }
         public string BrokerIdentificationNumber { get; set; }
         public string Owner1Name { get; set; }
-        public string Owner2Name { get; set; }
         public int InvoiceNumber { get; set; }
         public string Date { get; set; }
     }

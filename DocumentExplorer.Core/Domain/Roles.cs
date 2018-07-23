@@ -4,5 +4,6 @@ namespace DocumentExplorer.Core.Domain
     {
         public static string User => "user";
         public static string Admin => "admin";
+        public static string Complementer => "complementer";
     }
 }
