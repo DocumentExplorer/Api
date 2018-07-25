@@ -34,7 +34,6 @@ namespace DocumentExplorer.Infrastructure.Services
         {
             var order = new Order(number, clientCountry, clientIdentificationNumber, brokerCountry,
                 brokerIdentificationNumber, owner1Name, new DateTime());
-            order.PathToFolder = OrderFolderNameGenerator.OrderToName(order);
             await _orderRepository.AddAsync(order);
             _cache.Set(cacheId,order.Id,TimeSpan.FromSeconds(5));
         }
@@ -49,13 +48,13 @@ namespace DocumentExplorer.Infrastructure.Services
             string brokerCountry, string brokerIdentificationNumber)
         {
             var order = await _orderRepository.GetOrFailAsync(id);
-            var oldFolderName = order.PathToFolder;
+            var oldFolderName = order.GetPathToFolder();
             order.SetNumber(number);
             order.SetClientCountry(clientCountry);
             order.SetClientIdentificationNumber(clientIdentificationNumber);
             order.SetBrokerCountry(brokerCountry);
             order.SetBrokerIdentificationNumber(brokerIdentificationNumber);
-            var newFolderName = OrderFolderNameGenerator.OrderToName(order);
+            var newFolderName = order.GetPathToFolder();
             await _fileRepository.UpdateFolderName(oldFolderName, newFolderName);
             await _orderRepository.UpdateAsync(order);
         }

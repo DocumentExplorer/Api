@@ -16,27 +16,27 @@ namespace DocumentExplorer.Infrastructure.Services
         }
         public async Task SeedAsync()
         {
-            /*for(int i=1; i<=3; i++)
+            for(int i=1; i<=3; i++)
             {
                 await _userService.RegisterAsync($"usr{i}","secret123",Roles.User);
             }
             for(int i=1; i<=3; i++)
             {
                 await _userService.RegisterAsync($"adm{i}","secret123",Roles.Admin);
-            }*/
+            }
             for(int i=1; i<=3; i++)
             {
                 await _userService.RegisterAsync($"com{i}","secret123",Roles.Complementer);
             }
             var random = new Random();
-            /*for (int i = 1; i <= 3; i++)
+            for (int i = 1; i <= 3; i++)
             {
                 await _orderService.AddOrderAsync(Guid.NewGuid(),i, "PL", random.Next(1, 100000).ToString(), "PL", random.Next(1, 100000).ToString(), $"usr{i}");
             }
             for (int i = 1; i <= 3; i++)
             {
                 await _orderService.AddOrderAsync(Guid.NewGuid(), i+3, "PL", random.Next(1, 100000).ToString(), "PL", random.Next(1, 100000).ToString(), $"adm{i}");
-            }*/
+            }
         }
     }
 }

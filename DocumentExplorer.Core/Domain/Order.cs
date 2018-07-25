@@ -26,7 +26,6 @@ namespace DocumentExplorer.Core.Domain
 
 
         public int InvoiceNumber { get; set; }
-        public string PathToFolder { get; set; }
         public Guid CMRId {get; private set;}
         public Guid FVKId {get; private set;}
         public Guid FVPId {get; private set;}
@@ -55,7 +54,6 @@ namespace DocumentExplorer.Core.Domain
             Owner1Name = SetOwner(owner1Name);
             InvoiceNumber = invoiceNumber;
             SetCreationDate(creationDate);
-            PathToFolder = pathToFolder;
         }
 
         public string GetPathToFile(string fileType)
@@ -97,7 +95,7 @@ namespace DocumentExplorer.Core.Domain
                 default:
                     throw new DomainException(ErrorCodes.FileTypeNotSpecified);
             }
-            return $"{PathToFolder}{fileType}.pdf";
+            return $"{GetPathToFolder()}{fileType}.pdf";
         }
 
         public void LinkFile(File file, string fileType, int invoiceNumber)
@@ -130,6 +128,43 @@ namespace DocumentExplorer.Core.Domain
                     ZKId = file.Id;
                     break;
             }
+        }
+
+        public void UnlinkFile(string fileType)
+        {
+            switch(fileType)
+            {
+                case "cmr":
+                    CMRId = Guid.Empty;
+                    break;
+                case "fvk":
+                    CMRId = Guid.Empty;
+                    InvoiceNumber = 0;
+                    break;
+                case "fvp":
+                    FVPId = Guid.Empty;
+                    break;
+                case "nip":
+                    NIPId = Guid.Empty;
+                    break;
+                case "nota":
+                    NotaId = Guid.Empty;
+                    break;
+                case "pp":
+                    PPId = Guid.Empty;
+                    break;
+                case "rk":
+                    RKId = Guid.Empty;
+                    break;
+                case "zk":
+                    ZKId = Guid.Empty;
+                    break;
+            }
+        }
+
+        public string GetPathToFolder()
+        {
+            return OrderFolderNameGenerator.OrderToName(this);
         }
 
         private void SetCreationDate(DateTime date)

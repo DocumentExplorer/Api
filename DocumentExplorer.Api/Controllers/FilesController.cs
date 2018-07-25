@@ -15,9 +15,12 @@ namespace DocumentExplorer.Api.Controllers
     public class FilesController : ControllerBase
     {
         private readonly IOrderService _orderService;
-        public FilesController(ICommandDispatcher commandDispatcher, IMemoryCache cache, IOrderService orderService) : base(commandDispatcher, cache)
+        private readonly IFileService _fileService;
+        public FilesController(ICommandDispatcher commandDispatcher, IMemoryCache cache, 
+            IOrderService orderService, IFileService fileService) : base(commandDispatcher, cache)
         {
             _orderService = orderService;
+            _fileService = fileService;
         }
 
         [Authorize]
@@ -43,6 +46,20 @@ namespace DocumentExplorer.Api.Controllers
                 return StatusCode(403);
             }
             await DispatchAsync(command);
+            return NoContent();
+        }
+
+        [Authorize]
+        [HttpDelete("{uploadId}")]
+        public async Task<IActionResult> DeleteFile(Guid uploadId)
+        {
+            var file = await _fileService.GetFile(uploadId);
+            var order = await _orderService.GetAsync(file.OrderId);
+            if(!IsAuthorizedPlusComplementer(order.Owner1Name))
+            {
+                return StatusCode(403);
+            }
+            await _fileService.DeleteFile(uploadId);
             return NoContent();
         }
 
