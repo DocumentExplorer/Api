@@ -11,5 +11,6 @@
         public static string UserCannotChangeHisOwnOwnership => "user_cannot_change_his_own_ownership";
         public static string FileDoesNotExists => "file_does_not_exits";
         public static string FileTypeNotSpecified => "file_type_not_specified";
+        public static string FileIsAlreadyAssigned => "file_is_already_assigned";
     }
 }

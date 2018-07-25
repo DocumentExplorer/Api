@@ -43,6 +43,7 @@ namespace DocumentExplorer.Infrastructure.BlobStorage
                 fileStream.Position = 0;
                 await blockBlob.UploadFromStreamAsync(fileStream);
             }
+            File.Delete(filePath);
         }
 
         public async Task UploadAsync(string blobName, Stream stream)

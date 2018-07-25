@@ -26,6 +26,7 @@ namespace DocumentExplorer.Infrastructure.Services
         {
             var file = await _fileRepository.GetOrFailAsync(uploadId);
             var order = await _orderRepository.GetOrFailAsync(orderId);
+            file.SetOrderId(order.Id);
             order.LinkFile(file,fileType,invoiceNumber);
             var destination = order.GetPathToFile(fileType);
             await _realFileRepository.AddAsync(file.Path, destination);
@@ -42,7 +43,7 @@ namespace DocumentExplorer.Infrastructure.Services
             {
                 await file.CopyToAsync(stream);
             }
-            var fileData = new Core.Domain.File(id,filePath);
+            var fileData = new Core.Domain.File(id,filePath, Guid.Empty);
             await _fileRepository.AddAsync(fileData);
         }
 
