@@ -76,5 +76,17 @@ namespace DocumentExplorer.Api.Controllers
             await DispatchAsync(command);
             return NoContent();
         }
+        [Authorize]
+        [HttpPut("requirements")]
+        public async Task<IActionResult> SetRequirementsAsync([FromBody]SetRequirements command)
+        {
+            var order = await _orderService.GetAsync(command.OrderId);
+            if(!IsAuthorizedPlusComplementer(order.Owner1Name))
+            {
+                return StatusCode(403);
+            }
+            await DispatchAsync(command);
+            return NoContent();
+        }
     }
 }

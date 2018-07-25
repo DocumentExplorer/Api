@@ -10,6 +10,11 @@ namespace DocumentExplorer.Core.Domain
             Path = path;
             OrderId = orderId;
         }
+
+        protected File()
+        {
+
+        }
         public Guid Id { get; private set; }
         public string Path { get; set; }
         public Guid OrderId { get; private set; }
@@ -47,6 +52,9 @@ namespace DocumentExplorer.Core.Domain
                     isCorrect = true;
                     break;
                 case "zk":
+                    isCorrect = true;
+                    break;
+                case "zp":
                     isCorrect = true;
                     break;
             }

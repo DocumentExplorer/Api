@@ -11,5 +11,6 @@
         public static string FileTypeNotSpecified => "file_type_not_specified";
         public static string FileIsAlreadyAssigned => "file_is_already_assigned";
         public static string InvalidFileType => "invalid_file_type";
+        public static string FileIsNotRequired => "file_is_not_required";
     }
 }

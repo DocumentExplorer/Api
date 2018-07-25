@@ -95,10 +95,17 @@ namespace DocumentExplorer.Infrastructure.Services
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
         }
 
-        public async Task<OrderDto> GetAsync(Guid id)
+        public async Task<ExtendedOrderDto> GetAsync(Guid id)
         {
             var order = await _orderRepository.GetOrFailAsync(id);
-            return _mapper.Map<OrderDto>(order);
+            return _mapper.Map<ExtendedOrderDto>(order);
+        }
+
+        public async Task SetRequirementsAsync(Guid id, string fileType, bool isRequired)
+        {
+            var order = await _orderRepository.GetOrFailAsync(id);
+            order.SetRequirements(fileType,isRequired);
+            await _orderRepository.UpdateAsync(order);
         }
     }
 }

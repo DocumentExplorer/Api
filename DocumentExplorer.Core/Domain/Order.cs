@@ -27,14 +27,23 @@ namespace DocumentExplorer.Core.Domain
 
         public int InvoiceNumber { get; set; }
         public Guid CMRId {get; private set;}
+        public bool IsCMRRequired { get; set;}
         public Guid FVKId {get; private set;}
+        public bool IsFVKRequired { get; set;}
         public Guid FVPId {get; private set;}
+        public bool IsFVPRequired { get; private set;}
         public Guid NIPId {get; private set;}
+        public bool IsNIPRequired { get; private set;}
         public Guid NotaId {get; private set;}
+        public bool IsNotaRequired { get; private set;}
         public Guid PPId {get; private set;}
+        public bool IsPPRequired { get; private set;}
         public Guid RKId {get; private set;}
+        public bool IsRKRequired { get; private set;}
         public Guid ZKId {get; private set;}
+        public bool IsZKRequired { get; private set;}
         public Guid ZPId {get; private set;}
+        public bool IsZPRequired { get; private set; }
 
         protected Order()
         {
@@ -54,6 +63,74 @@ namespace DocumentExplorer.Core.Domain
             Owner1Name = SetOwner(owner1Name);
             InvoiceNumber = invoiceNumber;
             SetCreationDate(creationDate);
+            SetDefaultRequirements();
+        }
+
+        public void SetRequirements(string fileType, bool isRequired)
+        {
+            switch(fileType)
+            {
+                case "cmr":
+                    if((!isRequired) && (CMRId!=Guid.Empty)) 
+                        throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
+                    IsCMRRequired = isRequired;
+                    break;
+                case "fvk":
+                    if((!isRequired) && (FVKId!=Guid.Empty)) 
+                        throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
+                    IsFVKRequired = isRequired;
+                    break;
+                case "fvp":
+                    if((!isRequired) && (FVPId!=Guid.Empty)) 
+                        throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
+                    IsFVPRequired = isRequired;
+                    break;
+                case "nip":
+                    if((!isRequired) && (NIPId!=Guid.Empty)) 
+                        throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
+                    IsNIPRequired = isRequired;
+                    break;
+                case "nota":
+                    if((!isRequired) && (NotaId!=Guid.Empty)) 
+                        throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
+                    IsNotaRequired = isRequired;
+                    break;
+                case "pp":
+                    if((!isRequired) && (PPId!=Guid.Empty)) 
+                        throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
+                    IsPPRequired = isRequired;
+                    break;
+                case "rk":
+                    if((!isRequired) && (RKId!=Guid.Empty)) 
+                        throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
+                    IsRKRequired = isRequired;
+                    break;
+                case "zk":
+                    if((!isRequired) && (ZKId!=Guid.Empty)) 
+                        throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
+                    IsZKRequired = isRequired;
+                    break;
+                case "zp":
+                    if((!isRequired) && (ZPId!=Guid.Empty)) 
+                        throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
+                    IsZPRequired = isRequired;
+                    break;
+                default:
+                    throw new DomainException(ErrorCodes.InvalidFileType);
+            }
+        }
+
+        private void SetDefaultRequirements()
+        {
+            IsCMRRequired = true;
+            IsFVKRequired = true;
+            IsFVPRequired = true;
+            IsNIPRequired = true;
+            IsNotaRequired = true;
+            IsPPRequired = true;
+            IsRKRequired = true;
+            IsZKRequired = true;
+            IsZPRequired = true;
         }
 
         public string GetPathToFile(string fileType)
@@ -92,6 +169,10 @@ namespace DocumentExplorer.Core.Domain
                     if(ZKId == Guid.Empty) throw new DomainException(ErrorCodes.FileDoesNotExists);
                     fileType = $"{fileType}{AddLeadingZeros(Number)}";
                     break;
+                case "zp":
+                    if(ZPId == Guid.Empty) throw new DomainException(ErrorCodes.FileDoesNotExists);
+                    fileType = $"{fileType}{AddLeadingZeros(Number)}";
+                    break;
                 default:
                     throw new DomainException(ErrorCodes.FileTypeNotSpecified);
             }
@@ -103,38 +184,53 @@ namespace DocumentExplorer.Core.Domain
             switch(fileType)
             {
                 case "cmr":
-                    if(CMRId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned); 
+                    if(CMRId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
+                    if(!IsCMRRequired) throw new DomainException(ErrorCodes.FileIsNotRequired);
                     CMRId = file.Id;
                     break;
                 case "fvk":
-                    if(FVKId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned); 
+                    if(FVKId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
+                    if(!IsFVKRequired) throw new DomainException(ErrorCodes.FileIsNotRequired);
                     FVKId = file.Id;
                     InvoiceNumber = invoiceNumber;
                     break;
                 case "fvp":
-                    if(FVPId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned); 
+                    if(FVPId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
+                    if(!IsFVPRequired) throw new DomainException(ErrorCodes.FileIsNotRequired);
                     FVPId = file.Id;
                     break;
                 case "nip":
-                    if(NIPId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned); 
+                    if(NIPId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
+                    if(!IsNIPRequired) throw new DomainException(ErrorCodes.FileIsNotRequired);
                     NIPId = file.Id;
                     break;
                 case "nota":
-                    if(NotaId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned); 
+                    if(NotaId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
+                    if(!IsNotaRequired) throw new DomainException(ErrorCodes.FileIsNotRequired);
                     NotaId = file.Id;
                     break;
                 case "pp":
-                    if(PPId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned); 
+                    if(PPId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
+                    if(!IsPPRequired) throw new DomainException(ErrorCodes.FileIsNotRequired);
                     PPId = file.Id;
                     break;
                 case "rk":
-                    if(RKId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned); 
+                    if(RKId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
+                    if(!IsRKRequired) throw new DomainException(ErrorCodes.FileIsNotRequired);
                     RKId = file.Id;
                     break;
                 case "zk":
-                    if(ZKId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned); 
+                    if(ZKId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
+                    if(!IsZKRequired) throw new DomainException(ErrorCodes.FileIsNotRequired);
                     ZKId = file.Id;
                     break;
+                case "zp":
+                    if(ZPId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
+                    if(!IsZPRequired) throw new DomainException(ErrorCodes.FileIsNotRequired);
+                    ZPId = file.Id;
+                    break;
+                default:
+                    throw new DomainException(ErrorCodes.InvalidFileType);
             }
         }
 
@@ -167,6 +263,11 @@ namespace DocumentExplorer.Core.Domain
                 case "zk":
                     ZKId = Guid.Empty;
                     break;
+                case "zp":
+                    ZPId = Guid.Empty;
+                    break;
+                default:
+                    throw new DomainException(ErrorCodes.InvalidFileType);
             }
         }
 

@@ -13,9 +13,10 @@ namespace DocumentExplorer.Infrastructure.Services
             string brokerCountry, string brokerIdentificationNumber, string owner1Name);
         Task<IEnumerable<OrderDto>> GetAllAsync();
         Task<IEnumerable<OrderDto>> GetAllByUserAsync(string username);
-        Task<OrderDto> GetAsync(Guid id);
+        Task<ExtendedOrderDto> GetAsync(Guid id);
         Task DeleteAsync(Guid id);
         Task EditOrderAsync(Guid id, int number, string clientCountry, string clientIdentificationNumber, 
             string brokerCountry, string brokerIdentificationNumber);
+        Task SetRequirementsAsync(Guid id, string fileType, bool isRequired);
     }
 }
