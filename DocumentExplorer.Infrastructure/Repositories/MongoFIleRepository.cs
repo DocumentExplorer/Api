@@ -28,6 +28,9 @@ namespace DocumentExplorer.Infrastructure.Repositories
         public async Task UpdateAsync(File file)
             => await Files.ReplaceOneAsync(x => x.Id == file.Id, file);
 
+        public async Task<List<File>> GetFilesContainingPath(string path)
+            => await Files.Find(x => x.Path.Contains(path)).ToListAsync();
+
         private IMongoCollection<File> Files => _database.GetCollection<File>("File");
     }
 }

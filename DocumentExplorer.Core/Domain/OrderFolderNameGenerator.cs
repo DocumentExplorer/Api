@@ -150,7 +150,7 @@ namespace DocumentExplorer.Core.Domain
         private static string GetFolderBeginingName(Order order)
             => $"zl{AddLeadingZeros(order.Number)}_k{order.ClientCountry}{order.ClientIdentificationNumber}_p{order.BrokerCountry}{order.BrokerIdentificationNumber}_{order.Owner1Name}";
 
-        private static string AddLeadingZeros(int number)
+        public static string AddLeadingZeros(int number)
         {
             string s = number.ToString();
             int zeroes = 4 - s.Length;

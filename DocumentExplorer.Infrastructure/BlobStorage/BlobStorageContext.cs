@@ -72,13 +72,15 @@ namespace DocumentExplorer.Infrastructure.BlobStorage
         }
 
 
-        public async Task UpdateFolderName(string newFolderName, string oldFolderName)
+        public async Task UpdateFileNames(IEnumerable<string> from, IEnumerable<string> to)
         {
-            var list = await GetBlobListAsync();
-            var blobs =  list.Where(x => x.Folder==oldFolderName.TrimEnd('/')).ToList();
-            foreach(var blob in blobs)
+            using(var e1 = from.GetEnumerator())
+            using(var e2 = to.GetEnumerator())
             {
-                await UpdateBlobName($"{newFolderName}{blob.Name}",blob.BlobName);
+                while(e1.MoveNext() && e2.MoveNext())
+                {
+                    await UpdateBlobName(e2.Current,e1.Current);
+                }
             }
         }
 

@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DocumentExplorer.Core.Repositories
@@ -7,6 +9,6 @@ namespace DocumentExplorer.Core.Repositories
         Task GetAsync(string source, string destination);
         Task AddAsync(string source, string destination);
         Task RemoveAsync(string path);
-        Task UpdateFolderName(string from, string to);
+        Task UpdateFileNames(IEnumerable<string> from,IEnumerable<string> to);
     }
 }

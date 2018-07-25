@@ -11,5 +11,6 @@ namespace DocumentExplorer.Core.Repositories
         Task AddAsync(File file);
         Task RemoveAsync(File file);
         Task UpdateAsync(File file);
+        Task<List<File>> GetFilesContainingPath(string path);
     }
 }
