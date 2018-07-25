@@ -18,7 +18,6 @@ namespace DocumentExplorer.Api.Controllers
             _permissionsService = permissionsService;
         }
 
-        [Authorize("admin")]
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
