@@ -17,19 +17,22 @@ namespace DocumentExplorer.Infrastructure.Services
         private readonly IFileRepository _fileRepository;
         private readonly IOrderRepository _orderRepository;
         private readonly IRealFileRepository _realFileRepository;
+        private readonly IPermissionsService _permissionService;
         private readonly IMapper _mapper;
         public FileService(IFileRepository fileRepository, IOrderRepository orderRepository, 
-            IRealFileRepository realFileRepository, IMapper mapper)
+            IRealFileRepository realFileRepository, IMapper mapper, IPermissionsService permissionService)
         {
             _fileRepository = fileRepository;
             _orderRepository = orderRepository;
             _realFileRepository = realFileRepository;
             _mapper = mapper;
+            _permissionService = permissionService;
         }
 
-        public async Task DeleteFileAsync(Guid id)
+        public async Task DeleteFileAsync(Guid id, string role)
         {
             var file = await _fileRepository.GetOrFailAsync(id);
+            await _permissionService.Validate(file.FileType, role);
             var order = await _orderRepository.GetOrFailAsync(file.OrderId);
             await _realFileRepository.RemoveAsync(file.Path);
             await _fileRepository.RemoveAsync(file);
@@ -55,8 +58,9 @@ namespace DocumentExplorer.Infrastructure.Services
             return await _realFileRepository.GetOrFailAsync(file.Path);
         }
 
-        public async Task PutIntoLocationAsync(Guid uploadId, Guid orderId, string fileType, int invoiceNumber)
+        public async Task PutIntoLocationAsync(Guid uploadId, Guid orderId, string fileType, int invoiceNumber, string role)
         {
+            await _permissionService.Validate(fileType, role);
             var file = await _fileRepository.GetOrFailAsync(uploadId);
             var order = await _orderRepository.GetOrFailAsync(orderId);
             file.SetOrderId(order.Id);

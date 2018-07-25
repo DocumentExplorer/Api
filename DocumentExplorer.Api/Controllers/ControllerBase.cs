@@ -35,11 +35,13 @@ namespace DocumentExplorer.Api.Controllers
             => Username == username;
 
         protected bool IsRequestedByAdmin()
-           => User.Claims.ElementAt(1).Value == "admin";
+           => Role == "admin";
         protected bool IsRequestedByComplementer()
-           => User.Claims.ElementAt(1).Value == "complementer";
+           => Role == "complementer";
 
         protected string Username => User.Claims.ElementAt(0).Value;
+
+        protected string Role => User.Claims.ElementAt(1).Value;
 
         protected async Task DispatchAsync<T>(T command) where T : ICommand
         {

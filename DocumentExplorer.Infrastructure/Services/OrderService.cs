@@ -34,8 +34,9 @@ namespace DocumentExplorer.Infrastructure.Services
 
 
         public async Task AddOrderAsync(Guid cacheId, int number, string clientCountry, string clientIdentificationNumber, 
-            string brokerCountry, string brokerIdentificationNumber, string owner1Name)
+            string brokerCountry, string brokerIdentificationNumber, string owner1Name, string role)
         {
+            if(!(role == Roles.User || role == Roles.Admin)) throw new UnauthorizedAccessException();
             var order = new Order(number, clientCountry, clientIdentificationNumber, brokerCountry,
                 brokerIdentificationNumber, owner1Name, new DateTime());
             await _orderRepository.AddAsync(order);

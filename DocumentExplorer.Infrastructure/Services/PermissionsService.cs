@@ -4,6 +4,7 @@ using AutoMapper;
 using DocumentExplorer.Core.Domain;
 using DocumentExplorer.Core.Repositories;
 using DocumentExplorer.Infrastructure.DTO;
+using DocumentExplorer.Infrastructure.Exceptions;
 
 namespace DocumentExplorer.Infrastructure.Services
 {
@@ -31,6 +32,52 @@ namespace DocumentExplorer.Infrastructure.Services
             var permissions = await _permissionsRepository.GetAsync();
             permissions.SetPermissions(cmr, fvk, fvp, nip, nota, pp, rk, zk, zp);
             await _permissionsRepository.UpdateAsync(permissions);
+        }
+
+        public async Task Validate(string fileType, string role)
+        {
+            var permissions = await _permissionsRepository.GetAsync();
+            switch(fileType)
+            {
+                case "cmr":
+                    if(!(permissions.CMR==role || role == Roles.Admin)) 
+                        throw new UnauthorizedAccessException();
+                    break;
+                case "fvk":
+                    if(!(permissions.FVK==role || role == Roles.Admin)) 
+                        throw new UnauthorizedAccessException();
+                    break;
+                case "fvp":
+                    if(!(permissions.FVP==role || role == Roles.Admin)) 
+                        throw new UnauthorizedAccessException();
+                    break;
+                case "nip":
+                    if(!(permissions.NIP==role || role == Roles.Admin)) 
+                        throw new UnauthorizedAccessException();
+                    break;
+                case "nota":
+                    if(!(permissions.Nota==role || role == Roles.Admin)) 
+                        throw new UnauthorizedAccessException();
+                    break;
+                case "pp":
+                    if(!(permissions.PP==role || role == Roles.Admin)) 
+                        throw new UnauthorizedAccessException();
+                    break;
+                case "rk":
+                    if(!(permissions.RK==role || role == Roles.Admin)) 
+                        throw new UnauthorizedAccessException();
+                    break;
+                case "zk":
+                    if(!(permissions.ZK==role || role == Roles.Admin)) 
+                        throw new UnauthorizedAccessException();
+                    break;
+                case "zp":
+                    if(!(permissions.ZP==role || role == Roles.Admin)) 
+                        throw new UnauthorizedAccessException();
+                    break;
+                default:
+                    throw new ServiceException(Exceptions.ErrorCodes.InvalidFileType);
+            }
         }
     }
 }

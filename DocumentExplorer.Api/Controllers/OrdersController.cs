@@ -23,6 +23,7 @@ namespace DocumentExplorer.Api.Controllers
         public async Task<IActionResult> AddAsync([FromBody]AddOrder command)
         {
             command.CacheId = Guid.NewGuid();
+            command.Role = Role;
             await DispatchAsync(command);
             return Created($"orders/{Cache.Get(command.CacheId)}", null);
         }

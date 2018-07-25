@@ -11,5 +11,6 @@
         public static string NoFile => "no_file";
         public static string FileHasNoData => "file_has_no_data";
         public static string FileNotFound => "file_not_found";
+        public static string InvalidFileType => "invalid_file_type";
     }
 }

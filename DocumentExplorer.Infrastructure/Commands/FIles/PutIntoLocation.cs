@@ -8,5 +8,6 @@ namespace DocumentExplorer.Infrastructure.Commands.Files
         public Guid OrderId { get; set; }
         public string FileType { get; set; }
         public int InvoiceNumber { get; set; }
+        public string Role { get; set; }
     }
 }

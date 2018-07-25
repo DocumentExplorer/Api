@@ -11,5 +11,6 @@ namespace DocumentExplorer.Infrastructure.Services
         Task UpdatePermissions(string cmr, 
             string fvk, string fvp, string nip, string nota,
             string pp, string rk, string zk, string zp);
+        Task Validate(string fileType, string role);
     }
 }

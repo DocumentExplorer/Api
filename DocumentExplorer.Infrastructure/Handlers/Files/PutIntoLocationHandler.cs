@@ -17,7 +17,8 @@ namespace DocumentExplorer.Infrastructure.Handlers.Files
         }
         public async Task HandleAsync(PutIntoLocation command)
             => await _handler
-            .Run(async () => await _fileService.PutIntoLocationAsync(command.UploadId, command.OrderId, command.FileType, command.InvoiceNumber))
+            .Run(async () => await _fileService.PutIntoLocationAsync(command.UploadId, 
+                command.OrderId, command.FileType, command.InvoiceNumber, command.Role))
             .OnCustomError(x => throw new ServiceException(x.Code), true)
             .ExecuteAsync();
     }

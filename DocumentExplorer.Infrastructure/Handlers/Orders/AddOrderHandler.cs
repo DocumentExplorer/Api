@@ -26,7 +26,7 @@ namespace DocumentExplorer.Infrastructure.Handlers.Orders
                 await _orderService.AddOrderAsync(command.CacheId,command.Number,
                 command.ClientCountry, command.ClientIdentificationNumber,
                 command.BrokerCountry, command.BrokerIdentificationNumber,
-                command.Username);
+                command.Username, command.Role);
             })
             .OnCustomError(x => throw new ServiceException(x.Code), true)
             .ExecuteAsync();

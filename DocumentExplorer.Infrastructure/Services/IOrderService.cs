@@ -10,7 +10,7 @@ namespace DocumentExplorer.Infrastructure.Services
     public interface IOrderService
     {
         Task AddOrderAsync(Guid cacheId, int number, string clientCountry, string clientIdentificationNumber,
-            string brokerCountry, string brokerIdentificationNumber, string owner1Name);
+            string brokerCountry, string brokerIdentificationNumber, string owner1Name, string role);
         Task<IEnumerable<OrderDto>> GetAllAsync();
         Task<IEnumerable<OrderDto>> GetAllByUserAsync(string username);
         Task<ExtendedOrderDto> GetAsync(Guid id);

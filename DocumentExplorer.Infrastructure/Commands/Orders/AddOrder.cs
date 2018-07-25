@@ -10,5 +10,6 @@ namespace DocumentExplorer.Infrastructure.Commands.Orders
         public string ClientIdentificationNumber { get; set; }
         public string BrokerCountry { get; set; }
         public string BrokerIdentificationNumber { get; set; }
+        public string Role { get; set;}
     }
 }
