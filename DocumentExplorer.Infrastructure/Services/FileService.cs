@@ -39,7 +39,7 @@ namespace DocumentExplorer.Infrastructure.Services
         public async Task<FileDto> GetFile(Guid id)
         {
             var file = await _fileRepository.GetOrFailAsync(id);
-            return Mapper.Map<FileDto>(file);
+            return _mapper.Map<FileDto>(file);
         }
 
         public async Task PutIntoLocationAsync(Guid uploadId, Guid orderId, string fileType, int invoiceNumber)
@@ -47,6 +47,7 @@ namespace DocumentExplorer.Infrastructure.Services
             var file = await _fileRepository.GetOrFailAsync(uploadId);
             var order = await _orderRepository.GetOrFailAsync(orderId);
             file.SetOrderId(order.Id);
+            file.SetFileType(fileType);
             order.LinkFile(file,fileType,invoiceNumber);
             var destination = order.GetPathToFile(fileType);
             await _realFileRepository.AddAsync(file.Path, destination);

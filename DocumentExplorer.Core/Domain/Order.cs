@@ -103,28 +103,36 @@ namespace DocumentExplorer.Core.Domain
             switch(fileType)
             {
                 case "cmr":
+                    if(CMRId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned); 
                     CMRId = file.Id;
                     break;
                 case "fvk":
+                    if(FVKId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned); 
                     FVKId = file.Id;
                     InvoiceNumber = invoiceNumber;
                     break;
                 case "fvp":
+                    if(FVPId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned); 
                     FVPId = file.Id;
                     break;
                 case "nip":
+                    if(NIPId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned); 
                     NIPId = file.Id;
                     break;
                 case "nota":
+                    if(NotaId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned); 
                     NotaId = file.Id;
                     break;
                 case "pp":
+                    if(PPId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned); 
                     PPId = file.Id;
                     break;
                 case "rk":
+                    if(RKId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned); 
                     RKId = file.Id;
                     break;
                 case "zk":
+                    if(ZKId != Guid.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned); 
                     ZKId = file.Id;
                     break;
             }
