@@ -15,6 +15,7 @@ namespace DocumentExplorer.Infrastructure.Mappers
                 cfg.ReplaceMemberName("CreationDateString", "Date");
                 cfg.CreateMap<File,FileDto>();
                 cfg.CreateMap<Order, ExtendedOrderDto>();
+                cfg.CreateMap<Permissions,PermissionsDto>();
             })
             .CreateMapper();
     }

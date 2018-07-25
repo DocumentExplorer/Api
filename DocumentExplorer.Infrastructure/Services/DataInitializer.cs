@@ -9,14 +9,16 @@ namespace DocumentExplorer.Infrastructure.Services
     {
         private readonly IUserService _userService;
         private readonly IOrderService _orderService;
-        public DataInitializer(IUserService userService, IOrderService orderService)
+        private readonly IPermissionsService _permissionsService;
+        public DataInitializer(IUserService userService, IOrderService orderService, IPermissionsService permissionsService)
         {
             _userService = userService;
             _orderService = orderService;
+            _permissionsService = permissionsService;
         }
         public async Task SeedAsync()
         {
-            for(int i=1; i<=3; i++)
+            /*for(int i=1; i<=3; i++)
             {
                 await _userService.RegisterAsync($"usr{i}","secret123",Roles.User);
             }
@@ -36,7 +38,9 @@ namespace DocumentExplorer.Infrastructure.Services
             for (int i = 1; i <= 3; i++)
             {
                 await _orderService.AddOrderAsync(Guid.NewGuid(), i+3, "PL", random.Next(1, 100000).ToString(), "PL", random.Next(1, 100000).ToString(), $"adm{i}");
-            }
+            } */
+            
+            await _permissionsService.IntializePermissions();
         }
     }
 }
