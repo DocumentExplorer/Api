@@ -31,6 +31,9 @@ namespace DocumentExplorer.Infrastructure.Repositories
         public async Task<List<File>> GetFilesContainingPath(string path)
             => await Files.Find(x => x.Path.Contains(path)).ToListAsync();
 
+        public async Task<IEnumerable<File>> GetAllAsync()
+            => await Files.Find(_ => true).ToListAsync();
+
         private IMongoCollection<File> Files => _database.GetCollection<File>("File");
     }
 }

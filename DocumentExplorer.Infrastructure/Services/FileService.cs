@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -26,7 +27,7 @@ namespace DocumentExplorer.Infrastructure.Services
             _mapper = mapper;
         }
 
-        public async Task DeleteFile(Guid id)
+        public async Task DeleteFileAsync(Guid id)
         {
             var file = await _fileRepository.GetOrFailAsync(id);
             var order = await _orderRepository.GetOrFailAsync(file.OrderId);
@@ -36,10 +37,22 @@ namespace DocumentExplorer.Infrastructure.Services
             await _orderRepository.UpdateAsync(order);
         }
 
-        public async Task<FileDto> GetFile(Guid id)
+        public async Task<IEnumerable<FileDto>> GetAllFilesAsync()
+        {
+            var files = await _fileRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<FileDto>>(files);
+        }
+
+        public async Task<FileDto> GetFileAsync(Guid id)
         {
             var file = await _fileRepository.GetOrFailAsync(id);
             return _mapper.Map<FileDto>(file);
+        }
+
+        public async Task<MemoryStream> GetFileStreamAsync(Guid id)
+        {
+            var file = await _fileRepository.GetOrFailAsync(id);
+            return await _realFileRepository.GetOrFailAsync(file.Path);
         }
 
         public async Task PutIntoLocationAsync(Guid uploadId, Guid orderId, string fileType, int invoiceNumber)

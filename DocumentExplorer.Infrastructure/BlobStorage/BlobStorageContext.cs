@@ -58,11 +58,9 @@ namespace DocumentExplorer.Infrastructure.BlobStorage
         {
             CloudBlockBlob blockBlob = await GetBlockBlobAsync(blobName);
 
-            using (var stream = new MemoryStream())
-            {
-                await blockBlob.DownloadToStreamAsync(stream);
-                return stream;
-            }
+            var stream = new MemoryStream();
+            await blockBlob.DownloadToStreamAsync(stream);
+            return stream;
         }
 
         public async Task DeleteAsync(string blobName)

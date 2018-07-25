@@ -53,14 +53,44 @@ namespace DocumentExplorer.Api.Controllers
         [HttpDelete("{uploadId}")]
         public async Task<IActionResult> DeleteFile(Guid uploadId)
         {
-            var file = await _fileService.GetFile(uploadId);
+            var file = await _fileService.GetFileAsync(uploadId);
             var order = await _orderService.GetAsync(file.OrderId);
             if(!IsAuthorizedPlusComplementer(order.Owner1Name))
             {
                 return StatusCode(403);
             }
-            await _fileService.DeleteFile(uploadId);
+            await _fileService.DeleteFileAsync(uploadId);
             return NoContent();
+        }
+
+        [Authorize]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetFileAsync(Guid id)
+        {
+            var file = await _fileService.GetFileAsync(id);
+            var order = await _orderService.GetAsync(file.OrderId);
+            if(!IsAuthorizedPlusComplementer(order.Owner1Name))
+            {
+                return StatusCode(403);
+            }
+            var fileStream = await _fileService.GetFileStreamAsync(id);
+            return new FileContentResult(fileStream.ToArray(),"application/pdf");
+        }
+
+        [Authorize("admin")]
+        [HttpGet("metadata/{id}")]
+        public async Task<IActionResult> GetFileMetaDataAsync(Guid id)
+        {
+            var file = await _fileService.GetFileAsync(id);
+            return Json(file);
+        }
+
+        [Authorize("admin")]
+        [HttpGet("metadata")]
+        public async Task<IActionResult> GetFileMetaDatasAsync()
+        {
+            var files = await _fileService.GetAllFilesAsync();
+            return Json(files);
         }
 
     }
