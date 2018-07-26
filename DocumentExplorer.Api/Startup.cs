@@ -17,6 +17,9 @@ using DocumentExplorer.Infrastructure.Settings;
 using Microsoft.AspNetCore.Http;
 using DocumentExplorer.Infrastructure.Mongo;
 using DocumentExplorer.Api.Framework;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
+using NLog.Web;
 
 namespace DocumentExplorer.Api
 {
@@ -90,8 +93,12 @@ namespace DocumentExplorer.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime appLifetime)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime appLifetime,
+            ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddNLog();
+            env.ConfigureNLog("nlog.config");
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
