@@ -1,6 +1,8 @@
 ﻿using DocumentExplorer.Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using NLog;
 using System;
 using System.Net;
 using System.Threading.Tasks;
@@ -9,6 +11,7 @@ namespace DocumentExplorer.Api.Framework
 {
     public class ExceptionHandlerMiddleware
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly RequestDelegate _next;
 
         public ExceptionHandlerMiddleware(RequestDelegate next)
@@ -48,7 +51,7 @@ namespace DocumentExplorer.Api.Framework
                     statusCode = HttpStatusCode.InternalServerError;
                     break;
             }
-
+            Logger.Log(NLog.LogLevel.Error, exception, exception.StackTrace);
             var response = new { code = errorCode };
             var payload = JsonConvert.SerializeObject(response);
             context.Response.ContentType = "application/json";
