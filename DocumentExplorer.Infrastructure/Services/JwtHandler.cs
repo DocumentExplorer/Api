@@ -49,7 +49,7 @@ namespace DocumentExplorer.Infrastructure.Services
             return new JwtDto
             {
                 Token = token,
-                Expiry = expires.ToTimestamp(),
+                Expiry = (expires.Ticks - now.Ticks)/10000000,
                 Role = role
             };
         }
