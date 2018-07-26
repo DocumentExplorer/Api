@@ -11,9 +11,9 @@ namespace DocumentExplorer.Core.Domain
         {
             get
             {
-                var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
-                DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc(Date, timeZoneInfo);
-                return cstTime.ToString(@"dd.MM.yyyy HH:mm:ss");
+                //var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
+                //DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc(Date, timeZoneInfo);
+                return Date.ToString(@"dd.MM.yyyy HH:mm:ss");
             }
         }
         public Guid OrderId { get; private set; }

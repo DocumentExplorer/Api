@@ -11,5 +11,6 @@ namespace DocumentExplorer.Core.Repositories
         Task AddAsync(string source, string destination);
         Task RemoveAsync(string path);
         Task UpdateFileNames(IEnumerable<string> from,IEnumerable<string> to);
+        Task RemoveDirectoryIfExists(string path);
     }
 }

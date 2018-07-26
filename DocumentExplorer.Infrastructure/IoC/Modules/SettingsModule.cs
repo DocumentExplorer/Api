@@ -3,6 +3,7 @@ using Autofac;
 using DocumentExplorer.Infrastructure.BlobStorage;
 using DocumentExplorer.Infrastructure.EF;
 using DocumentExplorer.Infrastructure.Extensions;
+using DocumentExplorer.Infrastructure.FileSystem;
 using DocumentExplorer.Infrastructure.Mongo;
 using DocumentExplorer.Infrastructure.Settings;
 using Microsoft.Extensions.Configuration;
@@ -24,6 +25,7 @@ namespace DocumentExplorer.Infrastructure.IoC.Modules
             //builder.RegisterInstance(_configuration.GetSettings<SqlSettings>()).SingleInstance();
             builder.RegisterInstance(_configuration.GetSettings<MongoSettings>()).SingleInstance();
             builder.RegisterInstance(_configuration.GetSettings<BlobStorageSettings>()).SingleInstance();
+            builder.RegisterInstance(_configuration.GetSettings<FileSystemSettings>()).SingleInstance();
         }
     }
 }

@@ -28,6 +28,9 @@ namespace DocumentExplorer.Infrastructure.Repositories
         public async Task RemoveAsync(string path)
             => await _blobStorageContext.DeleteAsync(path);
 
+        public async Task RemoveDirectoryIfExists(string path)
+            => await Task.CompletedTask;
+
         public async Task UpdateFileNames(IEnumerable<string> from, IEnumerable<string> to)
             => await _blobStorageContext.UpdateFileNames(from, to);
     }

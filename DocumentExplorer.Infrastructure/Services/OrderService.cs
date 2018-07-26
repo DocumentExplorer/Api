@@ -58,6 +58,7 @@ namespace DocumentExplorer.Infrastructure.Services
             {
                 await _fileRepository.RemoveAsync(file.Path);
             }
+            await _fileRepository.RemoveDirectoryIfExists(order.GetPathToFolder());
             await _orderRepository.RemoveAsync(order);
             await _logService.AddLogAsync($"Usunięto zlecenie.",order,username);
         }
