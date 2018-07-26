@@ -40,9 +40,12 @@ namespace DocumentExplorer.Api
             var tokenValidationParameters = new TokenValidationParameters
             {
                 ValidIssuer = ConfigurationRoot["jwt:issuer"],
+                ValidateIssuerSigningKey = true,
                 ValidateAudience = false,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigurationRoot["jwt:key"])),
-                SaveSigninToken = true
+                SaveSigninToken = false,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
             };
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
