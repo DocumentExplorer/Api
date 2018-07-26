@@ -21,15 +21,20 @@ namespace DocumentExplorer.Infrastructure.Services
         private readonly IMemoryCache _cache;
         private readonly IRealFileRepository _fileRepository;
         private readonly IFileRepository _fileDbRepository;
+        private readonly ILogService _logService;
+        private readonly IPermissionsService _permissionService;
 
         public OrderService(IOrderRepository orderRepository,
-            IMapper mapper, IMemoryCache cache, IRealFileRepository fileRepository, IFileRepository fileDbRepository)
+            IMapper mapper, IMemoryCache cache, IRealFileRepository fileRepository, IFileRepository fileDbRepository,
+            ILogService logService, IPermissionsService permissionService)
         {
             _orderRepository = orderRepository;
             _mapper = mapper;
             _cache = cache;
             _fileRepository = fileRepository;
             _fileDbRepository = fileDbRepository;
+            _logService = logService;
+            _permissionService = permissionService;
         }
 
 
@@ -40,17 +45,25 @@ namespace DocumentExplorer.Infrastructure.Services
             var order = new Order(number, clientCountry, clientIdentificationNumber, brokerCountry,
                 brokerIdentificationNumber, owner1Name, new DateTime());
             await _orderRepository.AddAsync(order);
+            await _logService.AddLogAsync($"Dodano nowe zlecenie.",order,owner1Name);
             _cache.Set(cacheId,order.Id,TimeSpan.FromSeconds(5));
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id, string role, string username)
         {
+            if(!(role == Roles.User || role == Roles.Admin)) throw new UnauthorizedAccessException();
             var order = await _orderRepository.GetOrFailAsync(id);
+            var files = await _fileDbRepository.GetFilesContainingPath(order.GetPathToFolder());
+            foreach(var file in files)
+            {
+                await _fileRepository.RemoveAsync(file.Path);
+            }
             await _orderRepository.RemoveAsync(order);
+            await _logService.AddLogAsync($"Usunięto zlecenie.",order,username);
         }
 
         public async Task EditOrderAsync(Guid id, int number, string clientCountry, string clientIdentificationNumber, 
-            string brokerCountry, string brokerIdentificationNumber)
+            string brokerCountry, string brokerIdentificationNumber, string username)
         {
             var order = await _orderRepository.GetOrFailAsync(id);
             var oldFolderName = order.GetPathToFolder();
@@ -80,6 +93,7 @@ namespace DocumentExplorer.Infrastructure.Services
             var newFolderName = order.GetPathToFolder();
             await _fileRepository.UpdateFileNames(filePaths, newFilesPath);
             await _orderRepository.UpdateAsync(order);
+            await _logService.AddLogAsync("Edytowano dane zlecenia.", order, username);
         }
 
         public async Task<IEnumerable<OrderDto>> GetAllAsync()
@@ -102,11 +116,13 @@ namespace DocumentExplorer.Infrastructure.Services
             return _mapper.Map<ExtendedOrderDto>(order);
         }
 
-        public async Task SetRequirementsAsync(Guid id, string fileType, bool isRequired)
+        public async Task SetRequirementsAsync(Guid id, string fileType, bool isRequired, string username, string role)
         {
+            await _permissionService.Validate(fileType,role);
             var order = await _orderRepository.GetOrFailAsync(id);
             order.SetRequirements(fileType,isRequired);
             await _orderRepository.UpdateAsync(order);
+            await _logService.AddLogAsync($"Zmieniono wymagania dla plik {fileType} na {isRequired}.", order, username);
         }
     }
 }

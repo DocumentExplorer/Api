@@ -40,7 +40,6 @@ namespace DocumentExplorer.Api.Controllers
         public async Task<IActionResult> PutIntoLocationAsync([FromBody]PutIntoLocation command, Guid uploadId)
         {
             command.UploadId = uploadId;
-            command.Role = Role;
             var order = await _orderService.GetAsync(command.OrderId);
             if(!IsAuthorizedPlusComplementer(order.Owner1Name))
             {
@@ -60,7 +59,7 @@ namespace DocumentExplorer.Api.Controllers
             {
                 return StatusCode(403);
             }
-            await _fileService.DeleteFileAsync(uploadId, Role);
+            await _fileService.DeleteFileAsync(uploadId, Role, Username);
             return NoContent();
         }
 

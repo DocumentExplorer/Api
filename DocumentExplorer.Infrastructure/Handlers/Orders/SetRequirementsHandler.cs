@@ -17,7 +17,7 @@ namespace DocumentExplorer.Infrastructure.Handlers.Orders
         }
         public async Task HandleAsync(SetRequirements command)
             => await _handler
-            .Run(async ()=> await _orderService.SetRequirementsAsync(command.OrderId,command.FileType,command.IsRequired) )
+            .Run(async ()=> await _orderService.SetRequirementsAsync(command.OrderId,command.FileType,command.IsRequired, command.Username, command.Role))
             .OnCustomError(x=> throw new ServiceException(x.Code), true)
             .ExecuteAsync();
     }

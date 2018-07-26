@@ -14,9 +14,9 @@ namespace DocumentExplorer.Infrastructure.Services
         Task<IEnumerable<OrderDto>> GetAllAsync();
         Task<IEnumerable<OrderDto>> GetAllByUserAsync(string username);
         Task<ExtendedOrderDto> GetAsync(Guid id);
-        Task DeleteAsync(Guid id);
+        Task DeleteAsync(Guid id, string role, string username);
         Task EditOrderAsync(Guid id, int number, string clientCountry, string clientIdentificationNumber, 
-            string brokerCountry, string brokerIdentificationNumber);
-        Task SetRequirementsAsync(Guid id, string fileType, bool isRequired);
+            string brokerCountry, string brokerIdentificationNumber, string username);
+        Task SetRequirementsAsync(Guid id, string fileType, bool isRequired, string username, string role);
     }
 }

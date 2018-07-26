@@ -23,7 +23,6 @@ namespace DocumentExplorer.Api.Controllers
         public async Task<IActionResult> AddAsync([FromBody]AddOrder command)
         {
             command.CacheId = Guid.NewGuid();
-            command.Role = Role;
             await DispatchAsync(command);
             return Created($"orders/{Cache.Get(command.CacheId)}", null);
         }
@@ -61,7 +60,7 @@ namespace DocumentExplorer.Api.Controllers
             {
                 return StatusCode(403);
             }
-            await _orderService.DeleteAsync(id);
+            await _orderService.DeleteAsync(id, Role, Username);
             return NoContent();
         }
 

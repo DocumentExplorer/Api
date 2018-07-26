@@ -56,6 +56,7 @@ namespace DocumentExplorer.Api
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IPermissionsService, PermissionsService>();
+            services.AddScoped<ILogService, LogService>();
             services.AddScoped<IHandler, Handler>();
             services.AddScoped<IEncrypter,Encrypter>();
             services.AddMemoryCache();

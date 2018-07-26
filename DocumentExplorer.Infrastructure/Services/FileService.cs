@@ -19,22 +19,26 @@ namespace DocumentExplorer.Infrastructure.Services
         private readonly IRealFileRepository _realFileRepository;
         private readonly IPermissionsService _permissionService;
         private readonly IMapper _mapper;
+        private readonly ILogService _logService;
         public FileService(IFileRepository fileRepository, IOrderRepository orderRepository, 
-            IRealFileRepository realFileRepository, IMapper mapper, IPermissionsService permissionService)
+            IRealFileRepository realFileRepository, IMapper mapper, IPermissionsService permissionService,
+            ILogService logService)
         {
             _fileRepository = fileRepository;
             _orderRepository = orderRepository;
             _realFileRepository = realFileRepository;
             _mapper = mapper;
             _permissionService = permissionService;
+            _logService = logService;
         }
 
-        public async Task DeleteFileAsync(Guid id, string role)
+        public async Task DeleteFileAsync(Guid id, string role, string username)
         {
             var file = await _fileRepository.GetOrFailAsync(id);
             await _permissionService.Validate(file.FileType, role);
             var order = await _orderRepository.GetOrFailAsync(file.OrderId);
             await _realFileRepository.RemoveAsync(file.Path);
+            await _logService.AddLogAsync($"Usunięto plik: {Path.GetFileName(file.Path)}", order, username);
             await _fileRepository.RemoveAsync(file);
             order.UnlinkFile(file.FileType);
             await _orderRepository.UpdateAsync(order);
@@ -58,7 +62,7 @@ namespace DocumentExplorer.Infrastructure.Services
             return await _realFileRepository.GetOrFailAsync(file.Path);
         }
 
-        public async Task PutIntoLocationAsync(Guid uploadId, Guid orderId, string fileType, int invoiceNumber, string role)
+        public async Task PutIntoLocationAsync(Guid uploadId, Guid orderId, string fileType, int invoiceNumber, string role, string username)
         {
             await _permissionService.Validate(fileType, role);
             var file = await _fileRepository.GetOrFailAsync(uploadId);
@@ -69,6 +73,7 @@ namespace DocumentExplorer.Infrastructure.Services
             var destination = order.GetPathToFile(fileType);
             await _realFileRepository.AddAsync(file.Path, destination);
             file.Path = destination;
+            await _logService.AddLogAsync($"Dodano plik: {Path.GetFileName(file.Path)}", order, username);
             await _orderRepository.UpdateAsync(order);
             await _fileRepository.UpdateAsync(file);
         }

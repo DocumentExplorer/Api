@@ -48,6 +48,7 @@ namespace DocumentExplorer.Api.Controllers
             if (command is IAuthenticatedCommand authenticatedCommand)
             {
                 authenticatedCommand.Username = Username;
+                authenticatedCommand.Role = Role;
             }
             await CommandDispatcher.DispatchAsync(command);
         }

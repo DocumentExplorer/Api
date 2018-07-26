@@ -60,5 +60,15 @@ namespace DocumentExplorer.Infrastructure.Extensions
             }
             return file;
         }
+
+        public static async Task<Log> GetOrFailAsync(this ILogRepository logRepository, Guid id)
+        {
+            var log = await logRepository.GetAsync(id);
+            if(log == null)
+            {
+                throw new ServiceException(Exceptions.ErrorCodes.LogNotFound);
+            }
+            return log;
+        }
     }
 }

@@ -2,7 +2,7 @@ using System;
 
 namespace DocumentExplorer.Infrastructure.Commands.Orders
 {
-    public class EditOrder : ICommand
+    public class EditOrder : AuthenticatedCommandBase, ICommand
     {
         public Guid Id { get; set; }
         public int Number { get; set; }

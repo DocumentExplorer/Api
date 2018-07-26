@@ -16,6 +16,7 @@ namespace DocumentExplorer.Infrastructure.Mappers
                 cfg.CreateMap<File,FileDto>();
                 cfg.CreateMap<Order, ExtendedOrderDto>();
                 cfg.CreateMap<Permissions,PermissionsDto>();
+                cfg.CreateMap<Log,LogDto>();
             })
             .CreateMapper();
     }
