@@ -16,5 +16,6 @@ namespace DocumentExplorer.Infrastructure.Services
         Task DeleteFileAsync(Guid id, string role, string username);
         Task<MemoryStream> GetFileStreamAsync(Guid id);
         Task<IEnumerable<FileDto>> GetAllFilesAsync();
+        Task GenerateAsync();
     }
 }

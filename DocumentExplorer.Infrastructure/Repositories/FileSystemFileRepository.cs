@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -18,6 +19,15 @@ namespace DocumentExplorer.Infrastructure.Repositories
 
         public async Task<MemoryStream> GetAsync(string source)
             => await _context.GetFileStream(source);
+
+        public async Task<IEnumerable<string>> GetDirectoriesAsync(string path)
+            => await _context.GetDirectoriesAsync(path);
+
+        public async Task<DateTime> GetDirectoryCreationDateAsync(string path)
+            => await _context.GetDirectoryCreationDateAsync(path);
+
+        public async Task<IEnumerable<string>> GetFilesPathsAsync(string path)
+            => await _context.GetFilesPathsAsync(path);
 
         public async Task RemoveAsync(string path)
             => await _context.DeleteFile(path);

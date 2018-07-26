@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -12,5 +13,8 @@ namespace DocumentExplorer.Core.Repositories
         Task RemoveAsync(string path);
         Task UpdateFileNames(IEnumerable<string> from,IEnumerable<string> to);
         Task RemoveDirectoryIfExists(string path);
+        Task<IEnumerable<string>> GetDirectoriesAsync(string path);
+        Task<DateTime> GetDirectoryCreationDateAsync(string path);
+        Task<IEnumerable<string>> GetFilesPathsAsync(string path);
     }
 }

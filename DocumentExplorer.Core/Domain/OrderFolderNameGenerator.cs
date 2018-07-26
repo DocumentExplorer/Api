@@ -11,26 +11,14 @@ namespace DocumentExplorer.Core.Domain
         {
             var tab = order.Split("/");
             var creationDate = GetCreationDate(tab[0], tab[1]);
-            tab = tab[3].Split("_");
+            tab = tab[2].Split("_");
             var orderNumber = GetOrderNumber(tab[0]);
             var clientCountry = GetClientCountry(tab[1]);
             var clientIdentificationNumber = GetClientIdentificationNumber(tab[1]);
             var brokerCountry = GetBrokerCountry(tab[2]);
             var brokerIdentificationNumber = GetBrokerIdentificationNumber(tab[2]);
 
-            int invoiceNumber = 0;
-
-            for(int i = 4; i<tab.Length; i++)
-            {
-                switch(tab[i].Length)
-                {
-                    case 7:
-                        invoiceNumber = GetInvoiceNumber(tab[i]);
-                        break;
-                }
-            }
-
-            return new Order(orderNumber, clientCountry, clientIdentificationNumber, brokerCountry, brokerIdentificationNumber, tab[3], creationDate,order,invoiceNumber);
+            return new Order(orderNumber, clientCountry, clientIdentificationNumber, brokerCountry, brokerIdentificationNumber, tab[3], creationDate,order);
         }
 
         private static int GetInvoiceNumber(string tabElement)
@@ -44,7 +32,7 @@ namespace DocumentExplorer.Core.Domain
 
         private static string GetBrokerIdentificationNumber(string brokerString)
         {
-            var withoutBegining = brokerString.Replace("k", string.Empty);
+            var withoutBegining = brokerString.Replace("p", string.Empty);
             return withoutBegining.Replace(GetBrokerCountry(brokerString), string.Empty);
         }
 

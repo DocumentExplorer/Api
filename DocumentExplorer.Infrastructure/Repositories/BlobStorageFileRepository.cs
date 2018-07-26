@@ -2,6 +2,7 @@
 using DocumentExplorer.Core.Repositories;
 using DocumentExplorer.Infrastructure.BlobStorage;
 using DocumentExplorer.Infrastructure.Services;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -24,6 +25,24 @@ namespace DocumentExplorer.Infrastructure.Repositories
 
         public async Task<MemoryStream> GetAsync(string source)
             => await _blobStorageContext.DownloadAsync(source);
+
+        public async Task<IEnumerable<string>> GetDirectoriesAsync(string path)
+        {
+            await Task.CompletedTask;
+            return new List<string>();
+        }
+
+        public async Task<DateTime> GetDirectoryCreationDateAsync(string path)
+        {
+            await Task.CompletedTask;
+            return DateTime.UtcNow;
+        }
+
+        public async Task<IEnumerable<string>> GetFilesPathsAsync(string path)
+        {
+            await Task.CompletedTask;
+            return new List<string>();
+        }
 
         public async Task RemoveAsync(string path)
             => await _blobStorageContext.DeleteAsync(path);

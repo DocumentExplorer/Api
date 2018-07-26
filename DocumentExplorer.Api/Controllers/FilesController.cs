@@ -93,5 +93,13 @@ namespace DocumentExplorer.Api.Controllers
             return Json(files);
         }
 
+        [Authorize("admin")]
+        [HttpGet("generate")]
+        public async Task<IActionResult> GenerateAsync()
+        {
+            await _fileService.GenerateAsync();
+            return NoContent();
+        } 
+
     }
 }

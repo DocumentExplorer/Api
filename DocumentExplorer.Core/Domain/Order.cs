@@ -27,9 +27,9 @@ namespace DocumentExplorer.Core.Domain
 
         public int InvoiceNumber { get; set; }
         public Guid CMRId {get; private set;}
-        public bool IsCMRRequired { get; set;}
+        public bool IsCMRRequired { get; private set;}
         public Guid FVKId {get; private set;}
-        public bool IsFVKRequired { get; set;}
+        public bool IsFVKRequired { get; private set;}
         public Guid FVPId {get; private set;}
         public bool IsFVPRequired { get; private set;}
         public Guid NIPId {get; private set;}

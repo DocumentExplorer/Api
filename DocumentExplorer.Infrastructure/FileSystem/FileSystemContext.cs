@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -63,6 +64,29 @@ namespace DocumentExplorer.Infrastructure.FileSystem
                 Directory.Delete(path);
             }
             await Task.CompletedTask;
+        }
+
+        public async Task<IEnumerable<string>> GetDirectoriesAsync(string path)
+        {
+            path = ConnectWithRootPath(path);
+            var array = Directory.GetDirectories(path);
+            await Task.CompletedTask;
+            return array.Cast<string>();
+        }
+
+        public async Task<IEnumerable<string>> GetFilesPathsAsync(string path)
+        {
+            path = ConnectWithRootPath(path);
+            var array = Directory.GetFiles(path);
+            await Task.CompletedTask;
+            return array.Cast<string>();
+        }
+
+        public async Task<DateTime> GetDirectoryCreationDateAsync(string path)
+        {
+            path = ConnectWithRootPath(path);
+            await Task.CompletedTask;
+            return Directory.GetCreationTimeUtc(path);
         }
 
         private string ConnectWithRootPath(string path)

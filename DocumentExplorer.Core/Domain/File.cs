@@ -4,11 +4,12 @@ namespace DocumentExplorer.Core.Domain
 {
     public class File
     {
-        public File(Guid id, string path, Guid orderId)
+        public File(Guid id, string path, Guid orderId, string fileType=null)
         {
             Id = id;
             Path = path;
             OrderId = orderId;
+            SetFileType(fileType);
         }
 
         protected File()
@@ -30,6 +31,8 @@ namespace DocumentExplorer.Core.Domain
             bool isCorrect = false;
             switch(fileType)
             {
+                case null:
+                    return;
                 case "cmr":
                     isCorrect = true;
                     break;
