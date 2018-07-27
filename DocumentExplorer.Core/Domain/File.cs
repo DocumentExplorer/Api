@@ -28,38 +28,15 @@ namespace DocumentExplorer.Core.Domain
 
         public void SetFileType(string fileType)
         {
+            if(fileType == null) return;
             bool isCorrect = false;
-            switch(fileType)
+            var properties = typeof(FileTypes).GetProperties();
+            foreach(var property in properties)
             {
-                case null:
-                    return;
-                case "cmr":
+                if(property.Name.ToLower()==fileType)
+                {
                     isCorrect = true;
-                    break;
-                case "fvk":
-                    isCorrect = true;
-                    break;
-                case "fvp":
-                    isCorrect = true;
-                    break;
-                case "nip":
-                    isCorrect = true;
-                    break;
-                case "nota":
-                    isCorrect = true;
-                    break;
-                case "pp":
-                    isCorrect = true;
-                    break;
-                case "rk":
-                    isCorrect = true;
-                    break;
-                case "zk":
-                    isCorrect = true;
-                    break;
-                case "zp":
-                    isCorrect = true;
-                    break;
+                }
             }
             if(!isCorrect) throw new DomainException(ErrorCodes.InvalidFileType);
             FileType = fileType;
