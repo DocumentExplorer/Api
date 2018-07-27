@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace DocumentExplorer.Core.Domain
@@ -68,56 +69,33 @@ namespace DocumentExplorer.Core.Domain
 
         public void SetRequirements(string fileType, bool isRequired)
         {
-            switch(fileType)
+            var properties = typeof(FileTypes).GetProperties();
+            foreach(var property in properties)
             {
-                case "cmr":
-                    if((!isRequired) && (CMRId!=Guid.Empty)) 
+                if(property.Name.ToLower()==fileType)
+                {
+                    if((!isRequired) && FileIsAlreadyAssigned(property.Name))
                         throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
-                    IsCMRRequired = isRequired;
-                    break;
-                case "fvk":
-                    if((!isRequired) && (FVKId!=Guid.Empty)) 
-                        throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
-                    IsFVKRequired = isRequired;
-                    break;
-                case "fvp":
-                    if((!isRequired) && (FVPId!=Guid.Empty)) 
-                        throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
-                    IsFVPRequired = isRequired;
-                    break;
-                case "nip":
-                    if((!isRequired) && (NIPId!=Guid.Empty)) 
-                        throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
-                    IsNIPRequired = isRequired;
-                    break;
-                case "nota":
-                    if((!isRequired) && (NotaId!=Guid.Empty)) 
-                        throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
-                    IsNotaRequired = isRequired;
-                    break;
-                case "pp":
-                    if((!isRequired) && (PPId!=Guid.Empty)) 
-                        throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
-                    IsPPRequired = isRequired;
-                    break;
-                case "rk":
-                    if((!isRequired) && (RKId!=Guid.Empty)) 
-                        throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
-                    IsRKRequired = isRequired;
-                    break;
-                case "zk":
-                    if((!isRequired) && (ZKId!=Guid.Empty)) 
-                        throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
-                    IsZKRequired = isRequired;
-                    break;
-                case "zp":
-                    if((!isRequired) && (ZPId!=Guid.Empty)) 
-                        throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
-                    IsZPRequired = isRequired;
-                    break;
-                default:
-                    throw new DomainException(ErrorCodes.InvalidFileType);
+                    GetIsFileRequiredProperty(property.Name).SetValue(this, isRequired);
+                    return;
+                }
             }
+            throw new DomainException(ErrorCodes.InvalidFileType);
+        }
+
+        private PropertyInfo GetIsFileRequiredProperty(string propertyName)
+        {
+            return typeof(Order).GetProperty($"Is{propertyName}Required");
+        }
+
+        private bool FileIsAlreadyAssigned(string propertyName)
+        {
+            var valueOfProperty = typeof(Order).GetProperty($"{propertyName}Id").GetValue(this, null);
+            if(valueOfProperty is Guid fileId)
+            {
+                return fileId != Guid.Empty;
+            }
+            else throw new InvalidCastException();
         }
 
         private void SetDefaultRequirements()
@@ -135,48 +113,18 @@ namespace DocumentExplorer.Core.Domain
 
         public string GetPathToFile(string fileType)
         {
-            switch(fileType)
+            var properties = typeof(FileTypes).GetProperties();
+            foreach(var property in properties)
             {
-                case "cmr":
-                    if(CMRId == Guid.Empty) throw new DomainException(ErrorCodes.FileDoesNotExists);
-                    fileType = $"{fileType}{AddLeadingZeros(Number)}";
-                    break;
-                case "fvk":
-                    if(FVKId == Guid.Empty) throw new DomainException(ErrorCodes.FileDoesNotExists);
-                    fileType = $"{fileType}{AddLeadingZeros(InvoiceNumber)}";
-                    break;
-                case "fvp":
-                    if(FVPId == Guid.Empty) throw new DomainException(ErrorCodes.FileDoesNotExists);
-                    fileType = $"{fileType}{AddLeadingZeros(Number)}";
-                    break;
-                case "nip":
-                    if(NIPId == Guid.Empty) throw new DomainException(ErrorCodes.FileDoesNotExists);
-                    fileType = $"{fileType}{AddLeadingZeros(Number)}";
-                    break;
-                case "nota":
-                    if(NotaId == Guid.Empty) throw new DomainException(ErrorCodes.FileDoesNotExists);
-                    fileType = $"{fileType}{AddLeadingZeros(Number)}";
-                    break;
-                case "pp":
-                    if(PPId == Guid.Empty) throw new DomainException(ErrorCodes.FileDoesNotExists);
-                    fileType = $"{fileType}{AddLeadingZeros(Number)}";
-                    break;
-                case "rk":
-                    if(RKId == Guid.Empty) throw new DomainException(ErrorCodes.FileDoesNotExists);
-                    fileType = $"{fileType}{AddLeadingZeros(Number)}";
-                    break;
-                case "zk":
-                    if(ZKId == Guid.Empty) throw new DomainException(ErrorCodes.FileDoesNotExists);
-                    fileType = $"{fileType}{AddLeadingZeros(Number)}";
-                    break;
-                case "zp":
-                    if(ZPId == Guid.Empty) throw new DomainException(ErrorCodes.FileDoesNotExists);
-                    fileType = $"{fileType}{AddLeadingZeros(Number)}";
-                    break;
-                default:
-                    throw new DomainException(ErrorCodes.FileTypeNotSpecified);
+                if(!FileIsAlreadyAssigned(property.Name))
+                    throw new DomainException(ErrorCodes.FileDoesNotExists);
+                int number;
+                if(fileType==FileTypes.FVK) number = InvoiceNumber;
+                else number = Number;
+                fileType = $"{fileType}{AddLeadingZeros(Number)}";
+                return $"{GetPathToFolder()}{fileType}.pdf";
             }
-            return $"{GetPathToFolder()}{fileType}.pdf";
+            throw new DomainException(ErrorCodes.InvalidFileType);
         }
 
         public void LinkFile(File file, string fileType, int invoiceNumber)
