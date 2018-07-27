@@ -168,39 +168,15 @@ namespace DocumentExplorer.Core.Domain
 
         public void UnlinkFile(string fileType)
         {
-            switch(fileType)
+            var properties = typeof(FileTypes).GetProperties();
+            foreach(var property in properties)
             {
-                case "cmr":
-                    CMRId = Guid.Empty;
-                    break;
-                case "fvk":
-                    CMRId = Guid.Empty;
-                    InvoiceNumber = 0;
-                    break;
-                case "fvp":
-                    FVPId = Guid.Empty;
-                    break;
-                case "nip":
-                    NIPId = Guid.Empty;
-                    break;
-                case "nota":
-                    NotaId = Guid.Empty;
-                    break;
-                case "pp":
-                    PPId = Guid.Empty;
-                    break;
-                case "rk":
-                    RKId = Guid.Empty;
-                    break;
-                case "zk":
-                    ZKId = Guid.Empty;
-                    break;
-                case "zp":
-                    ZPId = Guid.Empty;
-                    break;
-                default:
-                    throw new DomainException(ErrorCodes.InvalidFileType);
+                if(property.Name.ToLower()==fileType)
+                {
+                    GetFileIdProperty(property.Name).SetValue(this, Guid.Empty);
+                }
             }
+            throw new DomainException(ErrorCodes.InvalidFileType);
         }
 
         public string GetPathToFolder()
