@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using NodaTime;
 
 namespace DocumentExplorer.Core.Domain
 {
@@ -18,9 +19,9 @@ namespace DocumentExplorer.Core.Domain
         {
             get
             {
-                //var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
-                //DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc(CreationDate, timeZoneInfo);
-                return CreationDate.ToString(@"dd.MM.yyyy HH:mm:ss");
+                var timeZone = DateTimeZoneProviders.Tzdb["Europe/Warsaw"];
+                var instant = Instant.FromDateTimeUtc(DateTime.SpecifyKind(CreationDate, DateTimeKind.Utc));
+                return instant.InZone(timeZone).ToDateTimeUnspecified().ToString(@"dd.MM.yyyy HH:mm:ss");
             }
         }
 

@@ -1,4 +1,5 @@
 using System;
+using NodaTime;
 
 namespace DocumentExplorer.Core.Domain
 {
@@ -11,9 +12,9 @@ namespace DocumentExplorer.Core.Domain
         {
             get
             {
-                //var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
-                //DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc(Date, timeZoneInfo);
-                return Date.ToString(@"dd.MM.yyyy HH:mm:ss");
+                var timeZone = DateTimeZoneProviders.Tzdb["Europe/Warsaw"];
+                var instant = Instant.FromDateTimeUtc(DateTime.SpecifyKind(Date, DateTimeKind.Utc));
+                return instant.InZone(timeZone).ToDateTimeUnspecified().ToString(@"dd.MM.yyyy HH:mm:ss");
             }
         }
         public Guid OrderId { get; private set; }
