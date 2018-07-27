@@ -19,9 +19,9 @@ namespace DocumentExplorer.Infrastructure.Services
             _logRepository = logRepository;
             _mapper = mapper;
         }
-        public async Task AddLogAsync(string @event, Order order, string username)
+        public async Task AddLogAsync(string @event, Order order, string username, DateTime date=default(DateTime))
         {
-            var log = new Log(@event, order, username);
+            var log = new Log(@event, order, username, date);
             await _logRepository.AddAsync(log);
         }
 

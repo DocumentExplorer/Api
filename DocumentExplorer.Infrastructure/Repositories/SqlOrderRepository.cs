@@ -24,10 +24,10 @@ namespace DocumentExplorer.Infrastructure.Repositories
         }
 
         public async Task<IEnumerable<Order>> GetAllAsync()
-            => await _context.Orders.ToListAsync();
+            => await _context.Orders.OrderBy(x=> x.CreationDate).ToListAsync();
 
         public async Task<IEnumerable<Order>> GetAllByUser(string username)
-            => await _context.Orders.Where(x => x.Owner1Name==username).ToListAsync();
+            => await _context.Orders.Where(x => x.Owner1Name==username).OrderBy(x=> x.CreationDate).ToListAsync();
 
         public async Task<Order> GetAsync(Guid id)
             => await _context.Orders.SingleOrDefaultAsync(x=> x.Id == id);

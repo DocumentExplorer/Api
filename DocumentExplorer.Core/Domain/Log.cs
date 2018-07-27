@@ -26,11 +26,14 @@ namespace DocumentExplorer.Core.Domain
         public string Username { get; private set; }
         public int InvoiceNumber { get; private set; }
         
-        public Log(string @event, Order order, string username)
+        public Log(string @event, Order order, string username, DateTime date)
         {
             Id = Guid.NewGuid();
             Event = @event;
-            Date = DateTime.UtcNow;
+            if(date==default(DateTime))
+                Date = DateTime.UtcNow;
+            else
+                Date = date;
             OrderId = order.Id;
             Number = order.Number;
             ClientCountry = order.ClientCountry;

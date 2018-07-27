@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DocumentExplorer.Core.Domain;
 using DocumentExplorer.Core.Repositories;
@@ -24,7 +25,7 @@ namespace DocumentExplorer.Infrastructure.Repositories
         }
 
         public async Task<IEnumerable<Log>> GetAllAsync()
-            => await _context.Logs.ToListAsync();
+            => await _context.Logs.OrderBy(x => x.Date).ToListAsync();
 
         public async Task<Log> GetAsync(Guid id)
             => await _context.Logs.SingleOrDefaultAsync(x => x.Id == id);

@@ -74,6 +74,7 @@ namespace DocumentExplorer.Infrastructure.Services
                                                                 directoryCreationDate.Hour,
                                                                 directoryCreationDate.Minute,
                                                                 directoryCreationDate.Second);
+                        var secondOwner = order.Substring(order.Length - 4);
                         var filesPaths = await _realFileRepository
                             .GetFilesPathsAsync($"{Path.GetFileName(year)}/{Path.GetFileName(month)}/{Path.GetFileName(order)}");
                         foreach(var filePath in filesPaths)
@@ -93,7 +94,52 @@ namespace DocumentExplorer.Infrastructure.Services
                                 $"{Path.GetFileName(year)}/{Path.GetFileName(month)}/{Path.GetFileName(order)}/{Path.GetFileName(filePath)}",
                                 orderObject.Id, alphaPart);
                             orderObject.LinkFile(file, file.FileType, invoiceNumber);
+                            var permissions = await _permissionService.GetPermissionsAsync();
+                            string fileAdder = "";
+                            switch(file.FileType)
+                            {
+                                case "cmr":
+                                    if(permissions.CMR=="user") fileAdder = orderObject.Owner1Name;
+                                    else fileAdder = secondOwner;
+                                    break;
+                                case "fvk":
+                                    if(permissions.FVK=="user") fileAdder = orderObject.Owner1Name;
+                                    else fileAdder = secondOwner;
+                                    break;
+                                case "fvp":
+                                    if(permissions.FVP=="user") fileAdder = orderObject.Owner1Name;
+                                    else fileAdder = secondOwner;
+                                    break;
+                                case "nip":
+                                    if(permissions.NIP=="user") fileAdder = orderObject.Owner1Name;
+                                    else fileAdder = secondOwner;
+                                    break;
+                                case "nota":
+                                    if(permissions.Nota=="user") fileAdder = orderObject.Owner1Name;
+                                    else fileAdder = secondOwner;
+                                    break;
+                                case "pp":
+                                    if(permissions.PP=="user") fileAdder = orderObject.Owner1Name;
+                                    else fileAdder = secondOwner;
+                                    break;
+                                case "rk":
+                                    if(permissions.RK=="user") fileAdder = orderObject.Owner1Name;
+                                    else fileAdder = secondOwner;
+                                    break;
+                                case "zk":
+                                    if(permissions.ZK=="user") fileAdder = orderObject.Owner1Name;
+                                    else fileAdder = secondOwner;
+                                    break;
+                                case "zp":
+                                    if(permissions.ZP=="user") fileAdder = orderObject.Owner1Name;
+                                    else fileAdder = secondOwner;
+                                    break;
+                            }
                             await _fileRepository.AddAsync(file);
+                            var fileCreatonDate = await _realFileRepository
+                                .GetFileCreationDateAsync($"{Path.GetFileName(year)}/{Path.GetFileName(month)}/{Path.GetFileName(order)}/{Path.GetFileName(filePath)}");
+                            await _logService.AddLogAsync($"Dodano plik: {Path.GetFileName(file.Path)}",
+                            orderObject,fileAdder,fileCreatonDate);
                             Logger.Log(NLog.LogLevel.Info, file.Path);
                         }
                         if(orderObject.CMRId==Guid.Empty) orderObject.SetRequirements("cmr", false);
@@ -106,9 +152,22 @@ namespace DocumentExplorer.Infrastructure.Services
                         if(orderObject.ZKId==Guid.Empty) orderObject.SetRequirements("zk", false);
                         if(orderObject.ZPId==Guid.Empty) orderObject.SetRequirements("zp", false);
                         await _orderRepository.AddAsync(orderObject);
+                        await _logService.AddLogAsync($"Dodano nowe zlecenie.",orderObject,orderObject.Owner1Name,orderObject.CreationDate);
                         if((await _userRepository.GetAsync(orderObject.Owner1Name))==null)
                         {
                             await _userService.RegisterAsync(orderObject.Owner1Name,"secret123",Roles.User);
+                        }
+                        if((await _userRepository.GetAsync(secondOwner))==null)
+                        {
+                            try
+                            {
+                                await _userService.RegisterAsync(secondOwner,"secret123",Roles.Complementer);
+                            }
+                            catch(Exception)
+                            {
+                                
+                            }
+                            
                         }
                     }
                 }

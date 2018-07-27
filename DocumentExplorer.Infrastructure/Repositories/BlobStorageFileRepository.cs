@@ -38,6 +38,12 @@ namespace DocumentExplorer.Infrastructure.Repositories
             return DateTime.UtcNow;
         }
 
+        public async Task<DateTime> GetFileCreationDateAsync(string path)
+        {
+            await Task.CompletedTask;
+            return DateTime.UtcNow;
+        }
+
         public async Task<IEnumerable<string>> GetFilesPathsAsync(string path)
         {
             await Task.CompletedTask;

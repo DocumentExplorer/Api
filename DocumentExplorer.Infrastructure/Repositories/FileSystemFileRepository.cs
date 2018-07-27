@@ -26,6 +26,9 @@ namespace DocumentExplorer.Infrastructure.Repositories
         public async Task<DateTime> GetDirectoryCreationDateAsync(string path)
             => await _context.GetDirectoryCreationDateAsync(path);
 
+        public async Task<DateTime> GetFileCreationDateAsync(string path)
+            => await _context.GetFileCreationDateAsync(path);
+
         public async Task<IEnumerable<string>> GetFilesPathsAsync(string path)
             => await _context.GetFilesPathsAsync(path);
 

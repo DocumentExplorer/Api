@@ -16,5 +16,6 @@ namespace DocumentExplorer.Core.Repositories
         Task<IEnumerable<string>> GetDirectoriesAsync(string path);
         Task<DateTime> GetDirectoryCreationDateAsync(string path);
         Task<IEnumerable<string>> GetFilesPathsAsync(string path);
+        Task<DateTime> GetFileCreationDateAsync(string path);
     }
 }

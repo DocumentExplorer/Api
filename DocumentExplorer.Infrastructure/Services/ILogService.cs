@@ -10,7 +10,7 @@ namespace DocumentExplorer.Infrastructure.Services
     {
         Task<IEnumerable<LogDto>> GetLogsAsync();
         Task<LogDto> GetLogAsync(Guid id);
-        Task AddLogAsync(string @event, Order order, string username);
+        Task AddLogAsync(string @event, Order order, string username, DateTime dateTime=default(DateTime));
         Task DeleteLogAsync(Guid id);
     }
 }

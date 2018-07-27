@@ -89,6 +89,13 @@ namespace DocumentExplorer.Infrastructure.FileSystem
             return Directory.GetCreationTimeUtc(path);
         }
 
+        public async Task<DateTime> GetFileCreationDateAsync(string path)
+        {
+            path = ConnectWithRootPath(path);
+            await Task.CompletedTask;
+            return File.GetCreationTimeUtc(path);
+        }
+
         private string ConnectWithRootPath(string path)
         {
             return $"{_fileSystemSettings.RootDirectoryPath}/{path}";
