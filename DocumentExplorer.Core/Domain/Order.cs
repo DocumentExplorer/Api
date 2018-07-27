@@ -89,7 +89,7 @@ namespace DocumentExplorer.Core.Domain
             return typeof(Order).GetProperty($"Is{propertyName}Required");
         }
 
-        private bool FileIsAlreadyAssigned(string propertyName)
+        public bool FileIsAlreadyAssigned(string propertyName)
         {
             var valueOfProperty = GetFileIdProperty(propertyName).GetValue(this, null);
             if(valueOfProperty is Guid fileId)

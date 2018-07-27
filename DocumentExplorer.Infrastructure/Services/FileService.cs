@@ -58,120 +58,166 @@ namespace DocumentExplorer.Infrastructure.Services
             var years = await _realFileRepository.GetDirectoriesAsync("");
             foreach(var year in years)
             {
-                var months = await _realFileRepository.GetDirectoriesAsync(Path.GetFileName(year));
-                foreach(var month in months)
-                {
-                    var orders = await _realFileRepository
-                        .GetDirectoriesAsync($"{Path.GetFileName(year)}/{Path.GetFileName(month)}");
-                    foreach(var order in orders)
-                    {
-                        var orderObject = OrderFolderNameGenerator.NameToOrder($"{Path.GetFileName(year)}/{Path.GetFileName(month)}/{Path.GetFileName(order)}");
-                        var directoryCreationDate = await _realFileRepository
-                            .GetDirectoryCreationDateAsync($"{Path.GetFileName(year)}/{Path.GetFileName(month)}/{Path.GetFileName(order)}");
-                        orderObject.CreationDate = new DateTime(orderObject.CreationDate.Year,
-                                                                orderObject.CreationDate.Month,
-                                                                directoryCreationDate.Day,
-                                                                directoryCreationDate.Hour,
-                                                                directoryCreationDate.Minute,
-                                                                directoryCreationDate.Second);
-                        var secondOwner = order.Substring(order.Length - 4);
-                        var filesPaths = await _realFileRepository
-                            .GetFilesPathsAsync($"{Path.GetFileName(year)}/{Path.GetFileName(month)}/{Path.GetFileName(order)}");
-                        foreach(var filePath in filesPaths)
-                        {
-                            var fileName = Path.GetFileNameWithoutExtension(filePath);
-                            Regex re = new Regex(@"([a-zA-Z]+)(\d+)");
-                            Match result = re.Match(fileName);
+                await GoThroughMonthsAsync(Path.GetFileName(year));
+            }
+        }
 
-                            int invoiceNumber = 0;
-                            string alphaPart = result.Groups[1].Value;
-                            string numberPart = result.Groups[2].Value;
-                            if(alphaPart=="fvk")
-                            {
-                                invoiceNumber = int.Parse(numberPart.TrimStart(new Char[] { '0' }));
-                            }
-                            var file = new Core.Domain.File(Guid.NewGuid(), 
-                                $"{Path.GetFileName(year)}/{Path.GetFileName(month)}/{Path.GetFileName(order)}/{Path.GetFileName(filePath)}",
-                                orderObject.Id, alphaPart);
-                            orderObject.LinkFile(file, file.FileType, invoiceNumber);
-                            var permissions = await _permissionService.GetPermissionsAsync();
-                            string fileAdder = "";
-                            switch(file.FileType)
-                            {
-                                case "cmr":
-                                    if(permissions.CMR=="user") fileAdder = orderObject.Owner1Name;
-                                    else fileAdder = secondOwner;
-                                    break;
-                                case "fvk":
-                                    if(permissions.FVK=="user") fileAdder = orderObject.Owner1Name;
-                                    else fileAdder = secondOwner;
-                                    break;
-                                case "fvp":
-                                    if(permissions.FVP=="user") fileAdder = orderObject.Owner1Name;
-                                    else fileAdder = secondOwner;
-                                    break;
-                                case "nip":
-                                    if(permissions.NIP=="user") fileAdder = orderObject.Owner1Name;
-                                    else fileAdder = secondOwner;
-                                    break;
-                                case "nota":
-                                    if(permissions.Nota=="user") fileAdder = orderObject.Owner1Name;
-                                    else fileAdder = secondOwner;
-                                    break;
-                                case "pp":
-                                    if(permissions.PP=="user") fileAdder = orderObject.Owner1Name;
-                                    else fileAdder = secondOwner;
-                                    break;
-                                case "rk":
-                                    if(permissions.RK=="user") fileAdder = orderObject.Owner1Name;
-                                    else fileAdder = secondOwner;
-                                    break;
-                                case "zk":
-                                    if(permissions.ZK=="user") fileAdder = orderObject.Owner1Name;
-                                    else fileAdder = secondOwner;
-                                    break;
-                                case "zp":
-                                    if(permissions.ZP=="user") fileAdder = orderObject.Owner1Name;
-                                    else fileAdder = secondOwner;
-                                    break;
-                            }
-                            await _fileRepository.AddAsync(file);
-                            var fileCreatonDate = await _realFileRepository
-                                .GetFileCreationDateAsync($"{Path.GetFileName(year)}/{Path.GetFileName(month)}/{Path.GetFileName(order)}/{Path.GetFileName(filePath)}");
-                            await _logService.AddLogAsync($"Dodano plik: {Path.GetFileName(file.Path)}",
-                            orderObject,fileAdder,fileCreatonDate);
-                            Logger.Log(NLog.LogLevel.Info, file.Path);
-                        }
-                        if(orderObject.CMRId==Guid.Empty) orderObject.SetRequirements("cmr", false);
-                        if(orderObject.FVKId==Guid.Empty) orderObject.SetRequirements("fvk", false);
-                        if(orderObject.FVPId==Guid.Empty) orderObject.SetRequirements("fvp", false);
-                        if(orderObject.NIPId==Guid.Empty) orderObject.SetRequirements("nip", false);
-                        if(orderObject.NotaId==Guid.Empty) orderObject.SetRequirements("nota", false);
-                        if(orderObject.PPId==Guid.Empty) orderObject.SetRequirements("pp", false);
-                        if(orderObject.RKId==Guid.Empty) orderObject.SetRequirements("rk", false);
-                        if(orderObject.ZKId==Guid.Empty) orderObject.SetRequirements("zk", false);
-                        if(orderObject.ZPId==Guid.Empty) orderObject.SetRequirements("zp", false);
-                        await _orderRepository.AddAsync(orderObject);
-                        await _logService.AddLogAsync($"Dodano nowe zlecenie.",orderObject,orderObject.Owner1Name,orderObject.CreationDate);
-                        if((await _userRepository.GetAsync(orderObject.Owner1Name))==null)
-                        {
-                            await _userService.RegisterAsync(orderObject.Owner1Name,"secret123",Roles.User);
-                        }
-                        if((await _userRepository.GetAsync(secondOwner))==null)
-                        {
-                            try
-                            {
-                                await _userService.RegisterAsync(secondOwner,"secret123",Roles.Complementer);
-                            }
-                            catch(Exception)
-                            {
-                                
-                            }
-                            
-                        }
+        private async Task GoThroughMonthsAsync(string yearPath)
+        {
+            var months = await _realFileRepository.GetDirectoriesAsync(yearPath);
+            foreach(var month in months)
+            {
+                await GoThroughOrdersAsync($"{yearPath}/{Path.GetFileName(month)}");
+            }
+        }
+
+        private async Task GoThroughOrdersAsync(string path)
+        {
+            var orders = await _realFileRepository.GetDirectoriesAsync(path);
+            foreach(var order in orders)
+            {
+                await GoThroughOrderAsync($"{path}/{Path.GetFileName(order)}");
+            }
+        }
+
+        private async Task GoThroughOrderAsync(string path)
+        {
+            var order = OrderFolderNameGenerator.NameToOrder(path);
+            order.CreationDate = await GenerateOrderCreationDateAsync(order, path);
+            var secondOwner = path.Substring(path.Length - 4);
+            order = await AddFilesAsync(order, path, secondOwner);
+            order = SetNotAddedFilesAsNotRequired(order);
+            await _orderRepository.AddAsync(order);
+            await _logService.AddLogAsync($"Dodano nowe zlecenie.",order,order.Owner1Name,order.CreationDate);
+            await AddOwnersAsync(order, secondOwner);
+        }
+
+        private async Task AddOwnersAsync(Order order, string secondOwner)
+        {
+            if((await _userRepository.GetAsync(order.Owner1Name))==null)
+            {
+                await _userService.RegisterAsync(order.Owner1Name,"secret123",Roles.User);
+            }
+            if((await _userRepository.GetAsync(secondOwner))==null)
+            {
+                try
+                {
+                    await _userService.RegisterAsync(secondOwner,"secret123",Roles.Complementer);
+                }
+                catch(Exception)
+                {
+                    
+                }
+            }
+        }
+
+        private Order SetNotAddedFilesAsNotRequired(Order order)
+        {  
+            var properties = typeof(FileTypes).GetProperties();
+            foreach(var property in properties)
+            {
+                if(!order.FileIsAlreadyAssigned(property.Name))
+                {
+                    order.SetRequirements(property.Name.ToLower(), false);
+                }
+            }
+
+            return order;
+        }
+
+        private async Task<Order> AddFilesAsync(Order order, string path, string secondOwner)
+        {
+            var filesPaths = await _realFileRepository.GetFilesPathsAsync(path);
+            foreach(var filePath in filesPaths)
+            {
+                order = await AddFileAsync(order, $"{path}/{Path.GetFileName(filePath)}", secondOwner);
+            }
+            return order;
+        }
+
+        private async Task<Order> AddFileAsync(Order order, string path, string secondOwner)
+        {
+            var file = GenerateFile(path, order);
+            int invoiceNumber = TryGetInvoiceNumber(path);
+            order.LinkFile(file, file.FileType, invoiceNumber);
+            await LogAddingFileAsync(file, order, secondOwner, path);
+            await _fileRepository.AddAsync(file);
+            return order;
+        }
+
+        private async Task LogAddingFileAsync(Core.Domain.File file, Order order, string secondOwner, string path)
+        {
+            var fileCreatonDate = await _realFileRepository.GetFileCreationDateAsync(path);
+            var fileAdder = await GetFileAdderAsync(file, order, secondOwner);
+            await _logService.AddLogAsync($"Dodano plik: {Path.GetFileName(file.Path)}",
+            order,fileAdder,fileCreatonDate);
+            Logger.Log(NLog.LogLevel.Info, file.Path);
+        }
+
+        private async Task<string> GetFileAdderAsync(Core.Domain.File file, Order order, string secondOwner)
+        {
+            var permissions = await _permissionService.GetPermissionsAsync();
+            var properties = typeof(FileTypes).GetProperties();
+            foreach(var property in properties)
+            {
+                if(property.Name.ToLower()==file.FileType)
+                {
+                    if(GetFilePermission(permissions, property.Name)=="user")
+                    {
+                        return order.Owner1Name;
+                    }
+                    else
+                    {
+                        return secondOwner;
                     }
                 }
             }
+            throw new ServiceException(Exceptions.ErrorCodes.InvalidFileType);
+        }
+
+        private string GetFilePermission(PermissionsDto permissions, string propertyName)
+        {
+            var propertyValueObject = typeof(PermissionsDto).GetProperty(propertyName).GetValue(permissions, null);
+            if(propertyValueObject is string filePermission)
+            {
+                return filePermission;
+            }
+            throw new InvalidCastException();
+        }
+        private Core.Domain.File GenerateFile(string path, Order order)
+        {
+            var fileName = GetDividedFileName(path);
+            return new Core.Domain.File(Guid.NewGuid(), path, order.Id, fileName[0]);
+        }
+
+        private int TryGetInvoiceNumber(string path)
+        {
+            var fileName = GetDividedFileName(path);
+            if(fileName[0]=="fvk")
+            {
+                return int.Parse(fileName[1].TrimStart(new Char[] { '0' }));
+            }
+            else return 0;
+        }
+
+        private string[] GetDividedFileName(string path)
+        {
+            var fileName = Path.GetFileNameWithoutExtension(path);
+            Regex re = new Regex(@"([a-zA-Z]+)(\d+)");
+            Match result = re.Match(fileName);
+            string alphaPart = result.Groups[1].Value;
+            string numberPart = result.Groups[2].Value;
+            var tab = new string[2];
+            tab[0] = alphaPart;
+            tab[1] = numberPart;
+            return tab;
+        }
+
+        private async Task<DateTime> GenerateOrderCreationDateAsync(Order order, string path)
+        {
+            var directoryCreationDate = await _realFileRepository.GetDirectoryCreationDateAsync(path);
+            return new DateTime(order.CreationDate.Year, order.CreationDate.Month, directoryCreationDate.Day, 
+                        directoryCreationDate.Hour, directoryCreationDate.Minute, directoryCreationDate.Second);
         }
 
         public async Task<IEnumerable<FileDto>> GetAllFilesAsync()
