@@ -50,6 +50,7 @@ namespace DocumentExplorer.Infrastructure.Services
             var hash = _encrypter.GetHash(password,salt);
             user = new User(username, hash, salt, role);
             await _userRepository.AddAsync(user);
+            
         }
 
         public async Task<UserDto> GetAsync(string username)

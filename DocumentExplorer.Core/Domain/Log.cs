@@ -41,5 +41,10 @@ namespace DocumentExplorer.Core.Domain
             Username = username;
             InvoiceNumber = order.InvoiceNumber;
         }
+
+        protected Log()
+        {
+            
+        }
     }
 }

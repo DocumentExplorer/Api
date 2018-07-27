@@ -20,6 +20,7 @@ using DocumentExplorer.Api.Framework;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using NLog.Web;
+using DocumentExplorer.Infrastructure.EF;
 
 namespace DocumentExplorer.Api
 {
@@ -78,17 +79,33 @@ namespace DocumentExplorer.Api
                     .AllowCredentials();
             }));
             services.AddMvc();
-            //services.AddEntityFrameworkSqlServer().AddEntityFrameworkInMemoryDatabase()
-            //    .AddDbContext<DocumentExplorerContext>();
-
+            if(ConfigurationRoot["general:Database"]=="SqlOrInMemory")
+            {
+                services.AddEntityFrameworkSqlServer().AddEntityFrameworkInMemoryDatabase()
+                .AddDbContext<DocumentExplorerContext>();
+            }
             var builder = new ContainerBuilder();
             builder.Populate(services);
+            if(ConfigurationRoot["general:Database"]=="SqlOrInMemory")
+            {
+                builder.RegisterModule<SqlModule>();
+            }
+            if(ConfigurationRoot["general:Database"]=="Mongo")
+            {
+                builder.RegisterModule<MongoModule>();
+            }
+            if(ConfigurationRoot["general:FileRepository"]=="FileSystem")
+            {
+                builder.RegisterModule<FileSystemModule>();
+            }
+            if(ConfigurationRoot["general:FileRepository"]=="BlobStorage")
+            {
+                builder.RegisterModule<BlobStorageModule>();
+            }
             builder.RegisterModule(new SettingsModule(ConfigurationRoot));
             builder.RegisterModule<CommandModule>();
-            //builder.RegisterModule<SqlModule>();
-            builder.RegisterModule<MongoModule>();
-            builder.RegisterModule<BlobStorageModule>();
-            //builder.RegisterModule<FileSystemModule>();
+            
+
             builder.RegisterType<Encrypter>().As<IEncrypter>().SingleInstance();
             builder.RegisterType<JwtHandler>().As<IJwtHandler>().SingleInstance();
             builder.RegisterType<DataInitializer>().As<IDataInitializer>().SingleInstance();

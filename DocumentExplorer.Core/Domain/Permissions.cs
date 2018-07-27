@@ -35,6 +35,11 @@ namespace DocumentExplorer.Core.Domain
             ZK = AssignRole(zk);
             ZP = AssignRole(zp);
         }
+
+        protected Permissions()
+        {
+            
+        }
         
         private string AssignRole(string role)
         {
