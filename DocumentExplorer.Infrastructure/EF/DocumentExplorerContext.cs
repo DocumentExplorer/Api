@@ -7,6 +7,10 @@ namespace DocumentExplorer.Infrastructure.EF
     {
         private readonly SqlSettings _sqlSettings;
         public DbSet<User> Users { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<Permissions> Permissions {get; set;}
+        public DbSet<Log> Logs {get; set;}
+        public DbSet<File> Files {get; set;}
         public DocumentExplorerContext(DbContextOptions<DocumentExplorerContext> options, 
             SqlSettings sqlSettings) : base(options)
         {
@@ -27,6 +31,15 @@ namespace DocumentExplorer.Infrastructure.EF
         {
             var userBuilder = modelBuilder.Entity<User>();
             userBuilder.HasKey(x => x.Id);
+            var orderBuilder = modelBuilder.Entity<Order>();
+            orderBuilder.HasKey(x => x.Id);
+            var permissionsBuilder = modelBuilder.Entity<Permissions>();
+            permissionsBuilder.HasKey(x => x.Id);
+            var logsBuilder = modelBuilder.Entity<Log>();
+            logsBuilder.HasKey(x=> x.Id);
+            var filesBuilder = modelBuilder.Entity<File>();
+            filesBuilder.HasKey(x=>x.Id);
+
         }
     }
 }
