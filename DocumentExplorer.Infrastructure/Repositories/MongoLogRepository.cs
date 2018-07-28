@@ -19,8 +19,6 @@ namespace DocumentExplorer.Infrastructure.Repositories
         public async Task AddAsync(Log log)
             => await Logs.InsertOneAsync(log);
 
-        public async Task<IEnumerable<Log>> GetAllAsync()
-            => await Logs.Find(_ => true).ToListAsync();
 
         public async Task<Log> GetAsync(Guid id)
             => await Logs.Find(x => x.Id==id).FirstOrDefaultAsync();
@@ -28,6 +26,10 @@ namespace DocumentExplorer.Infrastructure.Repositories
         public async Task RemoveAsync(Log log)
             => await Logs.DeleteOneAsync(x=> x.Id == log.Id);
 
+        public async Task<IEnumerable<Log>> GetAllAsync()
+            => await Logs.Find(_ => true).ToListAsync();
+
         private IMongoCollection<Log> Logs => _database.GetCollection<Log>("Logs");
+
     }
 }

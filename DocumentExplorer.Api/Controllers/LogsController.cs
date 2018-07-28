@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using DocumentExplorer.Infrastructure.Commands;
+using DocumentExplorer.Infrastructure.Commands.Logs;
 using DocumentExplorer.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,11 +19,13 @@ namespace DocumentExplorer.Api.Controllers
         }
 
         [Authorize("admin")]
-        [HttpGet]
-        public async Task<IActionResult> GetLogsAsync()
+        [HttpPost]
+        public async Task<IActionResult> GetLogsAsync([FromBody]SearchLogs command)
         {
-            var logs = await _logService.GetLogsAsync();
-            return Json(logs);
+            command.CacheId = Guid.NewGuid();
+            await DispatchAsync(command);
+            var result = Cache.Get(command.CacheId);
+            return Json(result);
         }
 
         [Authorize("admin")]

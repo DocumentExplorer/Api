@@ -25,7 +25,9 @@ namespace DocumentExplorer.Infrastructure.Repositories
         }
 
         public async Task<IEnumerable<Log>> GetAllAsync()
-            => await _context.Logs.OrderBy(x => x.Date).ToListAsync();
+        {
+            return await _context.Logs.OrderBy(x=> x.Date).ToListAsync();
+        }
 
         public async Task<Log> GetAsync(Guid id)
             => await _context.Logs.SingleOrDefaultAsync(x => x.Id == id);
