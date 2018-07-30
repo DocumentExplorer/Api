@@ -175,6 +175,7 @@ namespace DocumentExplorer.Core.Domain
                 if(property.Name.ToLower()==fileType)
                 {
                     GetFileIdProperty(property.Name).SetValue(this, Guid.Empty);
+                    if(fileType == FileTypes.FVK) InvoiceNumber = 0;
                     return;
                 }
             }
