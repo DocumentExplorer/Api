@@ -150,6 +150,8 @@ namespace DocumentExplorer.Core.Domain
         public void LinkFile(File file, string fileType, int invoiceNumber)
         {
             var properties = typeof(FileTypes).GetProperties();
+            if(fileType==FileTypes.FVK && invoiceNumber<=0) 
+                throw new DomainException(ErrorCodes.InvalidInvoiceNumber);
             foreach(var property in properties)
             {
                 if(property.Name.ToLower()==fileType)
