@@ -122,6 +122,8 @@ namespace DocumentExplorer.Infrastructure.Services
             var permissions = await _permissionService.GetPermissionsObjectAsync();
             var orders = await _orderRepository.GetAllAsync();
             if(role == Roles.User) orders = orders.Where(x=>x.Owner1Name==username);
+            var date = DateTime.UtcNow.AddDays(-14);
+            orders = orders.Where(x=>x.CreationDate<date);
             int lakingFilesInAllOrders = 0;
             var list = new List<LackingFilesDto>();
             foreach(var order in orders)
@@ -134,6 +136,7 @@ namespace DocumentExplorer.Infrastructure.Services
                         Count = lackingFiles,
                         OrderId = order.Id
                     };
+                    list.Add(lackingFilesDto);
                 }
                 lakingFilesInAllOrders += lackingFiles;
             }

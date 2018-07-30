@@ -45,7 +45,7 @@ namespace DocumentExplorer.Core.Domain
             foreach(var property in permissionsProperties)
             {
                 if(property.Name=="Id") continue;
-                if(GetPermissionValue(property)==role) list.Add(property.Name);
+                if(GetPermissionValue(property)==role || role==Roles.Admin) list.Add(property.Name);
             }
             return list;
         }

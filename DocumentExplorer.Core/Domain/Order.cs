@@ -262,7 +262,7 @@ namespace DocumentExplorer.Core.Domain
             var rolePermissions = permissions.GetPermissionsForRole(role);
             foreach(var perm in rolePermissions)
             {
-                if(IsFileRequired($"Is{perm}Required") && !FileIsAlreadyAssigned($"{perm}Id"))
+                if((IsFileRequired(perm) && (!FileIsAlreadyAssigned(perm))))
                 {
                     lackingFiles++;
                 }
