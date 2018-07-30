@@ -32,7 +32,11 @@ namespace DocumentExplorer.Api.Controllers
             command.File = file;
             command.Id = Guid.NewGuid();
             await DispatchAsync(command);
-            return Created($"files/{command.Id}", null);
+            var result = new
+            {
+                Location = $"files/{command.Id}"
+            };
+            return Json(result);
         }
 
         [Authorize]
