@@ -240,7 +240,6 @@ namespace DocumentExplorer.Infrastructure.Services
 
         public async Task PutIntoLocationAsync(Guid uploadId, Guid orderId, string fileType, int invoiceNumber, string role, string username)
         {
-            await _permissionService.Validate(fileType, role);
             var file = await _fileRepository.GetOrFailAsync(uploadId);
             var order = await _orderRepository.GetOrFailAsync(orderId);
             file.SetOrderId(order.Id);

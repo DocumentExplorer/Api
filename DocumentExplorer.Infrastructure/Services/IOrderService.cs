@@ -22,5 +22,6 @@ namespace DocumentExplorer.Infrastructure.Services
         Task SetRequirementsAsync(Guid id, string fileType, 
             bool isRequired, string username, string role);
         Task<LackingOrdersDto> GetLackingFilesAsync(string username, string role);
+        Task ValidatePermissionsToOrder(string username, string role, Guid orderId);
     }
 }

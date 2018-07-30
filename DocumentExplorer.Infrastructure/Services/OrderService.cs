@@ -157,5 +157,13 @@ namespace DocumentExplorer.Infrastructure.Services
             await _orderRepository.UpdateAsync(order);
             await _logService.AddLogAsync($"Zmieniono wymagania dla plik {fileType} na {isRequired}.", order, username);
         }
+
+        public async Task ValidatePermissionsToOrder(string username, string role, Guid orderId)
+        {
+            if(role==Roles.Admin || role == Roles.Complementer) return;
+            var order = await _orderRepository.GetAsync(orderId);
+            if(order.Owner1Name==username) return;
+            throw new UnauthorizedAccessException(); 
+        }
     }
 }

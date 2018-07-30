@@ -44,11 +44,6 @@ namespace DocumentExplorer.Api.Controllers
         public async Task<IActionResult> PutIntoLocationAsync([FromBody]PutIntoLocation command, Guid uploadId)
         {
             command.UploadId = uploadId;
-            var order = await _orderService.GetAsync(command.OrderId);
-            if(!IsAuthorizedPlusComplementer(order.Owner1Name))
-            {
-                return StatusCode(403);
-            }
             await DispatchAsync(command);
             return NoContent();
         }
