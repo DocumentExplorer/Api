@@ -175,6 +175,7 @@ namespace DocumentExplorer.Core.Domain
                 if(property.Name.ToLower()==fileType)
                 {
                     GetFileIdProperty(property.Name).SetValue(this, Guid.Empty);
+                    return;
                 }
             }
             throw new DomainException(ErrorCodes.InvalidFileType);
@@ -254,5 +255,20 @@ namespace DocumentExplorer.Core.Domain
                 throw new DomainException(ErrorCodes.InvalidUsername);
             return owner.ToLower();
         }
+
+        public int HasLackingFilesForRole(string role, Permissions permissions)
+        {
+            int lackingFiles = 0;
+            var rolePermissions = permissions.GetPermissionsForRole(role);
+            foreach(var perm in rolePermissions)
+            {
+                if(IsFileRequired($"Is{perm}Required") && !FileIsAlreadyAssigned($"{perm}Id"))
+                {
+                    lackingFiles++;
+                }
+            }
+            return lackingFiles;
+        }
+
     }
 }

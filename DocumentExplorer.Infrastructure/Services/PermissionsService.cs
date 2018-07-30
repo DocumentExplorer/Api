@@ -23,6 +23,9 @@ namespace DocumentExplorer.Infrastructure.Services
             return _mapper.Map<PermissionsDto>(permissions);
         }
 
+        public async Task<Permissions> GetPermissionsObjectAsync()
+            => await _permissionsRepository.GetAsync();
+
         public async Task IntializePermissions()
             => await _permissionsRepository.AddAsync(
                 new Permissions(Roles.User, Roles.User, Roles.User, Roles.User, Roles.User, Roles.User, Roles.User, Roles.User, Roles.User));

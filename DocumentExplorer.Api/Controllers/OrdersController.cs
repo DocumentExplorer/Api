@@ -88,5 +88,16 @@ namespace DocumentExplorer.Api.Controllers
             await DispatchAsync(command);
             return NoContent();
         }
+
+        [Authorize]
+        [HttpGet("lacks")]
+        public async Task<IActionResult> GetLackingFilesAsync()
+        {
+            var command = new GetLackingFiles();
+            command.LackingFilesId = Guid.NewGuid();
+            await DispatchAsync(command);
+            var result = Cache.Get(command.LackingFilesId);
+            return Json(result);
+        }
     }
 }

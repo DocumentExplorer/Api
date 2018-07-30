@@ -117,6 +117,35 @@ namespace DocumentExplorer.Infrastructure.Services
             return _mapper.Map<ExtendedOrderDto>(order);
         }
 
+        public async Task<LackingOrdersDto> GetLackingFilesAsync(string username, string role)
+        {
+            var permissions = await _permissionService.GetPermissionsObjectAsync();
+            var orders = await _orderRepository.GetAllAsync();
+            if(role == Roles.User) orders = orders.Where(x=>x.Owner1Name==username);
+            int lakingFilesInAllOrders = 0;
+            var list = new List<LackingFilesDto>();
+            foreach(var order in orders)
+            {
+                int lackingFiles = order.HasLackingFilesForRole(role,permissions);
+                if(lackingFiles>0)
+                {
+                    var lackingFilesDto = new LackingFilesDto
+                    {
+                        Count = lackingFiles,
+                        OrderId = order.Id
+                    };
+                }
+                lakingFilesInAllOrders += lackingFiles;
+            }
+
+            return new LackingOrdersDto
+            {
+                Count = lakingFilesInAllOrders,
+                Orders = list
+            };
+
+        }
+
         public async Task SetRequirementsAsync(Guid id, string fileType, bool isRequired, string username, string role)
         {
             await _permissionService.Validate(fileType,role);
