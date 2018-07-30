@@ -10,7 +10,7 @@ using DocumentExplorer.Infrastructure.Extensions;
 
 namespace DocumentExplorer.Infrastructure.Services
 {
-    public class LogService : ILogService
+    public class LogService : ILogService, IService
     {
         private readonly ILogRepository _logRepository;
         private readonly IMapper _mapper;

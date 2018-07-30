@@ -9,7 +9,7 @@ using System.Text;
 
 namespace DocumentExplorer.Infrastructure.Services
 {
-    public class JwtHandler : IJwtHandler
+    public class JwtHandler : IJwtHandler, IService
     {
         private readonly JwtSettings _settings;
 

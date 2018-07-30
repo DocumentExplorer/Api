@@ -7,7 +7,7 @@ using Microsoft.Extensions.Primitives;
 
 namespace DocumentExplorer.Infrastructure.Services
 {
-    public class TokenManager : ITokenManager
+    public class TokenManager : ITokenManager, IService
     {
         private readonly IMemoryCache _cache;
         private readonly IHttpContextAccessor _httpContextAccessor;

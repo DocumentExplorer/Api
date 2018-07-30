@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace DocumentExplorer.Infrastructure.Services
 {
-    public class OrderService : IOrderService
+    public class OrderService : IOrderService, IService
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IMapper _mapper;

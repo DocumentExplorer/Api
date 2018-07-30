@@ -10,7 +10,7 @@ using DocumentExplorer.Infrastructure.Extensions;
 
 namespace DocumentExplorer.Infrastructure.Services
 {
-    public class UserService : IUserService
+    public class UserService : IUserService, IService
     {
         public readonly IUserRepository _userRepository;
         public readonly IEncrypter _encrypter;

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DocumentExplorer.Infrastructure.Services
 {
-    public class Handler : IHandler
+    public class Handler : IHandler, IService
     {
         private readonly ISet<IHandlerTask> _handlerTasks = new HashSet<IHandlerTask>();
 

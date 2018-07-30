@@ -7,7 +7,7 @@ using DocumentExplorer.Infrastructure.Services;
 
 namespace DocumentExplorer.Infrastructure.Services
 {
-    public class Encrypter : IEncrypter
+    public class Encrypter : IEncrypter, IService
     {
         private static readonly int DeriveBytesIterationsCount = 10000;
         private static readonly int SaltSize = 40;

@@ -56,13 +56,6 @@ namespace DocumentExplorer.Api
 
 
             services.AddSingleton(AutoMapperConfig.Initialize());
-            services.AddScoped<IUserService,UserService>();
-            services.AddScoped<IOrderService, OrderService>();
-            services.AddScoped<IFileService, FileService>();
-            services.AddScoped<IPermissionsService, PermissionsService>();
-            services.AddScoped<ILogService, LogService>();
-            services.AddScoped<IHandler, Handler>();
-            services.AddScoped<IEncrypter,Encrypter>();
             services.AddMemoryCache();
             services.AddAuthorization(x => x.AddPolicy("admin", p=>p.RequireRole("admin")));
             services.AddAuthorization(x => x.AddPolicy("user", p=>p.RequireRole("user")));
@@ -102,13 +95,9 @@ namespace DocumentExplorer.Api
             {
                 builder.RegisterModule<BlobStorageModule>();
             }
+            builder.RegisterModule<ServiceModule>();
             builder.RegisterModule(new SettingsModule(ConfigurationRoot));
             builder.RegisterModule<CommandModule>();
-            
-
-            builder.RegisterType<Encrypter>().As<IEncrypter>().SingleInstance();
-            builder.RegisterType<JwtHandler>().As<IJwtHandler>().SingleInstance();
-            builder.RegisterType<DataInitializer>().As<IDataInitializer>().SingleInstance();
             ApplicationContainer = builder.Build();
 
             return new AutofacServiceProvider(ApplicationContainer);

@@ -5,7 +5,7 @@ using DocumentExplorer.Core.Domain;
 
 namespace DocumentExplorer.Infrastructure.Services
 {
-    public class DataInitializer : IDataInitializer
+    public class DataInitializer : IDataInitializer, IService
     {
         private readonly IUserService _userService;
         private readonly IOrderService _orderService;

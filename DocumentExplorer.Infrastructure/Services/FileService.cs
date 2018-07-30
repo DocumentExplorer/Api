@@ -16,7 +16,7 @@ using NLog;
 
 namespace DocumentExplorer.Infrastructure.Services
 {
-    public class FileService : IFileService
+    public class FileService : IFileService, IService
     {
         private readonly IFileRepository _fileRepository;
         private readonly IOrderRepository _orderRepository;

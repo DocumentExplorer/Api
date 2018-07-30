@@ -8,7 +8,7 @@ using DocumentExplorer.Infrastructure.Exceptions;
 
 namespace DocumentExplorer.Infrastructure.Services
 {
-    public class PermissionsService : IPermissionsService
+    public class PermissionsService : IPermissionsService, IService
     {
         private readonly IPermissionsRepository _permissionsRepository;
         private readonly IMapper _mapper;
