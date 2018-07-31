@@ -49,9 +49,8 @@ namespace DocumentExplorer.Infrastructure.Services
             _cache.Set(cacheId,order.Id,TimeSpan.FromSeconds(5));
         }
 
-        public async Task DeleteAsync(Guid id, string role, string username)
+        public async Task DeleteAsync(Guid id, string username)
         {
-            if(!(role == Roles.User || role == Roles.Admin)) throw new UnauthorizedAccessException();
             var order = await _orderRepository.GetOrFailAsync(id);
             var files = await _fileDbRepository.GetFilesContainingPath(order.GetPathToFolder());
             foreach(var file in files)
@@ -149,13 +148,17 @@ namespace DocumentExplorer.Infrastructure.Services
 
         }
 
-        public async Task SetRequirementsAsync(Guid id, string fileType, bool isRequired, string username, string role)
+        public async Task SetRequirementsAsync(Guid id, string fileType, bool isRequired, string username)
         {
-            await _permissionService.Validate(fileType,role);
             var order = await _orderRepository.GetOrFailAsync(id);
             order.SetRequirements(fileType,isRequired);
             await _orderRepository.UpdateAsync(order);
             await _logService.AddLogAsync($"Zmieniono wymagania dla plik {fileType} na {isRequired}.", order, username);
+        }
+
+        public void ValidateIsNotComplementer(string role)
+        {
+            if(role == Roles.Complementer) throw new UnauthorizedAccessException();
         }
 
         public async Task ValidatePermissionsToOrder(string username, string role, Guid orderId)

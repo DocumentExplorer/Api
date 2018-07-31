@@ -1,4 +1,5 @@
 ﻿using DocumentExplorer.Infrastructure.Commands;
+using DocumentExplorer.Infrastructure.Commands.Files;
 using DocumentExplorer.Infrastructure.Commands.Orders;
 using DocumentExplorer.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -55,12 +56,11 @@ namespace DocumentExplorer.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
-            var order = await _orderService.GetAsync(id);
-            if(!IsAuthorizedPlusComplementer(order.Owner1Name))
+            var command = new DeleteOrder
             {
-                return StatusCode(403);
-            }
-            await _orderService.DeleteAsync(id, Role, Username);
+                OrderId = id
+            };
+            await DispatchAsync(command);
             return NoContent();
         }
 
@@ -68,23 +68,14 @@ namespace DocumentExplorer.Api.Controllers
         [HttpPut]
         public async Task<IActionResult> EditAsync([FromBody]EditOrder command)
         {
-            var order = await _orderService.GetAsync(command.Id);
-            if(!IsAuthorizedPlusComplementer(order.Owner1Name))
-            {
-                return StatusCode(403);
-            }
             await DispatchAsync(command);
             return NoContent();
         }
+
         [Authorize]
         [HttpPut("requirements")]
         public async Task<IActionResult> SetRequirementsAsync([FromBody]SetRequirements command)
         {
-            var order = await _orderService.GetAsync(command.OrderId);
-            if(!IsAuthorizedPlusComplementer(order.Owner1Name))
-            {
-                return StatusCode(403);
-            }
             await DispatchAsync(command);
             return NoContent();
         }

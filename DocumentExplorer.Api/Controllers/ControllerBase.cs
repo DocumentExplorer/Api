@@ -19,26 +19,6 @@ namespace DocumentExplorer.Api.Controllers
             Cache = cache;
         }
 
-        protected bool IsAuthorized(string username)
-        {
-            if(username== null) return false;
-            return IsRequestedByTheUser(username) || IsRequestedByAdmin();
-        }
-
-        protected bool IsAuthorizedPlusComplementer(string username)
-        {
-            if(username== null) return false;
-            return IsRequestedByTheUser(username) || IsRequestedByAdmin() || IsRequestedByComplementer();
-        }
-
-        protected bool IsRequestedByTheUser(string username)
-            => Username == username;
-
-        protected bool IsRequestedByAdmin()
-           => Role == "admin";
-        protected bool IsRequestedByComplementer()
-           => Role == "complementer";
-
         protected string Username => User.Claims.ElementAt(0).Value;
 
         protected string Role => User.Claims.ElementAt(1).Value;

@@ -23,27 +23,19 @@ namespace DocumentExplorer.Api.Controllers
             _tokenManager = tokenManager;
         }
 
-        [Authorize]
+        [Authorize("admin")]
         [HttpGet("username/{username}")]
         public async Task<IActionResult> GetUserInfo(string username)
         {
-            if(!IsAuthorized(username))
-            {
-                return StatusCode(403);
-            }
             var user = await _userService.GetAsync(username);
             return Json(user);
         }
 
-        [Authorize]
+        [Authorize("admin")]
         [HttpGet("id/{id}")]
         public async Task<IActionResult> GetUserInfo(Guid id)
         {
             var user = await _userService.GetAsync(id);
-            if(!IsAuthorized(user.Username))
-            {
-                return StatusCode(403);
-            }
             return Json(user);
         }
 
