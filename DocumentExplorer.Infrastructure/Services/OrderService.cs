@@ -23,10 +23,11 @@ namespace DocumentExplorer.Infrastructure.Services
         private readonly IFileRepository _fileDbRepository;
         private readonly ILogService _logService;
         private readonly IPermissionsService _permissionService;
+        private readonly IHandler _handler;
 
         public OrderService(IOrderRepository orderRepository,
             IMapper mapper, IMemoryCache cache, IRealFileRepository fileRepository, IFileRepository fileDbRepository,
-            ILogService logService, IPermissionsService permissionService)
+            ILogService logService, IPermissionsService permissionService, IHandler handler)
         {
             _orderRepository = orderRepository;
             _mapper = mapper;
@@ -35,6 +36,7 @@ namespace DocumentExplorer.Infrastructure.Services
             _fileDbRepository = fileDbRepository;
             _logService = logService;
             _permissionService = permissionService;
+            _handler = handler;
         }
 
 
@@ -56,6 +58,7 @@ namespace DocumentExplorer.Infrastructure.Services
             foreach(var file in files)
             {
                 await _fileRepository.RemoveAsync(file.Path);
+                await _fileDbRepository.RemoveAsync(file);
             }
             await _fileRepository.RemoveDirectoryIfExists(order.GetPathToFolder());
             await _orderRepository.RemoveAsync(order);
@@ -67,16 +70,47 @@ namespace DocumentExplorer.Infrastructure.Services
         {
             var order = await _orderRepository.GetOrFailAsync(id);
             var oldFolderName = order.GetPathToFolder();
+            var oldOrder = OrderFolderNameGenerator.NameToOrder(oldFolderName);
             List<Core.Domain.File> files = await _fileDbRepository.GetFilesContainingPath(oldFolderName);
-            order.SetNumber(number);
-            order.SetClientCountry(clientCountry);
-            order.SetClientIdentificationNumber(clientIdentificationNumber);
-            order.SetBrokerCountry(brokerCountry);
-            order.SetBrokerIdentificationNumber(brokerIdentificationNumber);
+            await _handler
+                .Run(async () => 
+                {
+                    order.SetNumber(number);
+                    order.SetClientCountry(clientCountry);
+                    order.SetClientIdentificationNumber(clientIdentificationNumber);
+                    order.SetBrokerCountry(brokerCountry);
+                    order.SetBrokerIdentificationNumber(brokerIdentificationNumber);
+                    await _orderRepository.UpdateAsync(order);
+                })
+                .PropagateException()
+                .Next()
+                .Run(async () =>
+                {
+                    await UpdateFileRoots(files, number, order);
+                })
+                .OnSuccess(async () =>
+                {
+                    await _logService.AddLogAsync("Edytowano dane zlecenia.", order, username);
+                })
+                .OnError(async x => {
+                    order.SetNumber(oldOrder.Number);
+                    order.SetClientCountry(oldOrder.ClientCountry);
+                    order.SetClientIdentificationNumber(oldOrder.ClientIdentificationNumber);
+                    order.SetBrokerCountry(oldOrder.BrokerCountry);
+                    order.SetBrokerIdentificationNumber(oldOrder.BrokerIdentificationNumber);
+                    await _orderRepository.UpdateAsync(order);
+                }, true)
+                .Next()
+                .ExecuteAllAsync();
+        }
+
+        private async Task UpdateFileRoots(List<Core.Domain.File> files, int number, Order order)
+        {
             var filePaths = files.Select(x => x.Path).ToList();
             List<string> newFilesPath = new List<string>();
-            foreach(var path in filePaths)
+            foreach(var file in files)
             {
+                var path = file.Path;
                 var fileName = Path.GetFileNameWithoutExtension(path);
                 Regex re = new Regex(@"([a-zA-Z]+)(\d+)");
                 Match result = re.Match(fileName);
@@ -87,13 +121,13 @@ namespace DocumentExplorer.Infrastructure.Services
                 {
                     numberPart = OrderFolderNameGenerator.AddLeadingZeros(number);
                 }
-                newFilesPath.Add($"{order.GetPathToFolder()}{alphaPart}{numberPart}.pdf");
+                file.Path = $"{order.GetPathToFolder()}{alphaPart}{numberPart}.pdf";
+                newFilesPath.Add(file.Path);
+                await _fileDbRepository.UpdateAsync(file);
                 
             }
             var newFolderName = order.GetPathToFolder();
             await _fileRepository.UpdateFileNames(filePaths, newFilesPath);
-            await _orderRepository.UpdateAsync(order);
-            await _logService.AddLogAsync("Edytowano dane zlecenia.", order, username);
         }
 
         public async Task<IEnumerable<OrderDto>> GetAllAsync()
@@ -151,9 +185,21 @@ namespace DocumentExplorer.Infrastructure.Services
         public async Task SetRequirementsAsync(Guid id, string fileType, bool isRequired, string username)
         {
             var order = await _orderRepository.GetOrFailAsync(id);
-            order.SetRequirements(fileType,isRequired);
-            await _orderRepository.UpdateAsync(order);
-            await _logService.AddLogAsync($"Zmieniono wymagania dla plik {fileType} na {isRequired}.", order, username);
+            await _handler
+                .Run(async ()=>
+                {
+                    order.SetRequirements(fileType,isRequired);
+                    await _orderRepository.UpdateAsync(order);
+                })
+                .OnSuccess(async ()=>
+                {
+                    await _logService
+                    .AddLogAsync($"Zmieniono wymagania dla plik {fileType} na {isRequired}.", order, username);
+                })
+                .PropagateException()
+                .ExecuteAsync();
+            
+            
         }
 
         public void ValidateIsNotComplementer(string role)

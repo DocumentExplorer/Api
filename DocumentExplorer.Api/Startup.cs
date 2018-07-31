@@ -98,6 +98,7 @@ namespace DocumentExplorer.Api
             builder.RegisterModule<ServiceModule>();
             builder.RegisterModule(new SettingsModule(ConfigurationRoot));
             builder.RegisterModule<CommandModule>();
+            builder.RegisterType<Handler>().As<IHandler>().InstancePerDependency();
             ApplicationContainer = builder.Build();
 
             return new AutofacServiceProvider(ApplicationContainer);
