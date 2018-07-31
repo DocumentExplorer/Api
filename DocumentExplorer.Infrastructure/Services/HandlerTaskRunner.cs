@@ -19,7 +19,7 @@ namespace DocumentExplorer.Infrastructure.Services
 
         public IHandlerTask Run(Func<Task> run)
         {
-            var handlerTask = new HandlerTask(_handler, run);
+            var handlerTask = new HandlerTask(_handler, run, _validate);
             _handlerTasks.Add(handlerTask);
 
             return handlerTask;

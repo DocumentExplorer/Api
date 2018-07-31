@@ -52,12 +52,6 @@ namespace DocumentExplorer.Api.Controllers
         [HttpDelete("{uploadId}")]
         public async Task<IActionResult> DeleteFile(Guid uploadId)
         {
-            var file = await _fileService.GetFileAsync(uploadId);
-            var order = await _orderService.GetAsync(file.OrderId);
-            if(!IsAuthorizedPlusComplementer(order.Owner1Name))
-            {
-                return StatusCode(403);
-            }
             await _fileService.DeleteFileAsync(uploadId, Role, Username);
             return NoContent();
         }

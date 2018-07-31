@@ -27,9 +27,12 @@ namespace DocumentExplorer.Infrastructure.Services
         private readonly IUserRepository _userRepository;
         private readonly IUserService _userService;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private readonly IOrderService _orderService;
+        private readonly IHandler _handler;
         public FileService(IFileRepository fileRepository, IOrderRepository orderRepository, 
             IRealFileRepository realFileRepository, IMapper mapper, IPermissionsService permissionService,
-            ILogService logService, IUserRepository userRepository, IUserService userService)
+            ILogService logService, IUserRepository userRepository, IUserService userService,
+            IOrderService orderService, IHandler handler)
         {
             _fileRepository = fileRepository;
             _orderRepository = orderRepository;
@@ -39,19 +42,33 @@ namespace DocumentExplorer.Infrastructure.Services
             _logService = logService;
             _userRepository = userRepository;
             _userService = userService;
+            _orderService = orderService;
+            _handler = handler;
         }
 
         public async Task DeleteFileAsync(Guid id, string role, string username)
         {
             var file = await _fileRepository.GetOrFailAsync(id);
-            await _permissionService.Validate(file.FileType, role);
-            var order = await _orderRepository.GetOrFailAsync(file.OrderId);
-            await _realFileRepository.RemoveAsync(file.Path);
-            await _logService.AddLogAsync($"Usunięto plik: {Path.GetFileName(file.Path)}", order, username);
-            await _fileRepository.RemoveAsync(file);
-            order.UnlinkFile(file.FileType);
-            await _orderRepository.UpdateAsync(order);
+            await _handler
+            .Validate(async () =>
+            {
+                await _orderService.ValidatePermissionsToOrder(username, role, file.OrderId);
+                await _permissionService.Validate(file.FileType, role);
+            })
+            .Run(async ()=>
+            {
+                var order = await _orderRepository.GetOrFailAsync(file.OrderId);
+                await _realFileRepository.RemoveAsync(file.Path);
+                await _logService.AddLogAsync($"Usunięto plik: {Path.GetFileName(file.Path)}", order, username);
+                await _fileRepository.RemoveAsync(file);
+                order.UnlinkFile(file.FileType);
+                await _orderRepository.UpdateAsync(order);
+            })
+            .OnCustomError(x => throw new ServiceException(x.Code), true)
+            .ExecuteAsync();
         }
+            
+        
 
         public async Task GenerateAsync()
         {
