@@ -29,6 +29,7 @@ namespace DocumentExplorer.Infrastructure.Services
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly IOrderService _orderService;
         private readonly IHandler _handler;
+
         public FileService(IFileRepository fileRepository, IOrderRepository orderRepository, 
             IRealFileRepository realFileRepository, IMapper mapper, IPermissionsService permissionService,
             ILogService logService, IUserRepository userRepository, IUserService userService,
@@ -255,7 +256,8 @@ namespace DocumentExplorer.Infrastructure.Services
             return await _realFileRepository.GetOrFailAsync(file.Path);
         }
 
-        public async Task PutIntoLocationAsync(Guid uploadId, Guid orderId, string fileType, int invoiceNumber, string role, string username)
+        public async Task PutIntoLocationAsync(Guid uploadId, Guid orderId, string fileType, 
+            int invoiceNumber, string role, string username)
         {
             var file = await _fileRepository.GetOrFailAsync(uploadId);
             var order = await _orderRepository.GetOrFailAsync(orderId);

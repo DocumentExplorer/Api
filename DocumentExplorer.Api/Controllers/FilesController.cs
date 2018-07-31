@@ -60,14 +60,16 @@ namespace DocumentExplorer.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetFileAsync(Guid id)
         {
-            var file = await _fileService.GetFileAsync(id);
-            var order = await _orderService.GetAsync(file.OrderId);
-            if(!IsAuthorizedPlusComplementer(order.Owner1Name))
+            var command = new GetFile
             {
-                return StatusCode(403);
-            }
-            var fileStream = await _fileService.GetFileStreamAsync(id);
-            return new FileContentResult(fileStream.ToArray(),"application/pdf");
+                FileId = id,
+                CacheId = Guid.NewGuid()
+            };
+            await DispatchAsync(command);
+            var result = Cache.Get(command.CacheId);
+            if(result is MemoryStream fileStream)
+                return new FileContentResult(fileStream.ToArray(),"application/pdf");
+            throw new InvalidCastException();
         }
 
         [Authorize("admin")]

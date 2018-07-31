@@ -11,7 +11,8 @@ namespace DocumentExplorer.Infrastructure.Services
     {
         Task UploadAsync(IFormFile file, Guid id);
         void Validate(IFormFile file);
-        Task PutIntoLocationAsync(Guid uploadId, Guid orderId, string fileType, int invoiceNumber, string role, string username);
+        Task PutIntoLocationAsync(Guid uploadId, Guid orderId, string fileType, 
+            int invoiceNumber, string role, string username);
         Task<FileDto> GetFileAsync(Guid id);
         Task DeleteFileAsync(Guid id, string role, string username);
         Task<MemoryStream> GetFileStreamAsync(Guid id);
