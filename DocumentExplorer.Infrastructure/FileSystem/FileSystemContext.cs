@@ -70,16 +70,26 @@ namespace DocumentExplorer.Infrastructure.FileSystem
         {
             path = ConnectWithRootPath(path);
             var array = Directory.GetDirectories(path);
+            List<string> newArray = new List<string>();
+            foreach(var s in array)
+            {
+                var str = s.Replace(Path.DirectorySeparatorChar, '/');
+            }
             await Task.CompletedTask;
-            return array.Cast<string>();
+            return newArray;
         }
 
         public async Task<IEnumerable<string>> GetFilesPathsAsync(string path)
         {
             path = ConnectWithRootPath(path);
             var array = Directory.GetFiles(path);
+            List<string> newArray = new List<string>();
+            foreach(var s in array)
+            {
+                var str = s.Replace(Path.DirectorySeparatorChar, '/');
+            }
             await Task.CompletedTask;
-            return array.Cast<string>();
+            return newArray;
         }
 
         public async Task<DateTime> GetDirectoryCreationDateAsync(string path)
@@ -98,7 +108,7 @@ namespace DocumentExplorer.Infrastructure.FileSystem
 
         private string ConnectWithRootPath(string path)
         {
-            return $"{_fileSystemSettings.RootDirectoryPath}/{path}";
+            return $@"{_fileSystemSettings.RootDirectoryPath}/{path}".Replace('/', Path.DirectorySeparatorChar);
         }
     }
 }
