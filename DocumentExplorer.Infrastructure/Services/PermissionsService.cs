@@ -40,47 +40,28 @@ namespace DocumentExplorer.Infrastructure.Services
         public async Task Validate(string fileType, string role)
         {
             var permissions = await _permissionsRepository.GetAsync();
-            switch(fileType)
+            var properties = typeof(FileTypes).GetProperties();
+            foreach(var property in properties)
             {
-                case "cmr":
-                    if(!(permissions.CMR==role || role == Roles.Admin)) 
+                if(property.Name.ToLower()==fileType)
+                {
+                    if(!(GetPermissionsFileTypePropertyValue(permissions, property.Name)==role 
+                        || role == Roles.Admin))
+                    {
                         throw new UnauthorizedAccessException();
-                    break;
-                case "fvk":
-                    if(!(permissions.FVK==role || role == Roles.Admin)) 
-                        throw new UnauthorizedAccessException();
-                    break;
-                case "fvp":
-                    if(!(permissions.FVP==role || role == Roles.Admin)) 
-                        throw new UnauthorizedAccessException();
-                    break;
-                case "nip":
-                    if(!(permissions.NIP==role || role == Roles.Admin)) 
-                        throw new UnauthorizedAccessException();
-                    break;
-                case "nota":
-                    if(!(permissions.Nota==role || role == Roles.Admin)) 
-                        throw new UnauthorizedAccessException();
-                    break;
-                case "pp":
-                    if(!(permissions.PP==role || role == Roles.Admin)) 
-                        throw new UnauthorizedAccessException();
-                    break;
-                case "rk":
-                    if(!(permissions.RK==role || role == Roles.Admin)) 
-                        throw new UnauthorizedAccessException();
-                    break;
-                case "zk":
-                    if(!(permissions.ZK==role || role == Roles.Admin)) 
-                        throw new UnauthorizedAccessException();
-                    break;
-                case "zp":
-                    if(!(permissions.ZP==role || role == Roles.Admin)) 
-                        throw new UnauthorizedAccessException();
-                    break;
-                default:
-                    throw new ServiceException(Exceptions.ErrorCodes.InvalidFileType);
+                    }
+                }
             }
+        }
+
+        private string GetPermissionsFileTypePropertyValue(Permissions permissions, string propertyName)
+        {
+            var propertyObject = typeof(Permissions).GetProperty(propertyName).GetValue(permissions, null);
+            if(propertyObject is string result)
+            {
+                return result;
+            }
+            throw new InvalidCastException();
         }
     }
 }

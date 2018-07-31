@@ -19,21 +19,6 @@ namespace DocumentExplorer.Infrastructure.BlobStorage
             _blobStorageSettings = blobStorageSettings;
         }
 
-        public async Task<List<AzureBlobItem>> ListAsync()
-        {
-            return await GetBlobListAsync();
-        }
-
-        public async Task<List<string>> ListFoldersAsync()
-        {
-            var list = await GetBlobListAsync();
-            return list.Where(i => !string.IsNullOrEmpty(i.Folder))
-                       .Select(i => i.Folder)
-                       .Distinct()
-                       .OrderBy(i => i)
-                       .ToList();
-        }
-
         public async Task UploadAsync(string blobName, string filePath)
         {
             CloudBlockBlob blockBlob = await GetBlockBlobAsync(blobName);
@@ -44,14 +29,6 @@ namespace DocumentExplorer.Infrastructure.BlobStorage
                 await blockBlob.UploadFromStreamAsync(fileStream);
             }
             File.Delete(filePath);
-        }
-
-        public async Task UploadAsync(string blobName, Stream stream)
-        {
-            CloudBlockBlob blockBlob = await GetBlockBlobAsync(blobName);
-
-            stream.Position = 0;
-            await blockBlob.UploadFromStreamAsync(stream);
         }
 
         public async Task<MemoryStream> DownloadAsync(string blobName)
@@ -98,13 +75,6 @@ namespace DocumentExplorer.Infrastructure.BlobStorage
 
         }
 
-        public async Task DownloadAsync(string blobName, string path)
-        {
-            CloudBlockBlob blockBlob = await GetBlockBlobAsync(blobName);
-
-            await blockBlob.DownloadToFileAsync(path, FileMode.Create);
-        }
-
         private async Task<CloudBlobContainer> GetContainerAsync()
         {
             CloudStorageAccount storageAccount = new CloudStorageAccount(new StorageCredentials(_blobStorageSettings.StorageAccount, _blobStorageSettings.StorageKey), false);
@@ -124,27 +94,6 @@ namespace DocumentExplorer.Infrastructure.BlobStorage
             CloudBlockBlob blockBlob = blobContainer.GetBlockBlobReference(blobName);
 
             return blockBlob;
-        }
-
-        private async Task<List<AzureBlobItem>> GetBlobListAsync(bool useFlatListing = true)
-        {
-            CloudBlobContainer blobContainer = await GetContainerAsync();
-
-            var list = new List<AzureBlobItem>();
-            BlobContinuationToken token = null;
-            do
-            {
-                BlobResultSegment resultSegment = await blobContainer.ListBlobsSegmentedAsync("", useFlatListing, new BlobListingDetails(), null, token, null, null);
-                token = resultSegment.ContinuationToken;
-
-                foreach (IListBlobItem item in resultSegment.Results)
-                {
-                    list.Add(new AzureBlobItem(item));
-                }
-
-            } while (token != null);
-
-            return list.OrderBy(i => i.Folder).ThenBy(i => i.Name).ToList();
         }
     }
 }
