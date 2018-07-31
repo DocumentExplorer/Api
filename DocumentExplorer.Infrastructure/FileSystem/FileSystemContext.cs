@@ -74,6 +74,7 @@ namespace DocumentExplorer.Infrastructure.FileSystem
             foreach(var s in array)
             {
                 var str = s.Replace(Path.DirectorySeparatorChar, '/');
+                newArray.Add(str);
             }
             await Task.CompletedTask;
             return newArray;
@@ -87,6 +88,7 @@ namespace DocumentExplorer.Infrastructure.FileSystem
             foreach(var s in array)
             {
                 var str = s.Replace(Path.DirectorySeparatorChar, '/');
+                newArray.Add(str);
             }
             await Task.CompletedTask;
             return newArray;
