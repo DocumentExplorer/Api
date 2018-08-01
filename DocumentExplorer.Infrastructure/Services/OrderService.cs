@@ -20,20 +20,18 @@ namespace DocumentExplorer.Infrastructure.Services
         private readonly IMapper _mapper;
         private readonly IMemoryCache _cache;
         private readonly IRealFileRepository _fileRepository;
-        private readonly IFileRepository _fileDbRepository;
         private readonly ILogService _logService;
         private readonly IPermissionsService _permissionService;
         private readonly IHandler _handler;
 
         public OrderService(IOrderRepository orderRepository,
-            IMapper mapper, IMemoryCache cache, IRealFileRepository fileRepository, IFileRepository fileDbRepository,
+            IMapper mapper, IMemoryCache cache, IRealFileRepository fileRepository,
             ILogService logService, IPermissionsService permissionService, IHandler handler)
         {
             _orderRepository = orderRepository;
             _mapper = mapper;
             _cache = cache;
             _fileRepository = fileRepository;
-            _fileDbRepository = fileDbRepository;
             _logService = logService;
             _permissionService = permissionService;
             _handler = handler;
@@ -54,11 +52,13 @@ namespace DocumentExplorer.Infrastructure.Services
         public async Task DeleteAsync(Guid id, string username)
         {
             var order = await _orderRepository.GetOrFailAsync(id);
-            var files = await _fileDbRepository.GetFilesContainingPath(order.GetPathToFolder());
+            var files = order.Files;
             foreach(var file in files)
             {
-                await _fileRepository.RemoveAsync(file.Path);
-                await _fileDbRepository.RemoveAsync(file);
+                if(file.Path!=string.Empty)
+                {
+                    await _fileRepository.RemoveAsync(file.Path);
+                }
             }
             await _fileRepository.RemoveDirectoryIfExists(order.GetPathToFolder());
             await _orderRepository.RemoveAsync(order);
@@ -71,7 +71,7 @@ namespace DocumentExplorer.Infrastructure.Services
             var order = await _orderRepository.GetOrFailAsync(id);
             var oldFolderName = order.GetPathToFolder();
             var oldOrder = OrderFolderNameGenerator.NameToOrder(oldFolderName);
-            List<Core.Domain.File> files = await _fileDbRepository.GetFilesContainingPath(oldFolderName);
+            List<Core.Domain.File> files = order.Files.ToList();
             await _handler
                 .Run(async () => 
                 {
@@ -121,12 +121,9 @@ namespace DocumentExplorer.Infrastructure.Services
                 {
                     numberPart = OrderFolderNameGenerator.AddLeadingZeros(number);
                 }
-                file.Path = $"{order.GetPathToFolder()}{alphaPart}{numberPart}.pdf";
-                newFilesPath.Add(file.Path);
-                await _fileDbRepository.UpdateAsync(file);
+                newFilesPath.Add($"{order.GetPathToFolder()}{alphaPart}{numberPart}.pdf");
                 
             }
-            var newFolderName = order.GetPathToFolder();
             await _fileRepository.UpdateFileNames(filePaths, newFilesPath);
         }
 

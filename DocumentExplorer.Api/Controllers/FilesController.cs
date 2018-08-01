@@ -49,10 +49,10 @@ namespace DocumentExplorer.Api.Controllers
         }
 
         [Authorize]
-        [HttpDelete("{uploadId}")]
-        public async Task<IActionResult> DeleteFile(Guid uploadId)
+        [HttpDelete("{orderId}/{fileType}")]
+        public async Task<IActionResult> DeleteFile(Guid orderId, string fileType)
         {
-            await _fileService.DeleteFileAsync(uploadId, Role, Username);
+            await _fileService.DeleteFileAsync(orderId, fileType, Role, Username);
             return NoContent();
         }
 
@@ -62,7 +62,7 @@ namespace DocumentExplorer.Api.Controllers
         {
             var command = new GetFile
             {
-                FileId = id,
+                OrderId = id,
                 CacheId = Guid.NewGuid()
             };
             await DispatchAsync(command);
@@ -72,21 +72,6 @@ namespace DocumentExplorer.Api.Controllers
             throw new InvalidCastException();
         }
 
-        [Authorize("admin")]
-        [HttpGet("metadata/{id}")]
-        public async Task<IActionResult> GetFileMetaDataAsync(Guid id)
-        {
-            var file = await _fileService.GetFileAsync(id);
-            return Json(file);
-        }
-
-        [Authorize("admin")]
-        [HttpGet("metadata")]
-        public async Task<IActionResult> GetFileMetaDatasAsync()
-        {
-            var files = await _fileService.GetAllFilesAsync();
-            return Json(files);
-        }
 
         [Authorize("admin")]
         [HttpGet("generate")]

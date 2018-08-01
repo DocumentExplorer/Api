@@ -41,16 +41,6 @@ namespace DocumentExplorer.Infrastructure.Extensions
             return order;
         }
 
-        public static async Task<Core.Domain.File> GetOrFailAsync(this IFileRepository fileRepository, Guid id)
-        {
-            var file = await fileRepository.GetAsync(id);
-            if(file == null)
-            {
-                throw new ServiceException(Exceptions.ErrorCodes.FileNotFound);
-            }
-            return file;
-        }
-
         public static async Task<MemoryStream> GetOrFailAsync(this IRealFileRepository fileRepository, string path)
         {
             var file = await fileRepository.GetAsync(path);

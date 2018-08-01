@@ -13,10 +13,8 @@ namespace DocumentExplorer.Infrastructure.Services
         void Validate(IFormFile file);
         Task PutIntoLocationAsync(Guid uploadId, Guid orderId, string fileType, 
             int invoiceNumber, string role, string username);
-        Task<FileDto> GetFileAsync(Guid id);
-        Task DeleteFileAsync(Guid id, string role, string username);
-        Task<MemoryStream> GetFileStreamAsync(Guid id);
-        Task<IEnumerable<FileDto>> GetAllFilesAsync();
+        Task DeleteFileAsync(Guid id, string fileType, string role, string username);
+        Task<MemoryStream> GetFileStreamAsync(Guid orderId, string fileType);
         Task GenerateAsync();
     }
 }

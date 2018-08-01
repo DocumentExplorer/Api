@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -18,7 +19,6 @@ namespace DocumentExplorer.Infrastructure.Services
 {
     public class FileService : IFileService, IService
     {
-        private readonly IFileRepository _fileRepository;
         private readonly IOrderRepository _orderRepository;
         private readonly IRealFileRepository _realFileRepository;
         private readonly IPermissionsService _permissionService;
@@ -29,13 +29,13 @@ namespace DocumentExplorer.Infrastructure.Services
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly IOrderService _orderService;
         private readonly IHandler _handler;
+        private readonly IMemoryCache _cache;
 
-        public FileService(IFileRepository fileRepository, IOrderRepository orderRepository, 
+        public FileService(IOrderRepository orderRepository, 
             IRealFileRepository realFileRepository, IMapper mapper, IPermissionsService permissionService,
             ILogService logService, IUserRepository userRepository, IUserService userService,
-            IOrderService orderService, IHandler handler)
+            IOrderService orderService, IHandler handler, IMemoryCache cache)
         {
-            _fileRepository = fileRepository;
             _orderRepository = orderRepository;
             _realFileRepository = realFileRepository;
             _mapper = mapper;
@@ -45,23 +45,23 @@ namespace DocumentExplorer.Infrastructure.Services
             _userService = userService;
             _orderService = orderService;
             _handler = handler;
+            _cache = cache;
         }
 
-        public async Task DeleteFileAsync(Guid id, string role, string username)
+        public async Task DeleteFileAsync(Guid id, string fileType, string role, string username)
         {
-            var file = await _fileRepository.GetOrFailAsync(id);
+            var order = await _orderRepository.GetOrFailAsync(id);
             await _handler
             .Validate(async () =>
             {
-                await _orderService.ValidatePermissionsToOrder(username, role, file.OrderId);
-                await _permissionService.Validate(file.FileType, role);
+                await _orderService.ValidatePermissionsToOrder(username, role, order.Id);
+                await _permissionService.Validate(fileType, role);
             })
             .Run(async ()=>
             {
-                var order = await _orderRepository.GetOrFailAsync(file.OrderId);
+                var file = order.Files.SingleOrDefault(x=> x.FileType==fileType);
                 await _realFileRepository.RemoveAsync(file.Path);
                 await _logService.AddLogAsync($"Usunięto plik: {Path.GetFileName(file.Path)}", order, username);
-                await _fileRepository.RemoveAsync(file);
                 order.UnlinkFile(file.FileType);
                 await _orderRepository.UpdateAsync(order);
             })
@@ -134,7 +134,7 @@ namespace DocumentExplorer.Infrastructure.Services
             var properties = typeof(FileTypes).GetProperties();
             foreach(var property in properties)
             {
-                if(!order.FileIsAlreadyAssigned(property.Name))
+                if(!order.FileIsAlreadyAssigned(property.Name.ToLower()))
                 {
                     order.SetRequirements(property.Name.ToLower(), false);
                 }
@@ -155,30 +155,29 @@ namespace DocumentExplorer.Infrastructure.Services
 
         private async Task<Order> AddFileAsync(Order order, string path, string secondOwner)
         {
-            var file = GenerateFile(path, order);
+            var fileType = GetFileType(path);
             int invoiceNumber = TryGetInvoiceNumber(path);
-            order.LinkFile(file, file.FileType, invoiceNumber);
-            await LogAddingFileAsync(file, order, secondOwner, path);
-            await _fileRepository.AddAsync(file);
+            order.LinkFile(fileType, invoiceNumber);
+            await LogAddingFileAsync(fileType, order, secondOwner, path);
             return order;
         }
 
-        private async Task LogAddingFileAsync(Core.Domain.File file, Order order, string secondOwner, string path)
+        private async Task LogAddingFileAsync(string fileType, Order order, string secondOwner, string path)
         {
             var fileCreatonDate = await _realFileRepository.GetFileCreationDateAsync(path);
-            var fileAdder = await GetFileAdderAsync(file, order, secondOwner);
-            await _logService.AddLogAsync($"Dodano plik: {Path.GetFileName(file.Path)}",
+            var fileAdder = await GetFileAdderAsync(path, order, secondOwner);
+            await _logService.AddLogAsync($"Dodano plik: {Path.GetFileName(path)}",
             order,fileAdder,fileCreatonDate);
-            Logger.Log(NLog.LogLevel.Info, file.Path);
+            Logger.Log(NLog.LogLevel.Info, path);
         }
 
-        private async Task<string> GetFileAdderAsync(Core.Domain.File file, Order order, string secondOwner)
+        private async Task<string> GetFileAdderAsync(string fileType, Order order, string secondOwner)
         {
             var permissions = await _permissionService.GetPermissionsAsync();
             var properties = typeof(FileTypes).GetProperties();
             foreach(var property in properties)
             {
-                if(property.Name.ToLower()==file.FileType)
+                if(property.Name.ToLower()==fileType)
                 {
                     if(GetFilePermission(permissions, property.Name)=="user")
                     {
@@ -202,10 +201,10 @@ namespace DocumentExplorer.Infrastructure.Services
             }
             throw new InvalidCastException();
         }
-        private Core.Domain.File GenerateFile(string path, Order order)
+        private string GetFileType(string path)
         {
-            var fileName = GetDividedFileName(path);
-            return new Core.Domain.File(Guid.NewGuid(), path, order.Id, fileName[0]);
+            var fileType = GetDividedFileName(path);
+            return fileType[0];
         }
 
         private int TryGetInvoiceNumber(string path)
@@ -238,38 +237,23 @@ namespace DocumentExplorer.Infrastructure.Services
                         directoryCreationDate.Hour, directoryCreationDate.Minute, directoryCreationDate.Second);
         }
 
-        public async Task<IEnumerable<FileDto>> GetAllFilesAsync()
+        public async Task<MemoryStream> GetFileStreamAsync(Guid orderId, string fileType)
         {
-            var files = await _fileRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<FileDto>>(files);
-        }
-
-        public async Task<FileDto> GetFileAsync(Guid id)
-        {
-            var file = await _fileRepository.GetOrFailAsync(id);
-            return _mapper.Map<FileDto>(file);
-        }
-
-        public async Task<MemoryStream> GetFileStreamAsync(Guid id)
-        {
-            var file = await _fileRepository.GetOrFailAsync(id);
-            return await _realFileRepository.GetOrFailAsync(file.Path);
+            var order = await _orderRepository.GetOrFailAsync(orderId);
+            var filePath = order.GetPathToFile(fileType);
+            return await _realFileRepository.GetOrFailAsync(filePath);
         }
 
         public async Task PutIntoLocationAsync(Guid uploadId, Guid orderId, string fileType, 
             int invoiceNumber, string role, string username)
         {
-            var file = await _fileRepository.GetOrFailAsync(uploadId);
+            var filePath = _cache.GetString(uploadId);
             var order = await _orderRepository.GetOrFailAsync(orderId);
-            file.SetOrderId(order.Id);
-            file.SetFileType(fileType);
-            order.LinkFile(file,fileType,invoiceNumber);
+            order.LinkFile(fileType, invoiceNumber);
             var destination = order.GetPathToFile(fileType);
-            await _realFileRepository.AddAsync(file.Path, destination);
-            file.Path = destination;
-            await _logService.AddLogAsync($"Dodano plik: {Path.GetFileName(file.Path)}", order, username);
+            await _realFileRepository.AddAsync(filePath, destination);
+            await _logService.AddLogAsync($"Dodano plik: {Path.GetFileName(destination)}", order, username);
             await _orderRepository.UpdateAsync(order);
-            await _fileRepository.UpdateAsync(file);
         }
 
         public async Task UploadAsync(IFormFile file, Guid id)
@@ -280,8 +264,7 @@ namespace DocumentExplorer.Infrastructure.Services
             {
                 await file.CopyToAsync(stream);
             }
-            var fileData = new Core.Domain.File(id,filePath, Guid.Empty);
-            await _fileRepository.AddAsync(fileData);
+            _cache.Set(id, filePath, TimeSpan.FromMinutes(10));
         }
 
         public void Validate(IFormFile file)

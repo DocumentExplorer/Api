@@ -14,5 +14,14 @@ namespace DocumentExplorer.Infrastructure.Extensions
 
         private static string GetJwtKey(Guid tokenId)
             => $"jwt-{tokenId}";
+        public static string GetString(this IMemoryCache cache, Guid cacheId)
+        {
+            var fromCache = cache.Get(cacheId);
+            if(fromCache is string result)
+            {
+                return result;
+            }
+            throw new InvalidCastException();
+        }
     }
 }

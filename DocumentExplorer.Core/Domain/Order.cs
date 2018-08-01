@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -116,6 +117,7 @@ namespace DocumentExplorer.Core.Domain
         {
             var file = _files.SingleOrDefault(x => x.FileType==fileType);
             if(file==null) throw new DomainException(ErrorCodes.InvalidFileType);
+            if(file.Path==string.Empty) throw new DomainException(ErrorCodes.FileDoesNotExists);
             return file.Path;
         }
 
@@ -163,6 +165,7 @@ namespace DocumentExplorer.Core.Domain
         {
             if (number <= 0 || number>=10000) throw new DomainException(ErrorCodes.InvalidNumber);
             Number = number;
+            UpdateFilePaths();
         }
 
         private void ValidateInvoiceNumber(int invoiceNumber)
@@ -174,11 +177,13 @@ namespace DocumentExplorer.Core.Domain
         public void SetClientCountry(string country)
         {
             ClientCountry = SetCountry(country);
+            UpdateFilePaths();
         }
 
         public void SetBrokerCountry(string country)
         {
             BrokerCountry = SetCountry(country);
+            UpdateFilePaths();
         }
 
         private string SetCountry(string country)
@@ -195,11 +200,13 @@ namespace DocumentExplorer.Core.Domain
         public void SetClientIdentificationNumber(string number)
         {
             ClientIdentificationNumber = SetIdentificationNumber(number);
+            UpdateFilePaths();
         }
 
         public void SetBrokerIdentificationNumber(string number)
         {
             BrokerIdentificationNumber = SetIdentificationNumber(number);
+            UpdateFilePaths();
         }
 
         private string AddLeadingZeros(int number)
@@ -248,6 +255,14 @@ namespace DocumentExplorer.Core.Domain
         {
             var file = _files.SingleOrDefault(x => x.IsRequired);
             return file.IsRequired;
+        }
+
+        private void UpdateFilePaths()
+        {
+            foreach(var file in _files)
+            {
+                file.UpdatePath($"{GetPathToFolder()}{Path.GetFileName(file.Path)}");
+            }
         }
 
     }

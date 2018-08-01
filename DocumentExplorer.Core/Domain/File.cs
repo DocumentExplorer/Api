@@ -26,6 +26,12 @@ namespace DocumentExplorer.Core.Domain
             Path = path;
         }
 
+        public void UpdatePath(string path)
+        {
+            if(Path==string.Empty) throw new DomainException(ErrorCodes.FileDoesNotExists);
+            Path = path;
+        }
+
         public void SetIsNotRequired()
         {
             if(Path!=string.Empty) throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);

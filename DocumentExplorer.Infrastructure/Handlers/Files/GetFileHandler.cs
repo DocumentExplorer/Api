@@ -26,13 +26,12 @@ namespace DocumentExplorer.Infrastructure.Handlers.Files
             => await _handler
             .Validate(async () => 
             {
-                var file = await _fileService.GetFileAsync(command.FileId);
                 await _orderService.ValidatePermissionsToOrder(command.Username, 
-                    command.Role, file.OrderId);
+                    command.Role, command.OrderId);
             })
             .Run(async ()=>
             {
-                var stream = await _fileService.GetFileStreamAsync(command.FileId);
+                var stream = await _fileService.GetFileStreamAsync(command.OrderId, command.FileType);
                 _cache.Set(command.CacheId, stream, TimeSpan.FromSeconds(5));
             })
             .ExecuteAsync();
