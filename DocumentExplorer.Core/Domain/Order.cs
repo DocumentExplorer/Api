@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using NodaTime;
@@ -25,27 +27,38 @@ namespace DocumentExplorer.Core.Domain
             }
         }
 
-
-
         public int InvoiceNumber { get; set; }
-        public Guid CMRId {get; private set;}
-        public bool IsCMRRequired { get; private set;}
-        public Guid FVKId {get; private set;}
-        public bool IsFVKRequired { get; private set;}
-        public Guid FVPId {get; private set;}
-        public bool IsFVPRequired { get; private set;}
-        public Guid NIPId {get; private set;}
-        public bool IsNIPRequired { get; private set;}
-        public Guid NotaId {get; private set;}
-        public bool IsNotaRequired { get; private set;}
-        public Guid PPId {get; private set;}
-        public bool IsPPRequired { get; private set;}
-        public Guid RKId {get; private set;}
-        public bool IsRKRequired { get; private set;}
-        public Guid ZKId {get; private set;}
-        public bool IsZKRequired { get; private set;}
-        public Guid ZPId {get; private set;}
-        public bool IsZPRequired { get; private set; }
+        public IEnumerable<File> Files 
+        { 
+            get
+            {
+                return _files;
+            }
+            set
+            {
+                _files = new HashSet<File>(value);
+            }
+        }
+
+        private ISet<File> _files = new HashSet<File>();
+        public Guid CMRId { get => _files.SingleOrDefault(x=>x.FileType == FileTypes.CMR).Id; }
+        public bool IsCMRRequired { get => _files.SingleOrDefault(x=> x.FileType == FileTypes.CMR).IsRequired;}
+        public Guid FVKId { get => _files.SingleOrDefault(x=>x.FileType == FileTypes.FVK).Id; }
+        public bool IsFVKRequired { get => _files.SingleOrDefault(x=> x.FileType == FileTypes.FVK).IsRequired;}
+        public Guid FVPId { get => _files.SingleOrDefault(x=>x.FileType == FileTypes.FVP).Id; }
+        public bool IsFVPRequired { get => _files.SingleOrDefault(x=> x.FileType == FileTypes.FVP).IsRequired;}
+        public Guid NIPId { get => _files.SingleOrDefault(x=>x.FileType == FileTypes.NIP).Id; }
+        public bool IsNIPRequired { get => _files.SingleOrDefault(x=> x.FileType == FileTypes.NIP).IsRequired;}
+        public Guid NotaId { get => _files.SingleOrDefault(x=>x.FileType == FileTypes.Nota).Id; }
+        public bool IsNotaRequired { get => _files.SingleOrDefault(x=> x.FileType == FileTypes.Nota).IsRequired;}
+        public Guid PPId { get => _files.SingleOrDefault(x=>x.FileType == FileTypes.PP).Id; }
+        public bool IsPPRequired { get => _files.SingleOrDefault(x=> x.FileType == FileTypes.PP).IsRequired;}
+        public Guid RKId { get => _files.SingleOrDefault(x=>x.FileType == FileTypes.RK).Id; }
+        public bool IsRKRequired { get => _files.SingleOrDefault(x=> x.FileType == FileTypes.RK).IsRequired;}
+        public Guid ZKId { get => _files.SingleOrDefault(x=>x.FileType == FileTypes.ZK).Id; }
+        public bool IsZKRequired { get => _files.SingleOrDefault(x=> x.FileType == FileTypes.ZK).IsRequired;}
+        public Guid ZPId { get => _files.SingleOrDefault(x=>x.FileType == FileTypes.ZP).Id; }
+        public bool IsZPRequired { get => _files.SingleOrDefault(x=> x.FileType == FileTypes.ZP).IsRequired;}
 
         protected Order()
         {
@@ -65,123 +78,75 @@ namespace DocumentExplorer.Core.Domain
             Owner1Name = SetOwner(owner1Name);
             InvoiceNumber = invoiceNumber;
             SetCreationDate(creationDate);
-            SetDefaultRequirements();
+            SetDefaultFilesStatus();
         }
 
         public void SetRequirements(string fileType, bool isRequired)
         {
+            var file = _files.SingleOrDefault(x => x.FileType==fileType);
+            if(file==null) throw new DomainException(ErrorCodes.InvalidFileType);
+            if(isRequired)
+            {
+                file.SetIsRequired();
+            }
+            else
+            {
+                file.SetIsNotRequired();
+            }
+            
+        }
+
+        public bool FileIsAlreadyAssigned(string fileType)
+        {
+            var file = _files.SingleOrDefault(x => x.FileType==fileType);
+            if(file==null) throw new DomainException(ErrorCodes.InvalidFileType);
+            return file.Path != string.Empty;
+        }
+
+        private void SetDefaultFilesStatus()
+        {
             var properties = typeof(FileTypes).GetProperties();
             foreach(var property in properties)
             {
-                if(property.Name.ToLower()==fileType)
-                {
-                    if((!isRequired) && FileIsAlreadyAssigned(property.Name))
-                        throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
-                    GetIsFileRequiredProperty(property.Name).SetValue(this, isRequired);
-                    return;
-                }
+                _files.Add(new File(Id, property.Name.ToLower()));
             }
-            throw new DomainException(ErrorCodes.InvalidFileType);
-        }
-
-        private PropertyInfo GetIsFileRequiredProperty(string propertyName)
-        {
-            return typeof(Order).GetProperty($"Is{propertyName}Required");
-        }
-
-        public bool FileIsAlreadyAssigned(string propertyName)
-        {
-            var valueOfProperty = GetFileIdProperty(propertyName).GetValue(this, null);
-            if(valueOfProperty is Guid fileId)
-            {
-                return fileId != Guid.Empty;
-            }
-            else throw new InvalidCastException();
-        }
-
-        private PropertyInfo GetFileIdProperty(string propertyName)
-        {
-            return typeof(Order).GetProperty($"{propertyName}Id");
-        }
-
-        private void SetDefaultRequirements()
-        {
-            IsCMRRequired = true;
-            IsFVKRequired = true;
-            IsFVPRequired = true;
-            IsNIPRequired = true;
-            IsNotaRequired = true;
-            IsPPRequired = true;
-            IsRKRequired = true;
-            IsZKRequired = true;
-            IsZPRequired = true;
         }
 
         public string GetPathToFile(string fileType)
         {
-            var properties = typeof(FileTypes).GetProperties();
-            foreach(var property in properties)
-            {
-                if(property.Name.ToLower()==fileType)
-                {
-                    if(!FileIsAlreadyAssigned(property.Name))
-                    throw new DomainException(ErrorCodes.FileDoesNotExists);
-                    int number;
-                    if(fileType==FileTypes.FVK) number = InvoiceNumber;
-                    else number = Number;
-                    fileType = $"{fileType}{AddLeadingZeros(Number)}";
-                    return $"{GetPathToFolder()}{fileType}.pdf";
-                }
-                
-            }
-            throw new DomainException(ErrorCodes.InvalidFileType);
+            var file = _files.SingleOrDefault(x => x.FileType==fileType);
+            if(file==null) throw new DomainException(ErrorCodes.InvalidFileType);
+            return file.Path;
         }
 
-        private bool IsFileRequired(string propertyName)
+        public void LinkFile(string fileType, int invoiceNumber=0)
         {
-            var valueOfProperty =  GetIsFileRequiredProperty(propertyName).GetValue(this, null);
-            if(valueOfProperty is bool isFileRequired)
+            var file = _files.SingleOrDefault(x => x.FileType==fileType);
+            if(file==null) throw new DomainException(ErrorCodes.InvalidFileType);
+            int numberToAdd;
+            if(fileType==FileTypes.FVK)
             {
-                return isFileRequired;
+                ValidateInvoiceNumber(invoiceNumber);
+                numberToAdd = invoiceNumber;
             }
-            throw new InvalidCastException();
-        }
+            else
+            {
+                numberToAdd = Number;
+            }
 
-        public void LinkFile(File file, string fileType, int invoiceNumber)
-        {
-            var properties = typeof(FileTypes).GetProperties();
-            if(fileType==FileTypes.FVK && invoiceNumber<=0) 
-                throw new DomainException(ErrorCodes.InvalidInvoiceNumber);
-            foreach(var property in properties)
+            var path = $"{GetPathToFolder()}{fileType}{AddLeadingZeros(numberToAdd)}.pdf";
+            file.SetFile(path);
+            if(fileType==FileTypes.FVK)
             {
-                if(property.Name.ToLower()==fileType)
-                {
-                    if(FileIsAlreadyAssigned(property.Name))
-                        throw new DomainException(ErrorCodes.FileIsAlreadyAssigned);
-                    if(!IsFileRequired(property.Name))
-                        throw new DomainException(ErrorCodes.FileIsNotRequired);
-                    GetFileIdProperty(property.Name).SetValue(this, file.Id);
-                    if(fileType == FileTypes.FVK) InvoiceNumber = invoiceNumber;
-                    return;
-                }
-                
+                InvoiceNumber = invoiceNumber;
             }
-            throw new DomainException(ErrorCodes.InvalidFileType);
         }
 
         public void UnlinkFile(string fileType)
         {
-            var properties = typeof(FileTypes).GetProperties();
-            foreach(var property in properties)
-            {
-                if(property.Name.ToLower()==fileType)
-                {
-                    GetFileIdProperty(property.Name).SetValue(this, Guid.Empty);
-                    if(fileType == FileTypes.FVK) InvoiceNumber = 0;
-                    return;
-                }
-            }
-            throw new DomainException(ErrorCodes.InvalidFileType);
+            var file = _files.SingleOrDefault(x => x.FileType==fileType);
+            if(file==null) throw new DomainException(ErrorCodes.InvalidFileType);
+            file.DeleteFile();
         }
 
         public string GetPathToFolder()
@@ -196,8 +161,14 @@ namespace DocumentExplorer.Core.Domain
         }
         public void SetNumber(int number)
         {
-            if (number <= 0 || number>=10000) throw new DomainException(ErrorCodes.IvalidId);
+            if (number <= 0 || number>=10000) throw new DomainException(ErrorCodes.InvalidNumber);
             Number = number;
+        }
+
+        private void ValidateInvoiceNumber(int invoiceNumber)
+        {
+            if (invoiceNumber <= 0 || invoiceNumber>=10000) 
+                throw new DomainException(ErrorCodes.InvalidInvoiceNumber);
         }
 
         public void SetClientCountry(string country)
@@ -271,6 +242,12 @@ namespace DocumentExplorer.Core.Domain
                 }
             }
             return lackingFiles;
+        }
+
+        private bool IsFileRequired(string fileType)
+        {
+            var file = _files.SingleOrDefault(x => x.IsRequired);
+            return file.IsRequired;
         }
 
     }
