@@ -157,7 +157,7 @@ namespace DocumentExplorer.Infrastructure.Services
         {
             var fileType = GetFileType(path);
             int invoiceNumber = TryGetInvoiceNumber(path);
-            order.LinkFile(fileType, invoiceNumber);
+            order.LinkFile(fileType, invoiceNumber, path);
             await LogAddingFileAsync(fileType, order, secondOwner, path);
             return order;
         }
@@ -165,7 +165,7 @@ namespace DocumentExplorer.Infrastructure.Services
         private async Task LogAddingFileAsync(string fileType, Order order, string secondOwner, string path)
         {
             var fileCreatonDate = await _realFileRepository.GetFileCreationDateAsync(path);
-            var fileAdder = await GetFileAdderAsync(path, order, secondOwner);
+            var fileAdder = await GetFileAdderAsync(fileType, order, secondOwner);
             await _logService.AddLogAsync($"Dodano plik: {Path.GetFileName(path)}",
             order,fileAdder,fileCreatonDate);
             Logger.Log(NLog.LogLevel.Info, path);

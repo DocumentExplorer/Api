@@ -57,12 +57,13 @@ namespace DocumentExplorer.Api.Controllers
         }
 
         [Authorize]
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetFileAsync(Guid id)
+        [HttpGet("{id}/{fileType}")]
+        public async Task<IActionResult> GetFileAsync(Guid id, string fileType)
         {
             var command = new GetFile
             {
                 OrderId = id,
+                FileType = fileType,
                 CacheId = Guid.NewGuid()
             };
             await DispatchAsync(command);

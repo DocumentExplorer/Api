@@ -49,7 +49,8 @@ namespace DocumentExplorer.Infrastructure.Repositories
         public async Task<Order> GetAsync(Guid id)
         {
             var order = await _context.Orders.SingleOrDefaultAsync(x=> x.Id == id);
-            order.Files = await _context.Files.Where(x=> x.Id == id).ToListAsync();
+            if(order != null)
+                order.Files = await _context.Files.Where(x=> x.OrderId == id).ToListAsync();
             return order;
         }
 

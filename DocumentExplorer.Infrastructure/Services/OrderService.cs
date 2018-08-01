@@ -71,7 +71,7 @@ namespace DocumentExplorer.Infrastructure.Services
             var order = await _orderRepository.GetOrFailAsync(id);
             var oldFolderName = order.GetPathToFolder();
             var oldOrder = OrderFolderNameGenerator.NameToOrder(oldFolderName);
-            List<Core.Domain.File> files = order.Files.ToList();
+            IEnumerable<Core.Domain.File> files = order.Files.Clone();
             await _handler
                 .Run(async () => 
                 {
@@ -104,13 +104,14 @@ namespace DocumentExplorer.Infrastructure.Services
                 .ExecuteAllAsync();
         }
 
-        private async Task UpdateFileRoots(List<Core.Domain.File> files, int number, Order order)
+        private async Task UpdateFileRoots(IEnumerable<Core.Domain.File> files, int number, Order order)
         {
-            var filePaths = files.Select(x => x.Path).ToList();
+            var filePaths = files.Select(x => x.Path).Where(x=>x!=string.Empty).ToList();
             List<string> newFilesPath = new List<string>();
             foreach(var file in files)
             {
                 var path = file.Path;
+                if(path==string.Empty) continue;
                 var fileName = Path.GetFileNameWithoutExtension(path);
                 Regex re = new Regex(@"([a-zA-Z]+)(\d+)");
                 Match result = re.Match(fileName);

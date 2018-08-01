@@ -19,6 +19,15 @@ namespace DocumentExplorer.Core.Domain
             IsRequired = true;
         }
 
+        public File(Guid id, string path, Guid orderId, string fileType, bool isRequired)
+        {
+            Id = id;
+            Path = path;
+            OrderId = orderId;
+            FileType = fileType;
+            IsRequired = isRequired;
+        }
+
         public void SetFile(string path)
         {
             if(!IsRequired) throw new DomainException(ErrorCodes.FileIsNotRequired);
@@ -28,7 +37,7 @@ namespace DocumentExplorer.Core.Domain
 
         public void UpdatePath(string path)
         {
-            if(Path==string.Empty) throw new DomainException(ErrorCodes.FileDoesNotExists);
+            if(Path==string.Empty) return;
             Path = path;
         }
 

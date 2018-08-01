@@ -42,23 +42,122 @@ namespace DocumentExplorer.Core.Domain
         }
 
         private ISet<File> _files = new HashSet<File>();
-        public Guid CMRId { get => _files.SingleOrDefault(x=>x.FileType == FileTypes.CMR).Id; }
+        public Guid CMRId 
+        { 
+            get
+            {
+                var file = _files.SingleOrDefault(x=>x.FileType == FileTypes.CMR);
+                if(file.Path==string.Empty)
+                {
+                    return Guid.Empty;
+                }
+                return file.Id;
+            } 
+        }
         public bool IsCMRRequired { get => _files.SingleOrDefault(x=> x.FileType == FileTypes.CMR).IsRequired;}
-        public Guid FVKId { get => _files.SingleOrDefault(x=>x.FileType == FileTypes.FVK).Id; }
+        public Guid FVKId
+        { 
+            get
+            {
+                var file = _files.SingleOrDefault(x=>x.FileType == FileTypes.FVK);
+                if(file.Path==string.Empty)
+                {
+                    return Guid.Empty;
+                }
+                return file.Id;
+            } 
+        }
         public bool IsFVKRequired { get => _files.SingleOrDefault(x=> x.FileType == FileTypes.FVK).IsRequired;}
-        public Guid FVPId { get => _files.SingleOrDefault(x=>x.FileType == FileTypes.FVP).Id; }
+        public Guid FVPId
+        { 
+            get
+            {
+                var file = _files.SingleOrDefault(x=>x.FileType == FileTypes.FVP);
+                if(file.Path==string.Empty)
+                {
+                    return Guid.Empty;
+                }
+                return file.Id;
+            } 
+        }
         public bool IsFVPRequired { get => _files.SingleOrDefault(x=> x.FileType == FileTypes.FVP).IsRequired;}
-        public Guid NIPId { get => _files.SingleOrDefault(x=>x.FileType == FileTypes.NIP).Id; }
+        public Guid NIPId
+        { 
+            get
+            {
+                var file = _files.SingleOrDefault(x=>x.FileType == FileTypes.NIP);
+                if(file.Path==string.Empty)
+                {
+                    return Guid.Empty;
+                }
+                return file.Id;
+            } 
+        }
         public bool IsNIPRequired { get => _files.SingleOrDefault(x=> x.FileType == FileTypes.NIP).IsRequired;}
-        public Guid NotaId { get => _files.SingleOrDefault(x=>x.FileType == FileTypes.Nota).Id; }
+        public Guid NotaId
+        { 
+            get
+            {
+                var file = _files.SingleOrDefault(x=>x.FileType == FileTypes.Nota);
+                if(file.Path==string.Empty)
+                {
+                    return Guid.Empty;
+                }
+                return file.Id;
+            } 
+        }
         public bool IsNotaRequired { get => _files.SingleOrDefault(x=> x.FileType == FileTypes.Nota).IsRequired;}
-        public Guid PPId { get => _files.SingleOrDefault(x=>x.FileType == FileTypes.PP).Id; }
+        public Guid PPId
+        { 
+            get
+            {
+                var file = _files.SingleOrDefault(x=>x.FileType == FileTypes.PP);
+                if(file.Path==string.Empty)
+                {
+                    return Guid.Empty;
+                }
+                return file.Id;
+            } 
+        }
         public bool IsPPRequired { get => _files.SingleOrDefault(x=> x.FileType == FileTypes.PP).IsRequired;}
-        public Guid RKId { get => _files.SingleOrDefault(x=>x.FileType == FileTypes.RK).Id; }
+        public Guid RKId
+        { 
+            get
+            {
+                var file = _files.SingleOrDefault(x=>x.FileType == FileTypes.RK);
+                if(file.Path==string.Empty)
+                {
+                    return Guid.Empty;
+                }
+                return file.Id;
+            } 
+        }
         public bool IsRKRequired { get => _files.SingleOrDefault(x=> x.FileType == FileTypes.RK).IsRequired;}
-        public Guid ZKId { get => _files.SingleOrDefault(x=>x.FileType == FileTypes.ZK).Id; }
+        public Guid ZKId
+        { 
+            get
+            {
+                var file = _files.SingleOrDefault(x=>x.FileType == FileTypes.ZK);
+                if(file.Path==string.Empty)
+                {
+                    return Guid.Empty;
+                }
+                return file.Id;
+            } 
+        }
         public bool IsZKRequired { get => _files.SingleOrDefault(x=> x.FileType == FileTypes.ZK).IsRequired;}
-        public Guid ZPId { get => _files.SingleOrDefault(x=>x.FileType == FileTypes.ZP).Id; }
+        public Guid ZPId
+        { 
+            get
+            {
+                var file = _files.SingleOrDefault(x=>x.FileType == FileTypes.ZP);
+                if(file.Path==string.Empty)
+                {
+                    return Guid.Empty;
+                }
+                return file.Id;
+            } 
+        }
         public bool IsZPRequired { get => _files.SingleOrDefault(x=> x.FileType == FileTypes.ZP).IsRequired;}
 
         protected Order()
@@ -121,7 +220,7 @@ namespace DocumentExplorer.Core.Domain
             return file.Path;
         }
 
-        public void LinkFile(string fileType, int invoiceNumber=0)
+        public void LinkFile(string fileType, int invoiceNumber=0, string otherPath=null)
         {
             var file = _files.SingleOrDefault(x => x.FileType==fileType);
             if(file==null) throw new DomainException(ErrorCodes.InvalidFileType);
@@ -135,8 +234,10 @@ namespace DocumentExplorer.Core.Domain
             {
                 numberToAdd = Number;
             }
-
-            var path = $"{GetPathToFolder()}{fileType}{AddLeadingZeros(numberToAdd)}.pdf";
+            string path;
+            if(otherPath==null)
+                path = $"{GetPathToFolder()}{fileType}{AddLeadingZeros(numberToAdd)}.pdf";
+            else path = otherPath;
             file.SetFile(path);
             if(fileType==FileTypes.FVK)
             {
