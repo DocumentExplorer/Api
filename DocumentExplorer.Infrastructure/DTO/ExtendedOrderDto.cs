@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace DocumentExplorer.Infrastructure.DTO
 {
@@ -22,5 +23,7 @@ namespace DocumentExplorer.Infrastructure.DTO
         public bool IsZKRequired { get; set;}
         public Guid ZPId {get; set;}
         public bool IsZPRequired { get; set; }
+
+        public IEnumerable<FileDto> Files { get; set; }
     }
 }
