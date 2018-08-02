@@ -5,5 +5,6 @@ namespace DocumentExplorer.Infrastructure.DTO
         public string Token {get; set;}
         public long Expiry {get; set;}
         public string Role {get; set;}
+        public string Username {get; set; }
     }
 }

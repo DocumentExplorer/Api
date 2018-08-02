@@ -50,7 +50,8 @@ namespace DocumentExplorer.Infrastructure.Services
             {
                 Token = token,
                 Expiry = (expires.Ticks - now.Ticks)/10000000,
-                Role = role
+                Role = role,
+                Username = name
             };
         }
     }
