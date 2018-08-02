@@ -3,7 +3,6 @@ using DocumentExplorer.Infrastructure.Commands;
 using DocumentExplorer.Infrastructure.Commands.Files;
 using DocumentExplorer.Infrastructure.Exceptions;
 using DocumentExplorer.Infrastructure.Services;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace DocumentExplorer.Infrastructure.Handlers.Files
 {

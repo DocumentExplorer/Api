@@ -1,9 +1,6 @@
 using System;
-using System.IO;
 using System.Security.Cryptography;
-using System.Text;
 using DocumentExplorer.Infrastructure.Extensions;
-using DocumentExplorer.Infrastructure.Services;
 
 namespace DocumentExplorer.Infrastructure.Services
 {

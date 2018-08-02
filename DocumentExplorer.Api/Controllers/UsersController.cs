@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using DocumentExplorer.Infrastructure.Commands;
 using DocumentExplorer.Infrastructure.Commands.Users;

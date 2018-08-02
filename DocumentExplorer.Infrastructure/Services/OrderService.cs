@@ -2,7 +2,6 @@
 using DocumentExplorer.Core.Domain;
 using DocumentExplorer.Core.Repositories;
 using DocumentExplorer.Infrastructure.DTO;
-using DocumentExplorer.Infrastructure.Exceptions;
 using DocumentExplorer.Infrastructure.Extensions;
 using Microsoft.Extensions.Caching.Memory;
 using System;

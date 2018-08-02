@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DocumentExplorer.Infrastructure.BlobStorage
+﻿namespace DocumentExplorer.Infrastructure.BlobStorage
 {
     public class BlobStorageSettings
     {

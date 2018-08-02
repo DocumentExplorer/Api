@@ -1,5 +1,3 @@
-using System;
-
 namespace DocumentExplorer.Infrastructure.DTO
 {
     public class PermissionsDto

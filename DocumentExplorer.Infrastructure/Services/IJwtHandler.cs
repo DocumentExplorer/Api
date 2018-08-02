@@ -1,5 +1,4 @@
 ﻿using DocumentExplorer.Infrastructure.DTO;
-using System;
 
 namespace DocumentExplorer.Infrastructure.Services
 {

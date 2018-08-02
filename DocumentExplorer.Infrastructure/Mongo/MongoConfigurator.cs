@@ -1,8 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Conventions;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace DocumentExplorer.Infrastructure.Mongo
 {

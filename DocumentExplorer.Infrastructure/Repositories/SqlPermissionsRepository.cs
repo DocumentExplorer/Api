@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using DocumentExplorer.Core.Domain;
 using DocumentExplorer.Core.Repositories;

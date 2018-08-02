@@ -8,8 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using DocumentExplorer.Infrastructure.Mappers;
 using DocumentExplorer.Infrastructure.IoC.Modules;
 using DocumentExplorer.Infrastructure.Services;
-using DocumentExplorer.Core.Repositories;
-using DocumentExplorer.Infrastructure.Repositories;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

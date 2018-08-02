@@ -1,10 +1,7 @@
 using Autofac;
 using DocumentExplorer.Infrastructure.FileSystem;
 using DocumentExplorer.Infrastructure.Repositories;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace DocumentExplorer.Infrastructure.IoC.Modules
 {

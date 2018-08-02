@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using DocumentExplorer.Core.Domain;
 using DocumentExplorer.Infrastructure.DTO;

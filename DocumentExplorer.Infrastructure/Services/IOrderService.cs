@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using DocumentExplorer.Core.Domain;
 using DocumentExplorer.Infrastructure.DTO;
 
 namespace DocumentExplorer.Infrastructure.Services

@@ -4,7 +4,6 @@ using AutoMapper;
 using DocumentExplorer.Core.Domain;
 using DocumentExplorer.Core.Repositories;
 using DocumentExplorer.Infrastructure.DTO;
-using DocumentExplorer.Infrastructure.Exceptions;
 
 namespace DocumentExplorer.Infrastructure.Services
 {

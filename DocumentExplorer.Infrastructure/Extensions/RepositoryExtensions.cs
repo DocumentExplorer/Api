@@ -2,9 +2,7 @@
 using DocumentExplorer.Core.Repositories;
 using DocumentExplorer.Infrastructure.Exceptions;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DocumentExplorer.Infrastructure.Extensions

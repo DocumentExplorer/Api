@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using DocumentExplorer.Core.Domain;
-using Newtonsoft.Json;
 
 namespace DocumentExplorer.Infrastructure.Extensions
 {
