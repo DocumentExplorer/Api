@@ -52,6 +52,7 @@ namespace DocumentExplorer.Api.Framework
                     break;
             }
             Logger.Log(NLog.LogLevel.Error, exception, exception.StackTrace);
+            Logger.Log(NLog.LogLevel.Error, exception, exception.Message, exception.StackTrace);
             var response = new { code = errorCode };
             var payload = JsonConvert.SerializeObject(response);
             context.Response.ContentType = "application/json";
