@@ -197,8 +197,8 @@ namespace DocumentExplorer.Core.Domain
 
         public bool FileIsAlreadyAssigned(string fileType)
         {
-            var file = _files.SingleOrDefault(x => x.FileType==fileType);
-            if(file==null) throw new DomainException(ErrorCodes.InvalidFileType);
+            var file = _files.SingleOrDefault(x => x.FileType==fileType.ToLower());
+                if(file==null) throw new DomainException(ErrorCodes.InvalidFileType);
             return file.Path != string.Empty;
         }
 
@@ -353,7 +353,8 @@ namespace DocumentExplorer.Core.Domain
 
         private bool IsFileRequired(string fileType)
         {
-            var file = _files.SingleOrDefault(x => x.IsRequired);
+            var file = _files.SingleOrDefault(x => x.FileType==fileType.ToLower());
+                if(file==null) throw new DomainException(ErrorCodes.InvalidFileType);
             return file.IsRequired;
         }
 
