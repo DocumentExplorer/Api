@@ -24,7 +24,11 @@ namespace DocumentExplorer.Api.Controllers
         {
             command.CacheId = Guid.NewGuid();
             await DispatchAsync(command);
-            return Created($"orders/{Cache.Get(command.CacheId)}", null);
+            var result = new
+            {
+                Id = Cache.Get(command.CacheId)
+            };
+            return Json(result);
         }
 
         [Authorize("complementerAndAdmin")]
