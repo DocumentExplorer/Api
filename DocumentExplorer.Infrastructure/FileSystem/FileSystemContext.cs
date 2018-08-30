@@ -45,6 +45,7 @@ namespace DocumentExplorer.Infrastructure.FileSystem
 
         public async Task MoveFiles(IEnumerable<string> from, IEnumerable<string> to)
         {
+            if(from.Count()==0) return;
             using(var e1 = from.GetEnumerator())
             using(var e2 = to.GetEnumerator())
             {

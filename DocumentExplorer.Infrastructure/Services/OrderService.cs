@@ -107,9 +107,9 @@ namespace DocumentExplorer.Infrastructure.Services
         {
             var filePaths = files.Select(x => x.Path).Where(x=>x!=string.Empty).ToList();
             List<string> newFilesPath = new List<string>();
-            foreach(var file in files)
+            foreach(var file in filePaths)
             {
-                var path = file.Path;
+                var path = file;
                 if(path==string.Empty) continue;
                 var fileName = Path.GetFileNameWithoutExtension(path);
                 Regex re = new Regex(@"([a-zA-Z]+)(\d+)");

@@ -14,7 +14,7 @@ namespace DocumentExplorer.Api
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .UseUrls("http://localhost:5000/")
+                .UseUrls("http://*:5000/")
                 .UseNLog()
                 .Build();
     }
