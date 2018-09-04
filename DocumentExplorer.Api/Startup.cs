@@ -19,6 +19,7 @@ using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using NLog.Web;
 using DocumentExplorer.Infrastructure.EF;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace DocumentExplorer.Api
 {
@@ -62,13 +63,6 @@ namespace DocumentExplorer.Api
             services.AddTransient<TokenManagerMiddleware>();
             services.AddTransient<ITokenManager,TokenManager>();
             services.AddSingleton<IHttpContextAccessor,HttpContextAccessor>();
-            services.AddCors(o => o.AddPolicy("MyPolicy", a =>
-            {
-                    a.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials();
-            }));
             services.AddMvc();
             if(ConfigurationRoot["general:Database"]=="SqlOrInMemory")
             {
@@ -106,6 +100,10 @@ namespace DocumentExplorer.Api
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime appLifetime,
             ILoggerFactory loggerFactory)
         {
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
             loggerFactory.AddNLog();
             env.ConfigureNLog("nlog.config");
 
@@ -116,7 +114,6 @@ namespace DocumentExplorer.Api
             app.UseMiddleware<TokenManagerMiddleware>();
             app.UseAuthentication();
             app.UseExceptionMiddleware();
-            app.UseCors("MyPolicy");
             MongoConfigurator.Initialize();
             var generalSettings = app.ApplicationServices.GetService<GeneralSettings>();
             if(generalSettings.DataInitialize)

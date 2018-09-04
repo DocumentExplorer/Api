@@ -32,6 +32,7 @@ namespace DocumentExplorer.Infrastructure.FileSystem
             Stream fileStream = File.OpenRead(path);
             var memoryStream = new MemoryStream();
             fileStream.CopyTo(memoryStream);
+            fileStream.Close();
             await Task.CompletedTask;
             return memoryStream;
         }
